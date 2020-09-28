@@ -3,7 +3,7 @@
 alias dtags='dart_ctags -l -o tags'
 alias em='sudo emerge --quiet --ask'
 alias onedrive='rclone mount onedrive: /home/solaire/mnt/onedrive'
-alias emupg='emerge --update --changed-use --deep --quiet @world'
+alias emupg='sudo emerge --update --changed-use --deep --quiet @world'
 
 autoload -U colors && colors
 
