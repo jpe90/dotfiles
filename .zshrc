@@ -4,12 +4,23 @@ alias dtags='dart_ctags -l -o tags'
 alias em='sudo emerge --quiet --ask'
 alias onedrive='rclone mount onedrive: /home/solaire/mnt/onedrive'
 alias emupg='sudo emerge --update --changed-use --deep --quiet @world'
+alias dag='git log --all --graph --decorate'
+
+# configure history
+
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=5000
+setopt appendhistory
+setopt sharehistory
 
 autoload -U colors && colors
 
+export PATH="$PATH:/home/solaire/Development/GentooAdminScripts"
+
 # android SDK
 
-export PATH="$PATH:/home/solaire/Android/Sdk/platform-tools:/home/solaire/Android/Sdk/tools/bin"
+# export PATH="$PATH:/home/solaire/Android/Sdk/platform-tools:/home/solaire/Android/Sdk/tools/bin"
 
 # set FZF to use fd by default to respect gitignore
 # TODO: install FZF
