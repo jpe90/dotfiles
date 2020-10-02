@@ -1,10 +1,11 @@
 # aliases 
 
 alias dtags='dart_ctags -l -o tags'
-alias em='sudo emerge --quiet --ask'
+alias em='sudo emerge --verbose --ask'
 alias onedrive='rclone mount onedrive: /home/solaire/mnt/onedrive'
-alias emupg='sudo emerge --update --changed-use --deep --quiet @world'
+alias emupg='sudo emerge --ask --update --changed-use --deep --verbose @world'
 alias dag='git log --all --graph --decorate'
+alias psudo='sudo env "PATH=$PATH"'
 
 # configure history
 
