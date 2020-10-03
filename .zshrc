@@ -6,6 +6,7 @@ alias onedrive='rclone mount onedrive: /home/solaire/mnt/onedrive'
 alias emupg='sudo emerge --ask --update --changed-use --deep --verbose @world'
 alias dag='git log --all --graph --decorate'
 alias psudo='sudo env "PATH=$PATH"'
+alias sld='feh --bg-fill ~/Pictures/wallpapers/landscape/r.jpg ~/Pictures/wallpapers/landscape/l.jpg'
 
 # configure history
 
@@ -19,13 +20,16 @@ autoload -U colors && colors
 
 export PATH="$PATH:/home/solaire/Development/GentooAdminScripts"
 
-# android SDK
-
+# TODO: install android SDK
 # export PATH="$PATH:/home/solaire/Android/Sdk/platform-tools:/home/solaire/Android/Sdk/tools/bin"
 
 # set FZF to use fd by default to respect gitignore
 # TODO: install FZF
 # export FZF_DEFAULT_COMMAND='fd --type f'
+
+# TODO: install flutter
+# Flutter webdev tool
+# export PATH="$PATH":"$HOME/.pub-cache/bin"
 
 # autocomplete
 autoload -U compinit
@@ -72,18 +76,16 @@ preexec() { echo -ne '\e[5 q' ;} # Use beam shape cursor for each new prompt.
 
 autoload -Uz promptinit
 promptinit
-#prompt gentoo
 setopt PROMPT_SUBST
 GIT_PS1_SHOWDIRTYSTATE="y"
-precmd () { __git_ps1 "%n" ":%~$ " "|%s" }
-PS1='[%n@%m %c$(__git_ps1 " (%s)")]\$ '
+GIT_PS1_SHOWCOLORHINTS="y"
+GIT_PS1_SHOWUPSTREAM="verbose"
+GITPST_DESCRIBE_STYLE="branch"
+precmd () { __git_ps1 "%F{cyan}%n%f" " | %~ $ " " | %s" }
 
 # Load zsh-syntax-highlighting; should be last.
  source /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh 2>/dev/null
  
 
 
-# TODO: install flutter
-# Flutter webdev tool
-export PATH="$PATH":"$HOME/.pub-cache/bin"
 
