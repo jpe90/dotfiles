@@ -79,9 +79,9 @@ promptinit
 setopt PROMPT_SUBST
 GIT_PS1_SHOWDIRTYSTATE="y"
 GIT_PS1_SHOWCOLORHINTS="y"
-GIT_PS1_SHOWUPSTREAM="verbose"
+GIT_PS1_SHOWUPSTREAM="verbose git"
 GITPST_DESCRIBE_STYLE="branch"
-precmd () { __git_ps1 "%F{cyan}%n%f" " %~ $ " " %s" }
+precmd () { __git_ps1 "%F{cyan}%n%f%F{yellow}@%f%F{magenta}%m%f" " %~ $ " " %s" }
 
 # Load zsh-syntax-highlighting; should be last.
  source /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh 2>/dev/null
