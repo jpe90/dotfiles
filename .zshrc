@@ -3,7 +3,7 @@
 alias dtags='dart_ctags -l -o tags'
 alias em='sudo emerge --verbose --ask'
 alias onedrive='rclone mount onedrive: /home/solaire/mnt/onedrive'
-alias emupg='sudo emerge --ask --update --changed-use --deep --verbose @world'
+alias emupg='sudo emerge -uDU --keep-going --with-bdeps=y @world'
 alias dag='git log --all --graph --decorate'
 alias psudo='sudo env "PATH=$PATH"'
 alias sld='feh --bg-fill ~/Pictures/wallpapers/landscape/r.jpg ~/Pictures/wallpapers/landscape/l.jpg'
@@ -81,7 +81,7 @@ GIT_PS1_SHOWDIRTYSTATE="y"
 GIT_PS1_SHOWCOLORHINTS="y"
 GIT_PS1_SHOWUPSTREAM="verbose"
 GITPST_DESCRIBE_STYLE="branch"
-precmd () { __git_ps1 "%F{cyan}%n%f" " | %~ $ " " | %s" }
+precmd () { __git_ps1 "%F{cyan}%n%f" " %~ $ " " %s" }
 
 # Load zsh-syntax-highlighting; should be last.
  source /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh 2>/dev/null
