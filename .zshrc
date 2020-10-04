@@ -79,7 +79,7 @@ promptinit
 setopt PROMPT_SUBST
 GIT_PS1_SHOWDIRTYSTATE="y"
 GIT_PS1_SHOWCOLORHINTS="y"
-GIT_PS1_SHOWUPSTREAM="verbose"
+GIT_PS1_SHOWUPSTREAM="verbose git"
 GITPST_DESCRIBE_STYLE="branch"
 precmd () { __git_ps1 "%F{cyan}%n%f" " %~ $ " " %s" }
 
