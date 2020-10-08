@@ -6,7 +6,7 @@ alias onedrive='rclone mount onedrive: /home/solaire/mnt/onedrive'
 alias emupg='sudo emerge -uDU --keep-going --with-bdeps=y @world'
 alias dag='git log --all --graph --decorate'
 alias psudo='sudo env "PATH=$PATH"'
-alias sld='feh --bg-fill ~/Pictures/wallpapers/landscape/r.jpg ~/Pictures/wallpapers/landscape/l.jpg'
+alias sld='feh --bg-fill ~/Pictures/wallpapers/landscape/l.jpg ~/Pictures/wallpapers/landscape/r.jpg'
 
 # configure history
 
@@ -63,6 +63,7 @@ function zle-keymap-select {
     echo -ne '\e[5 q'
   fi
 }
+
 zle -N zle-keymap-select
 zle-line-init() {
     zle -K viins # initiate `vi insert` as keymap (can be removed if `bindkey -V` has been set elsewhere)
