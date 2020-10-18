@@ -7,6 +7,10 @@ alias emupg='sudo emerge -uDU --keep-going --with-bdeps=y @world'
 alias dag='git log --all --graph --decorate'
 alias psudo='sudo env "PATH=$PATH"'
 alias sld='feh --bg-fill ~/Pictures/wallpapers/landscape/l.jpg ~/Pictures/wallpapers/landscape/r.jpg'
+alias spd='feh --bg-fill ~/Pictures/wallpapers/portrait/l.jpg ~/Pictures/wallpapers/landscape/r.jpg'
+alias albd='feh --bg-max ~/Pictures/album_art/shore.jpg ~/Pictures/album_art/i_see_you.jpg'
+alias xrun='gcc -Wall -Wextra -Werror -pedantic main.c -o main && ./main' 
+alias cpwd='pwd | xclip -i -selection clipboard'
 
 # configure history
 
@@ -19,6 +23,7 @@ setopt sharehistory
 autoload -U colors && colors
 
 export PATH="$PATH:/home/solaire/Development/GentooAdminScripts"
+export PATH="$PATH:/home/solaire/.local/bin"
 
 # TODO: install android SDK
 # export PATH="$PATH:/home/solaire/Android/Sdk/platform-tools:/home/solaire/Android/Sdk/tools/bin"

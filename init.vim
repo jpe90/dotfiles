@@ -43,6 +43,7 @@ syntax enable
 set number
 set relativenumber
 set mouse+=a
+set title
 
 autocmd Filetype typescript setlocal shiftwidth=2 tabstop=2
 " ############### COLOR ######################
