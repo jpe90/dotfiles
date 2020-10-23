@@ -9,7 +9,7 @@ alias psudo='sudo env "PATH=$PATH"'
 alias sld='feh --bg-fill ~/Pictures/wallpapers/landscape/l.jpg ~/Pictures/wallpapers/landscape/r.jpg'
 alias spd='feh --bg-fill ~/Pictures/wallpapers/portrait/l.jpg ~/Pictures/wallpapers/landscape/r.jpg'
 alias albd='feh --bg-max ~/Pictures/album_art/shore.jpg ~/Pictures/album_art/i_see_you.jpg'
-alias xrun='gcc -Wall -Wextra -Werror -pedantic main.c -o main && ./main' 
+alias xrun='gcc -Wall -Wextra -Werror -pedantic -g main.c -o main && ./main' 
 alias cpwd='pwd | xclip -i -selection clipboard'
 
 # configure history
@@ -30,8 +30,9 @@ export PATH="$PATH:/home/solaire/.local/bin"
 
 # set FZF to use fd by default to respect gitignore
 # TODO: install FZF
-# export FZF_DEFAULT_COMMAND='fd --type f'
-
+#export FZF_DEFAULT_COMMAND='fd --type f'
+export FZF_DEFAULT_OPTS='--height 60% --reverse'
+export FZF_COMPLETION_TRIGGER='~~'
 # TODO: install flutter
 # Flutter webdev tool
 # export PATH="$PATH":"$HOME/.pub-cache/bin"
@@ -90,7 +91,9 @@ GITPST_DESCRIBE_STYLE="branch"
 precmd () { __git_ps1 "%F{cyan}%n%f%F{yellow}@%f%F{magenta}%m%f" " %~ $ " " %s" }
 
 # Load zsh-syntax-highlighting; should be last.
- source /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh 2>/dev/null
+source /usr/share/fzf/key-bindings.zsh
+source /usr/share/zsh/site-functions/_fzf
+source /usr/share/zsh/site-functions/zsh-syntax-highlighting.zsh 2>/dev/null
  
 
 
