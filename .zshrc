@@ -11,6 +11,7 @@ alias spd='feh --bg-fill ~/Pictures/wallpapers/portrait/l.jpg ~/Pictures/wallpap
 alias albd='feh --bg-max ~/Pictures/album_art/shore.jpg ~/Pictures/album_art/i_see_you.jpg'
 alias xrun='gcc -Wall -Wextra -Werror -pedantic -g main.c -o main && ./main' 
 alias cpwd='pwd | xclip -i -selection clipboard'
+alias readc='zathura ~/Documents/books/knr.pdf & disown'
 
 # configure history
 
