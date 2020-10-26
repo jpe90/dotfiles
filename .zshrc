@@ -12,6 +12,8 @@ alias albd='feh --bg-max ~/Pictures/album_art/shore.jpg ~/Pictures/album_art/i_s
 alias xrun='gcc -Wall -Wextra -Werror -pedantic -g main.c -o main && ./main' 
 alias cpwd='pwd | xclip -i -selection clipboard'
 alias readc='zathura ~/Documents/books/knr.pdf & disown'
+source .sshcmd
+
 
 # configure history
 
