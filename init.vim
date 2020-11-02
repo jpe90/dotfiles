@@ -6,7 +6,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'dart-lang/dart-vim-plugin'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'morhetz/gruvbox'
 Plug 'altercation/vim-colors-solarized'
@@ -368,8 +367,10 @@ let g:NERDTreeWinPos = "right"
 
 " ################### FZF ####################
 
-nnoremap <silent> <C-p> :GFiles<CR>
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <silent> <C-g> :GFiles<CR>
 nnoremap <silent> <C-t> :Tags<CR>
+nnoremap <C-f> :Rg! 
 let g:fzf_buffers_jump = 1
 " [[B]Commits] Customize the options used by 'git log':
 let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
