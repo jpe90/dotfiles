@@ -6,7 +6,6 @@ Plug 'tpope/vim-fugitive'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'dart-lang/dart-vim-plugin'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'morhetz/gruvbox'
 Plug 'altercation/vim-colors-solarized'
@@ -355,7 +354,7 @@ let g:coc_snippet_next = '<tab>'
 map <C-n> :NERDTreeToggle<CR>
 " close NERDTree if it's the only window left open
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-let g:NERDTreeWinPos = "right"
+let g:NERDTreeWinPos = "left"
 
 " ################## SCROLL POP UP ################
 
@@ -368,7 +367,8 @@ let g:NERDTreeWinPos = "right"
 
 " ################### FZF ####################
 
-nnoremap <silent> <C-p> :GFiles<CR>
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <silent> <C-g> :GFiles<CR>
 nnoremap <silent> <C-t> :Tags<CR>
 let g:fzf_buffers_jump = 1
 " [[B]Commits] Customize the options used by 'git log':
