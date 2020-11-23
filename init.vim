@@ -12,6 +12,7 @@ Plug 'altercation/vim-colors-solarized'
 Plug 'leafgarland/typescript-vim'
 Plug 'liuchengxu/vista.vim'
 Plug 'honza/vim-snippets'
+Plug 'ziglang/zig.vim'
 
 call plug#end()
 
