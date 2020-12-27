@@ -50,7 +50,7 @@ Plug 'ziglang/zig.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
-Plug 'ludovicchabant/vim-gutentags'
+"Plug 'ludovicchabant/vim-gutentags'
 Plug 'tpope/vim-eunuch'
 Plug 'rafi/awesome-vim-colorschemes'
 
@@ -59,9 +59,11 @@ call plug#end()
 " autocmd vimenter * ++nested colorscheme gruvbox
 
 " ############################ MISC COMMANDS ######################
-set background=dark    " Setting dark mode
+"set background=dark    " Setting dark mode
 set tabstop=4
 set shiftwidth=4
+
+colorscheme solarized8
 
 " ######################### BLOCK CURSOR #########################
 
