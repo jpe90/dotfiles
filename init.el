@@ -1,6 +1,8 @@
 (tool-bar-mode -1)
+(setq tab-always-indent 'complete)
 (setq set-mark-command-repeat-pop t)
 (setq mouse-wheel-progressive-speed nil)
+(setq read-file-name-completion-ignore-case t)
 (toggle-scroll-bar -1)
 (menu-bar-mode -1)
 (setq c-default-style "stroustrup")
@@ -14,6 +16,7 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+
 
 ;; ########################## DO NOT MODIFY
 (custom-set-faces
@@ -34,7 +37,7 @@
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
- '(custom-enabled-themes '(naysayer))
+ '(custom-enabled-themes nil)
  '(custom-safe-themes
    '("13a8eaddb003fd0d561096e11e1a91b029d3c9d64554f8e897b2513dbf14b277" "2809bcb77ad21312897b541134981282dc455ccd7c14d74cc333b6e549b824f3" "5d59bd44c5a875566348fa44ee01c98c1d72369dc531c1c5458b0864841f887c" default))
  '(fci-rule-color "#eee8d5")
@@ -96,3 +99,7 @@
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#073642"])
  '(xterm-color-names-bright
    ["#fdf6e3" "#cb4b16" "#93a1a1" "#839496" "#657b83" "#6c71c4" "#586e75" "#002b36"]))
+
+;; ################################### OK TO MODIFY
+(if (display-graphic-p)
+    (load-theme 'naysayer t)) 
