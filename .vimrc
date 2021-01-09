@@ -51,7 +51,8 @@ set background=dark    " Setting dark mode
 set tabstop=4
 set shiftwidth=4
 
-colorscheme OceanicNext
+colorscheme minimalist
+" hi Normal guibg=NONE ctermbg=NONE
 
 " ######################### BLOCK CURSOR #########################
 
