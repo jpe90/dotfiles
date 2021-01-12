@@ -1,8 +1,21 @@
+;; relative line numbers
+(setq display-line-numbers-type 'relative)
+
 ;;; scroll like vim
 (autoload 'View-scroll-half-page-forward "view")
 (autoload 'View-scroll-half-page-backward "view")
 (global-set-key (kbd "C-v") 'View-scroll-half-page-forward)
 (global-set-key (kbd "M-v") 'View-scroll-half-page-backward)
+
+;;; jump to previous buffer
+(defun er-switch-to-previous-buffer ()
+  "Switch to previously open buffer.
+Repeated invocations toggle between the two most recently open buffers."
+  (interactive)
+  (switch-to-buffer (other-buffer (current-buffer) 1)))
+
+(global-set-key (kbd "C-x x") #'er-switch-to-previous-buffer)
+
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -11,7 +24,8 @@
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
 
-;;; ctags config
+;;; #DEPENDENCY universal ctags
+;;; create-tags function
 (setq path-to-ctags "/usr/bin/ctags")
 (defun create-tags (dir-name)
   "Create tags file."
@@ -42,6 +56,7 @@
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 (setq org-log-done t)
+
 ;;(setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 ;;(setq indent-line-function 'insert-tab)
@@ -51,6 +66,13 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+(global-set-key (kbd "M-p") 'fzf-git)
+
+;;; deprecated
+
+;;; theme when in GUI mode but not terminal mode
+;;(if (display-graphic-p)
+;;    (load-theme 'oceanic' t))
 
 ;; ########################## DO NOT MODIFY
 (custom-set-variables
@@ -59,12 +81,16 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("d9495c98266e15a77c3cd6cb45f7964891c189cf613337d9a2e2950881493c09" default)))
+   '("d9495c98266e15a77c3cd6cb45f7964891c189cf613337d9a2e2950881493c09" default))
  '(package-selected-packages
-   '(color-theme-sanityinc-solarized gruvbox-theme color-theme-sanityinc-tomorrow zenburn-theme dracula-theme monokai-theme afternoon-theme cyberpunk-theme yaml-mode oceanic-theme evil naysayer-theme zig-mode solarized-theme meson-mode fzf))
+   '(magit zig-mode yaml-mode oceanic-theme naysayer-theme meson-mode fzf evil))
+ '(vc-follow-symlinks t))
+ '(package-selected-packages
+   '(yaml-mode oceanic-theme evil naysayer-theme zig-mode meson-mode fzf))
 
-;; ################################### OK TO MODIFY
-
-;;; theme when in GUI mode but not terminal mode
-;;(if (display-graphic-p)
-;;    (load-theme 'oceanic' t)) 
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
