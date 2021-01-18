@@ -1,5 +1,28 @@
-;; relative line numbers
+;;; helm setup
+(require 'helm-config)
+(helm-mode 1)
+(global-set-key (kbd "C-x b") 'helm-buffers-list)
+(global-set-key (kbd "C-s") 'helm-occur)
+(global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+;;;; lsp setup
+;;; prefix for LSP commands
+(setq lsp-keymap-prefix "C-c C-l")
+
+(require 'lsp-mode)
+(add-hook 'c-mode-hook 'lsp)
+
+;;; stop indenting please
+(setq lsp-enable-indentation nil)
+
+;;; WHY DO I KEEP QUITTING
+(setq confirm-kill-emacs 'yes-or-no-p)
+
+;;; relative line numbers
 (setq display-line-numbers-type 'relative)
+
+;;; get rid of blinking cursor
+(blink-cursor-mode 0)
 
 ;;; scroll like vim
 (autoload 'View-scroll-half-page-forward "view")
@@ -38,8 +61,13 @@ Repeated invocations toggle between the two most recently open buffers."
 (toggle-scroll-bar -1)
 (menu-bar-mode -1)
 
-;;; i forget
-(setq tab-always-indent 'complete)
+;;; how the fuck do i deal with tabs 
+;(setq tab-always-indent 'complete)
+;(setq tab-width 4)
+;(setq indent-tabs-mode nil)
+;;(Setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+;;(setq indent-line-function 'insert-tab)
 
 ;;; cycle thru marks w/ c-space
 (setq set-mark-command-repeat-pop t)
@@ -50,29 +78,28 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;; case insenstive autocompletion
 (setq read-file-name-completion-ignore-case t)
 
-;;; config org mode
+;;; c indentation
 (setq c-default-style "stroustrup")
+
+;;; config org mode
 (require 'org)
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 (setq org-log-done t)
 
-;;(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-;;(setq indent-line-function 'insert-tab)
+;;; jump to header in c file
+(add-hook 'c-mode-common-hook
+  (lambda() 
+    (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
 ;;; configure melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+;;; DEPENDENCY: fzf
+;;; keybind for fzf
 (global-set-key (kbd "M-p") 'fzf-git)
-
-;;; deprecated
-
-;;; theme when in GUI mode but not terminal mode
-;;(if (display-graphic-p)
-;;    (load-theme 'oceanic' t))
 
 ;; ########################## DO NOT MODIFY
 (custom-set-variables
@@ -80,17 +107,20 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(blink-cursor-mode nil)
  '(custom-safe-themes
    '("d9495c98266e15a77c3cd6cb45f7964891c189cf613337d9a2e2950881493c09" default))
+ '(display-line-numbers-type 'relative t)
  '(package-selected-packages
-   '(magit zig-mode yaml-mode oceanic-theme naysayer-theme meson-mode fzf evil))
+   '(helm lsp-mode magit zig-mode yaml-mode meson-mode fzf evil))
+ '(tool-bar-mode nil)
  '(vc-follow-symlinks t))
- '(package-selected-packages
-   '(yaml-mode oceanic-theme evil naysayer-theme zig-mode meson-mode fzf))
+; '(package-selected-packages
+ ;  '(yaml-mode evil zig-mode meson-mode fzf))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "Inconsolata" :foundry "CYRE" :slant normal :weight normal :height 120 :width normal)))))
