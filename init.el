@@ -1,9 +1,45 @@
+;;; test dumb shit
+
+;(load "~/.emacs.d/custom_lisp/org_publish.el")
+
+;;; lisp setup
+
+(paredit-mode 1)
+(add-hook 'clojure-mode-hook #'paredit-mode)
+(show-paren-mode 1)
+(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+(add-hook 'emacs-lisp-mode-hook       #'enable-paredit-mode)
+(add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+(add-hook 'ielm-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+(add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+(add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+;;; gdb setup
+(setq
+ ;; use gdb-many-windows by default
+ gdb-many-windows t
+
+ ;; Non-nil means display source file containing the main routine at startup
+ gdb-show-main t
+ )
+
+;;; open links in eww
+(setq browse-url-browser-function 'eww-browse-url)
+
 ;;; helm setup
+(require 'helm)
 (require 'helm-config)
-(helm-mode 1)
-(global-set-key (kbd "C-x b") 'helm-buffers-list)
-(global-set-key (kbd "C-s") 'helm-occur)
+
+(global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "C-c h o") 'helm-occur)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
+
+(helm-autoresize-mode t)
+(setq helm-autoresize-max-height 20)
+(setq helm-autoresize-min-height 20)
+(setq helm-split-window-in-side-p t)
+
+(helm-mode 1)
 
 ;;;; lsp setup
 ;;; prefix for LSP commands
@@ -109,18 +145,17 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(custom-safe-themes
-   '("d9495c98266e15a77c3cd6cb45f7964891c189cf613337d9a2e2950881493c09" default))
+   '("d9646b131c4aa37f01f909fbdd5a9099389518eb68f25277ed19ba99adeb7279" "d9495c98266e15a77c3cd6cb45f7964891c189cf613337d9a2e2950881493c09" default))
  '(display-line-numbers-type 'relative t)
+ '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(helm lsp-mode magit zig-mode yaml-mode meson-mode fzf evil))
+   '(fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode fzf evil))
+ '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(vc-follow-symlinks t))
-; '(package-selected-packages
- ;  '(yaml-mode evil zig-mode meson-mode fzf))
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Inconsolata" :foundry "CYRE" :slant normal :weight normal :height 120 :width normal)))))
+ '(default ((t (:family "Inconsolata" :foundry "CYRE" :slant normal :weight normal :height 130 :width normal)))))

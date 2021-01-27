@@ -47,11 +47,11 @@ Plug 'rafi/awesome-vim-colorschemes'
 call plug#end()
 
 " ############################ MISC COMMANDS ######################
-set background=dark    " Setting dark mode
+set background=light    " Setting dark mode
 set tabstop=4
 set shiftwidth=4
 
-colorscheme minimalist
+" colorscheme minimalist
 " hi Normal guibg=NONE ctermbg=NONE
 
 " ######################### BLOCK CURSOR #########################
