@@ -1,6 +1,18 @@
-;;; test dumb shit
+;;; flymake setup
 
-;(load "~/.emacs.d/custom_lisp/org_publish.el")
+(defun user-flymake-keybindings ()
+  (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
+  (local-set-key (kbd "M-n") 'flymake-goto-next-error)
+)
+
+(add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
+
+;;; slime setup
+(setq inferior-lisp-program "clisp")
+(add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
+
+;;; initial buffer selection
+(setq initial-buffer-choice "/home/solaire/notes/orgmode/todo.org")
 
 ;;; lisp setup
 
@@ -14,6 +26,7 @@
 (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
+
 ;;; gdb setup
 (setq
  ;; use gdb-many-windows by default
@@ -39,6 +52,14 @@
 (setq helm-autoresize-min-height 20)
 (setq helm-split-window-in-side-p t)
 
+;;; helm-slime setup
+
+(defun user-slime-repl-keybindings ()
+  (local-set-key (kbd "C-c h y") 'helm-slime-repl-history)
+)
+
+(add-hook 'slime-repl-mode-hook		#'user-slime-repl-keybindings)
+
 (helm-mode 1)
 
 ;;;; lsp setup
@@ -47,6 +68,10 @@
 
 (require 'lsp-mode)
 (add-hook 'c-mode-hook 'lsp)
+(add-hook 'c++-mode-hook 'lsp)
+
+(add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
+;(setq lsp-signature-auto-activate t)
 
 ;;; stop indenting please
 (setq lsp-enable-indentation nil)
@@ -95,7 +120,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;; toolbar visibility
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
-(menu-bar-mode -1)
+(menu-bar-mode 1)
 
 ;;; how the fuck do i deal with tabs 
 ;(setq tab-always-indent 'complete)
@@ -116,6 +141,7 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; c indentation
 (setq c-default-style "stroustrup")
+(setq c-offsets-alist '((arglist-cont-nonempty . +)))
 
 ;;; config org mode
 (require 'org)
@@ -135,7 +161,7 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; DEPENDENCY: fzf
 ;;; keybind for fzf
-(global-set-key (kbd "M-p") 'fzf-git)
+; (global-set-key (kbd "M-p") 'fzf-git)
 
 ;; ########################## DO NOT MODIFY
 (custom-set-variables
@@ -149,7 +175,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(display-line-numbers-type 'relative t)
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode fzf evil))
+   '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode evil))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(vc-follow-symlinks t))
