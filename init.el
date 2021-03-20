@@ -1,3 +1,13 @@
+
+;;; unbind page up and page down
+
+(define-key (current-global-map) (kbd "<next>") nil) 
+(global-unset-key (kbd "<prior>"))                   
+
+;;; function args setup
+
+;(fa-config-default)
+
 ;;; flymake setup
 
 (defun user-flymake-keybindings ()
@@ -37,7 +47,7 @@
  )
 
 ;;; open links in eww
-(setq browse-url-browser-function 'eww-browse-url)
+;(setq browse-url-browser-function 'eww-browse-url)
 
 ;;; helm setup
 (require 'helm)
@@ -108,7 +118,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
 
-;;; #DEPENDENCY universal ctags
+;;; #EXTERNAL DEPENDENCY universal ctags
 ;;; create-tags function
 (setq path-to-ctags "/usr/bin/ctags")
 (defun create-tags (dir-name)
@@ -159,6 +169,19 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+;;; auto install packages at startup
+
+(defvar my-packages
+  '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode evil))
+
+(require 'cl-lib)
+(package-initialize)
+(unless (cl-every #'package-installed-p my-packages)
+  (dolist (package my-packages)
+    (unless (package-installed-p package)
+      (print1 package "not installed"))))
+
+
 ;;; DEPENDENCY: fzf
 ;;; keybind for fzf
 ; (global-set-key (kbd "M-p") 'fzf-git)
@@ -175,7 +198,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(display-line-numbers-type 'relative t)
  '(inhibit-startup-screen t)
  '(package-selected-packages
-   '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode evil))
+   '(function-args lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode evil))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(vc-follow-symlinks t))
