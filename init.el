@@ -18,7 +18,7 @@
 (add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
 
 ;;; slime setup
-(setq inferior-lisp-program "clisp")
+(setq inferior-lisp-program "sbcl")
 (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
 
 ;;; initial buffer selection
@@ -167,7 +167,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;; configure melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
+;(package-initialize)
 
 ;;; auto install packages at startup
 
@@ -175,11 +175,11 @@ Repeated invocations toggle between the two most recently open buffers."
   '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode evil))
 
 (require 'cl-lib)
-(package-initialize)
+;(package-initialize)
 (unless (cl-every #'package-installed-p my-packages)
   (dolist (package my-packages)
     (unless (package-installed-p package)
-      (print1 package "not installed"))))
+      (package-install package))))
 
 
 ;;; DEPENDENCY: fzf
