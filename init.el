@@ -1,3 +1,32 @@
+(setq-default indent-tabs-mode nil)
+(require 'lsp-mode)
+
+;;; js org mode
+(org-babel-do-load-languages
+      'org-babel-load-languages
+      '((js . t)))
+
+;;; haskell setup
+
+(require 'haskell-interactive-mode)
+(require 'haskell-process)
+;(require 'flymake-haskell-multi) ;; not needed if installed via package
+(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+(setq haskell-process-type 'stack-ghci)
+
+;; dante
+(add-hook 'haskell-mode-hook 'dante-mode)
+(remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
+(add-hook 'haskell-mode-hook 'flymake-mode)
+
+;; lsp
+;; (require 'lsp)
+;; (require 'lsp-haskell)
+;; (add-hook 'haskell-mode-hook #'lsp)
+;; (add-hook 'haskell-literate-mode-hook #'lsp)
+
+(add-hook 'haskell-mode-hook 'flymake-haskell-multi-load)
+;(add-hook 'haskell-mode-hook 'haskell-setup)
 
 ;;; unbind page up and page down
 
@@ -17,6 +46,9 @@
 
 (add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
 
+
+;;; racket setup
+
 ;;; slime setup
 (setq inferior-lisp-program "sbcl")
 (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
@@ -34,6 +66,7 @@
 (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
 (add-hook 'ielm-mode-hook             #'enable-paredit-mode)
 (add-hook 'lisp-mode-hook             #'enable-paredit-mode)
+(add-hook 'racket-mode-hook           #'enable-paredit-mode)
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 
@@ -74,9 +107,9 @@
 
 ;;;; lsp setup
 ;;; prefix for LSP commands
-(setq lsp-keymap-prefix "C-c C-l")
+(setq lsp-keymap-prefix "C-c C-o")
 
-(require 'lsp-mode)
+
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 
@@ -197,9 +230,12 @@ Repeated invocations toggle between the two most recently open buffers."
    '("d9646b131c4aa37f01f909fbdd5a9099389518eb68f25277ed19ba99adeb7279" "d9495c98266e15a77c3cd6cb45f7964891c189cf613337d9a2e2950881493c09" default))
  '(display-line-numbers-type 'relative t)
  '(inhibit-startup-screen t)
+ '(lsp-haskell-format-on-import-on t)
+ '(lsp-haskell-formatting-provider "brittany")
  '(package-selected-packages
-   '(function-args lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode evil))
+   '(dante python-mode nix-mode flymake-haskell-multi racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(show-paren-mode t)
+ '(tab-width 4)
  '(tool-bar-mode nil)
  '(vc-follow-symlinks t))
 (custom-set-faces
@@ -207,4 +243,4 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Inconsolata" :foundry "CYRE" :slant normal :weight normal :height 130 :width normal)))))
+ '(default ((t (:family "SFMono Nerd Font Mono" :foundry "APPL" :slant normal :weight normal :height 128 :width normal)))))
