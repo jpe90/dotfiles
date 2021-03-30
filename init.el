@@ -233,7 +233,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(lsp-haskell-format-on-import-on t)
  '(lsp-haskell-formatting-provider "brittany")
  '(package-selected-packages
-   '(dante python-mode nix-mode flymake-haskell-multi racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+   '(format-all dante python-mode nix-mode flymake-haskell-multi racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
