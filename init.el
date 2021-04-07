@@ -1,6 +1,17 @@
-(setq-default indent-tabs-mode nil)
-(require 'lsp-mode)
+(defvar my-packages
+  '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
 
+(require 'cl-lib)
+;(package-initialize)
+(unless (cl-every #'package-installed-p my-packages)
+  (dolist (package my-packages)
+    (unless (package-installed-p package)
+      (package-install package))))
+
+
+(exec-path-from-shell-initialize)
+
+(setq-default indent-tabs-mode nil)
 ;;; js org mode
 (org-babel-do-load-languages
       'org-babel-load-languages
@@ -10,23 +21,21 @@
 
 (require 'haskell-interactive-mode)
 (require 'haskell-process)
-;(require 'flymake-haskell-multi) ;; not needed if installed via package
-(add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-(setq haskell-process-type 'stack-ghci)
+;;; lsp
 
-;; dante
-(add-hook 'haskell-mode-hook 'dante-mode)
-(remove-hook 'flymake-diagnostic-functions 'flymake-proc-legacy-flymake)
-(add-hook 'haskell-mode-hook 'flymake-mode)
+(setq lsp-keymap-prefix "C-c C-f")
 
-;; lsp
-;; (require 'lsp)
-;; (require 'lsp-haskell)
-;; (add-hook 'haskell-mode-hook #'lsp)
-;; (add-hook 'haskell-literate-mode-hook #'lsp)
+;; (defun user-haskell-save-hook ()
+;;   (when (eq major-mode 'haskell-mode)
+;;     (shell-command-to-string (format "brittany --write-mode inplace %s" buffer-file-name))
+;;     (revert-buffer :ignore-auto :noconfirm)
+;;     )
+;;   ) 
+;;(add-hook 'after-save-hook #'user-haskell-save-hook)
+(setq haskell-mode-stylish-haskell-path "ormolu") 
 
-(add-hook 'haskell-mode-hook 'flymake-haskell-multi-load)
-;(add-hook 'haskell-mode-hook 'haskell-setup)
+(require 'flycheck)
+(add-hook 'haskell-mode-hook 'flycheck-mode)
 
 ;;; unbind page up and page down
 
@@ -54,7 +63,7 @@
 (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
 
 ;;; initial buffer selection
-(setq initial-buffer-choice "/home/solaire/notes/orgmode/todo.org")
+;;(setq initial-buffer-choice "/home/solaire/notes/orgmode/todo.org")
 
 ;;; lisp setup
 
@@ -70,6 +79,7 @@
 (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
 (add-hook 'scheme-mode-hook           #'enable-paredit-mode)
 
+
 ;;; gdb setup
 (setq
  ;; use gdb-many-windows by default
@@ -80,14 +90,14 @@
  )
 
 ;;; open links in eww
-;(setq browse-url-browser-function 'eww-browse-url)
+;;(setq browse-url-browser-function 'eww-browse-url)
 
 ;;; helm setup
 (require 'helm)
 (require 'helm-config)
 
 (global-set-key (kbd "C-x b") 'helm-mini)
-(global-set-key (kbd "C-c h o") 'helm-occur)
+(global-set-key (kbd "C-s") 'helm-occur)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 
 (helm-autoresize-mode t)
@@ -107,9 +117,6 @@
 
 ;;;; lsp setup
 ;;; prefix for LSP commands
-(setq lsp-keymap-prefix "C-c C-o")
-
-
 (add-hook 'c-mode-hook 'lsp)
 (add-hook 'c++-mode-hook 'lsp)
 
@@ -204,22 +211,16 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; auto install packages at startup
 
-(defvar my-packages
-  '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode evil))
 
-(require 'cl-lib)
-;(package-initialize)
-(unless (cl-every #'package-installed-p my-packages)
-  (dolist (package my-packages)
-    (unless (package-installed-p package)
-      (package-install package))))
+;; ########################## Custom
 
-
-;;; DEPENDENCY: fzf
-;;; keybind for fzf
-; (global-set-key (kbd "M-p") 'fzf-git)
-
-;; ########################## DO NOT MODIFY
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "SFMono Nerd Font Mono" :foundry "APPL" :slant normal :weight normal :height 128 :width normal))))
+ '(lsp-ui-doc-background ((t (:background "gainsboro")))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -229,18 +230,37 @@ Repeated invocations toggle between the two most recently open buffers."
  '(custom-safe-themes
    '("d9646b131c4aa37f01f909fbdd5a9099389518eb68f25277ed19ba99adeb7279" "d9495c98266e15a77c3cd6cb45f7964891c189cf613337d9a2e2950881493c09" default))
  '(display-line-numbers-type 'relative t)
+ '(haskell-mode-hook '(flycheck-mode interactive-haskell-mode))
+ '(haskell-mode-stylish-haskell-path "ormolu")
+ '(haskell-process-auto-import-loaded-modules t)
+ '(haskell-process-log t)
+ '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-stylish-on-save t)
+ '(haskell-w3m-haddock-dirs '("~/.ghcup/share/doc/"))
  '(inhibit-startup-screen t)
+ '(lsp-eldoc-enable-hover t)
+ '(lsp-eldoc-render-all nil)
+ '(lsp-enable-file-watchers nil)
  '(lsp-haskell-format-on-import-on t)
- '(lsp-haskell-formatting-provider "brittany")
+ '(lsp-haskell-formatting-provider "ormolu")
+ '(lsp-ui-doc-alignment 'window)
+ '(lsp-ui-doc-delay 0)
+ '(lsp-ui-doc-enable t)
+ '(lsp-ui-doc-max-height 6)
+ '(lsp-ui-doc-use-childframe t)
+ '(lsp-ui-doc-use-webkit nil)
+ '(lsp-ui-peek-enable t)
+ '(lsp-ui-sideline-delay 0)
+ '(lsp-ui-sideline-show-hover nil)
  '(package-selected-packages
-   '(format-all dante python-mode nix-mode flymake-haskell-multi racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+   '(rmsbolt peep-dired flycheck w3m exec-path-from-shell flymake-haskell-multi python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
  '(vc-follow-symlinks t))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "SFMono Nerd Font Mono" :foundry "APPL" :slant normal :weight normal :height 128 :width normal)))))
+
+;;; needs to be after config
+
+(add-hook 'haskell-mode-hook 'lsp)
+(add-hook 'haskell-literate-mode-hook 'lsp)
+
