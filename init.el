@@ -1,8 +1,12 @@
+;;; configure melpa
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
 (defvar my-packages
-  '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+  '(exec-path-from-shell flycheck lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode nix-mode))
 
 (require 'cl-lib)
-;(package-initialize)
+(package-initialize)
 (unless (cl-every #'package-installed-p my-packages)
   (dolist (package my-packages)
     (unless (package-installed-p package)
@@ -204,9 +208,7 @@ Repeated invocations toggle between the two most recently open buffers."
   (lambda() 
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
-;;; configure melpa
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
 ;(package-initialize)
 
 ;;; auto install packages at startup
@@ -219,7 +221,7 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "SFMono Nerd Font Mono" :foundry "APPL" :slant normal :weight normal :height 128 :width normal))))
+ '(default ((t (:family "Meslo LG M" :foundry "PfEd" :slant normal :weight normal :height 98 :width normal))))
  '(lsp-ui-doc-background ((t (:background "gainsboro")))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
