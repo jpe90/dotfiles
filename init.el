@@ -1,3 +1,6 @@
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
 (defvar my-packages
   '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
 
@@ -8,6 +11,7 @@
     (unless (package-installed-p package)
       (package-install package))))
 
+(setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
 (exec-path-from-shell-initialize)
 
@@ -16,6 +20,10 @@
 (org-babel-do-load-languages
       'org-babel-load-languages
       '((js . t)))
+;;; rust
+
+(setq rust-format-on-save t)
+;(define-key rust-mode-map (kbd "C-c C-c") 'rust-run)
 
 ;;; haskell setup
 
@@ -205,8 +213,7 @@ Repeated invocations toggle between the two most recently open buffers."
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
 ;;; configure melpa
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+
 ;(package-initialize)
 
 ;;; auto install packages at startup
@@ -219,7 +226,7 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "SFMono Nerd Font Mono" :foundry "APPL" :slant normal :weight normal :height 128 :width normal))))
+ '(default ((t (:family "Iosevka" :foundry "BE5N" :slant normal :weight normal :height 128 :width normal))))
  '(lsp-ui-doc-background ((t (:background "gainsboro")))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -253,7 +260,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(lsp-ui-sideline-delay 0)
  '(lsp-ui-sideline-show-hover nil)
  '(package-selected-packages
-   '(rmsbolt peep-dired flycheck w3m exec-path-from-shell flymake-haskell-multi python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+   '(rust-mode rmsbolt peep-dired flycheck w3m exec-path-from-shell flymake-haskell-multi python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
@@ -261,6 +268,7 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; needs to be after config
 
-(add-hook 'haskell-mode-hook 'lsp)
-(add-hook 'haskell-literate-mode-hook 'lsp)
+;(add-hook 'haskell-mode-hook 'lsp)
+;(add-hook 'haskell-literate-mode-hook 'lsp)
+
 
