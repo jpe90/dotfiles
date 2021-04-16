@@ -1,11 +1,12 @@
+;;; configure melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
 (defvar my-packages
-  '(lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+  '(exec-path-from-shell flycheck lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode nix-mode))
 
 (require 'cl-lib)
-;(package-initialize)
+(package-initialize)
 (unless (cl-every #'package-installed-p my-packages)
   (dolist (package my-packages)
     (unless (package-installed-p package)
@@ -211,8 +212,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-hook 'c-mode-common-hook
   (lambda() 
     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
-
-;;; configure melpa
 
 ;(package-initialize)
 
