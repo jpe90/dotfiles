@@ -47,7 +47,10 @@
 
 (require 'flycheck)
 (add-hook 'haskell-mode-hook 'flycheck-mode)
-;(setq flycheck-display-errors-function nil)
+;;(setq flycheck-display-errors-function nil)
+ '(flycheck-check-syntax-automatically (quote (save idle-change mode-
+enabled)))
+ '(flycheck-idle-change-delay 4) ;; Set delay based on what suits you the best
 
 ;;; unbind page up and page down
 
@@ -220,7 +223,9 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; auto install packages at startup
 
+;; show columns
 
+(setq column-number-mode t)
 ;; ########################## Custom
 
 (custom-set-faces
@@ -262,7 +267,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(lsp-ui-sideline-delay 0)
  '(lsp-ui-sideline-show-hover nil)
  '(package-selected-packages
-   '(racer rust-mode rmsbolt peep-dired flycheck w3m exec-path-from-shell flymake-haskell-multi python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+   '(lsp-haskell racer rust-mode rmsbolt peep-dired flycheck w3m exec-path-from-shell python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
@@ -273,5 +278,3 @@ Repeated invocations toggle between the two most recently open buffers."
 ;(add-hook 'haskell-mode-hook 'lsp)
 ;(add-hook 'haskell-literate-mode-hook 'lsp)
 ;(add-hook 'rust-mode-hook 'lsp)
-
-
