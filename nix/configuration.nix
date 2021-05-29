@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
       ./cachix.nix
       ./desktop.nix
+      ./vscode.nix
     ];
 
 
@@ -89,31 +90,20 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget emacs
-    firefox vim
-    git fish
-    ghc cabal-install
-    cabal2nix htop
-    zig wl-clipboard
-    haskell-language-server
-    cargo rustc
-    rustfmt stack
-    python3 libreoffice
-    vscode
-    okular zlib
-    gcc zathura
+    gcc ghc rustc zig dart flutter python3 jdk11
+    haskell-language-server stack cabal-install cabal2nix
+    cargo rustfmt 
+    emacs vim sublime3 android-studio
 
-    android-studio
-
-    unzip zip p7zip
-
-    exfat flutter
-    jdk11
-    # wl-clipboard
-    xclip
-    xorg.xeyes
+    sublime-merge
     
+    git fish unzip zip p7zip wget bash
+    htop exfat wl-clipboard xclip
 
+    libreoffice okular zathura firefox
+
+    zlib xorg.xeyes
+    
     man man-pages posix_man_pages stdman
   ];
 
