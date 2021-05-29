@@ -38,16 +38,15 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'ziglang/zig.vim'
 Plug 'tpope/vim-fugitive'
-Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
-"Plug 'ludovicchabant/vim-gutentags'
+" Plug 'junegunn/fzf'
+" Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-eunuch'
-Plug 'rafi/awesome-vim-colorschemes'
+Plug 'dart-lang/dart-vim-plugin'
+Plug 'neovimhaskell/haskell-vim'
 
 call plug#end()
 
 " ############################ MISC COMMANDS ######################
-set background=light    " Setting dark mode
 set tabstop=4
 set shiftwidth=4
 
@@ -68,10 +67,10 @@ augroup END
 
 " ################### FZF ####################
 
-nnoremap <silent> <C-p> :Files<CR>
-nnoremap <silent> <C-g> :GFiles<CR>
-nnoremap <silent> <C-t> :Tags<CR>
-nnoremap <C-f> :Rg! 
-let g:fzf_buffers_jump = 1
-" [[B]Commits] Customize the options used by 'git log':
-let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
+" nnoremap <silent> <C-p> :Files<CR>
+" nnoremap <silent> <C-g> :GFiles<CR>
+" nnoremap <silent> <C-t> :Tags<CR>
+" nnoremap <C-f> :Rg! 
+" let g:fzf_buffers_jump = 1
+" " [[B]Commits] Customize the options used by 'git log':
+" let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
