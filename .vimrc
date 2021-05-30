@@ -1,37 +1,13 @@
-" Turn on syntax highlighting.
 syntax on
-
-" Show line numbers.
 set number
-
-" This enables relative line numbering mode. With both number and
-" relativenumber enabled, the current line shows the true line number, while
-" all other lines (above and below) are numbered relative to the current line.
 set relativenumber
-
-" Always show the status line at the bottom, even if you only have one window open.
 set laststatus=2
-
-" backspace over anything.
 set backspace=indent,eol,start
-
-" This setting makes search case-insensitive when all characters in the string
-" being searched are lowercase. However, the search becomes case-sensitive if
-" it contains any capital letters. This makes searching more convenient.
 set ignorecase
 set smartcase
-
-" Enable searching as you type, rather than waiting till you press enter.
 set incsearch
-
-" Unbind some useless/annoying default key bindings.
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
-
-" Disable audible bell because it's annoying.
 set noerrorbells visualbell t_vb=
-
-" Enable mouse support. You should avoid relying on this too much, but it can
-" sometimes be convenient.
 set mouse+=a
 
 call plug#begin('~/.vim/plugged')
@@ -73,3 +49,50 @@ augroup END
 " let g:fzf_buffers_jump = 1
 " " [[B]Commits] Customize the options used by 'git log':
 " let g:fzf_commits_log_options = '--graph --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr"'
+
+" ############### INDENTATION ###############
+"
+"
+" length of an actual \t character:
+set tabstop=4
+" length to use when editing text (eg. TAB and BS keys)
+" (0 for ‘tabstop’, -1 for ‘shiftwidth’):
+set softtabstop=-1
+" length to use when shifting text (eg. <<, >> and == commands)
+" (0 for ‘tabstop’):
+set shiftwidth=0
+" round indentation to multiples of 'shiftwidth' when shifting text
+" (so that it behaves like Ctrl-D / Ctrl-T):
+set shiftround
+
+" if set, only insert spaces; otherwise insert \t and complete with spaces:
+set expandtab
+
+" reproduce the indentation of the previous line:
+set autoindent
+" keep indentation produced by 'autoindent' if leaving the line blank:
+"set cpoptions+=I
+" try to be smart (increase the indenting level after ‘{’,
+" decrease it after ‘}’, and so on):
+set smartindent
+" a stricter alternative which works better for the C language:
+"set cindent
+" use language‐specific plugins for indenting (better):
+filetype plugin indent on
+
+" ############ DART INDENT ##################
+
+let g:dart_style_guide = 2
+let g:dart_format_on_save = 1
+
+" ################### BUGFIX #################
+
+if &encoding != 'utf-8'
+	set encoding=utf-8
+endif
+
+" ################# VIM-FUGITIVE ##############
+
+nmap <leader>gh :diffget //2<CR>
+nmap <leader>gl :diffget //3<CR>
+nmap <leader>gs :G<CR>

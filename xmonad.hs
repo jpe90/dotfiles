@@ -8,4 +8,8 @@ main = xmonad $ def
     , terminal              = "st"
     , normalBorderColor     = "#cccccc"
     , focusedBorderColor    = "cd8b00"
-	} `additionalKeys` [ ((mod4Mask .|. shiftMask, xK_q     ), kill)]
+    } `additionalKeys` [ 
+          ((mod4Mask .|. shiftMask, xK_q     ), kill)
+        -- we should fix this
+        , ((mod4Mask, xK_Return             ), spawn $ "st")
+    ]

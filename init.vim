@@ -25,8 +25,8 @@ set title
 
 autocmd Filetype typescript setlocal shiftwidth=2 tabstop=2
 " ############### COLOR ######################
-set termguicolors
-set background=dark
+" set termguicolors
+" set background=dark
 
 
 " ############### INDENTATION ###############
