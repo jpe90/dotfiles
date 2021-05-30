@@ -38,11 +38,10 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'ziglang/zig.vim'
 Plug 'tpope/vim-fugitive'
-" Plug 'junegunn/fzf'
-" Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-eunuch'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
+Plug 'dag/vim-fish'
 
 call plug#end()
 
