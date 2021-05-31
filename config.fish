@@ -31,4 +31,5 @@ test -f /home/solaire/.ghcup/env ; and set -gx PATH $HOME/.cabal/bin /home/solai
 # dart
 set -gx PATH $HOME/.pub-cache/bin $PATH
 
-
+# stack
+test -f /home/solaire/.stack/config.yaml ; and set -gx PATH $HOME/.local/bin $PATH
