@@ -7,7 +7,7 @@ main = xmonad $ def
     , modMask               = mod4Mask
     , terminal              = "st"
     , normalBorderColor     = "#cccccc"
-    , focusedBorderColor    = "cd8b00"
+    , focusedBorderColor    = "#fb4934"
     } `additionalKeys` [ 
           ((mod4Mask .|. shiftMask, xK_q     ), kill)
         -- we should fix this
