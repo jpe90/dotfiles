@@ -19,10 +19,10 @@ fenv source $GUIX_PROFILE/etc/profile
 fenv source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
 
 # aliases
-alias em "TERM=xterm-256color emacs -nw -q --load ~/.emacs.d/custom_lisp/quick_init.el"
-alias org "em ~/notes/orgmode/todo.org"
-alias zth "zathura --fork"
-alias vsc "code --enable-features=UseOzonePlatform --ozone-platform=wayland"
+# alias em "TERM=xterm-256color emacs -nw -q --load ~/.emacs.d/custom_lisp/quick_init.el"
+# alias org "em ~/notes/orgmode/todo.org"
+# alias zth "zathura --fork"
+# alias vsc "code --enable-features=UseOzonePlatform --ozone-platform=wayland"
 
 # ghcup-env
 set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME

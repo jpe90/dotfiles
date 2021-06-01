@@ -2,8 +2,31 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 
-(defvar my-packages
-  '(exec-path-from-shell flycheck lsp-haskell haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode nix-mode))
+(setq my-packages
+      '(exec-path-from-shell
+        flycheck
+        lsp-haskell
+        haskell-mode
+        helm-slime
+        slime
+        elpher
+        fish-mode
+        cider
+        paredit
+        clojure-mode
+        helm
+        lsp-mode
+        magit
+        zig-mode
+        yaml-mode
+        meson-mode
+        use-package
+        ; nix-mode
+        )
+      )
+
+;; (when (not package-archive-contents)
+;;   (package-refresh-contents))
 
 (require 'cl-lib)
 (package-initialize)
@@ -41,6 +64,8 @@
 ;;; dart setup
 
 (setq dart-format-on-save t)
+(add-hook 'dart-mode-hook #'lsp)
+;;;(add-hook 'dart-mode-hook (lambda () (lsp-mode +1)))
 
 ;;; lsp
 
@@ -310,17 +335,15 @@ Repeated invocations toggle between the two most recently open buffers."
  '(lsp-eldoc-enable-hover t)
  '(lsp-eldoc-render-all nil)
  '(lsp-enable-file-watchers nil)
- '(lsp-enable-indentation t)
+ '(lsp-enable-indentation t t)
  '(lsp-haskell-format-on-import-on t)
  '(lsp-haskell-formatting-provider "ormolu")
  '(lsp-signature-render-documentation nil)
  '(lsp-ui-doc-alignment 'window)
  '(lsp-ui-doc-enable t)
- '(lsp-ui-doc-show-with-cursor nil)
+;;; '(lsp-ui-doc-show-with-cursor nil)
  '(lsp-ui-peek-enable t)
- '(lsp-ui-peek-list-width 20)
-;; '(lsp-ui-sideline-show-code-actions nil)
-;; '(lsp-ui-sideline-show-symbol nil)
+;; '(lsp-ui-peek-list-width 20)
  '(objed-cursor-color "#ff6c6b")
  '(org-src-block-faces 'nil)
  '(package-selected-packages

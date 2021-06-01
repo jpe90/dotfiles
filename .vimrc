@@ -9,6 +9,7 @@ set incsearch
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 set noerrorbells visualbell t_vb=
 set mouse+=a
+set splitbelow
 
 call plug#begin('~/.vim/plugged')
 

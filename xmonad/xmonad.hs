@@ -1,5 +1,4 @@
 import XMonad
-import qualified Data.Map        as M
 import XMonad.Util.EZConfig ( additionalKeys )
 
 main = xmonad $ def
@@ -7,9 +6,7 @@ main = xmonad $ def
     , modMask               = mod4Mask
     , terminal              = "st"
     , normalBorderColor     = "#cccccc"
-    , focusedBorderColor    = "#fb4934"
+    , focusedBorderColor    = "#d08770"
     } `additionalKeys` [ 
           ((mod4Mask .|. shiftMask, xK_q     ), kill)
-        -- we should fix this
-        , ((mod4Mask, xK_Return             ), spawn $ "st")
     ]
