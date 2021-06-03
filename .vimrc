@@ -19,6 +19,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'dag/vim-fish'
+Plug 'arcticicestudio/nord-vim'
 
 call plug#end()
 
@@ -26,7 +27,7 @@ call plug#end()
 set tabstop=4
 set shiftwidth=4
 
-" colorscheme minimalist
+colorscheme nord
 " hi Normal guibg=NONE ctermbg=NONE
 
 " ######################### BLOCK CURSOR #########################
@@ -72,7 +73,7 @@ set expandtab
 " reproduce the indentation of the previous line:
 set autoindent
 " keep indentation produced by 'autoindent' if leaving the line blank:
-"set cpoptions+=I
+set cpoptions+=I
 " try to be smart (increase the indenting level after ‘{’,
 " decrease it after ‘}’, and so on):
 set smartindent

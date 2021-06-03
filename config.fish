@@ -7,15 +7,7 @@ set -gx _JAVA_AWT_WM_NONREPARENTING 1
 set -gx EDITOR "nvim"
 #set -gx JAVA_HOME "/usr/lib/jvm/default"
 
-# guix
-set -gx GUIX_PROFILE $HOME/.guix-profile
-set -gx GUIX_LOCPATH $HOME/.guix-profile/lib/locale
-set -gx SSL_CERT_DIR $HOME/.guix-profile/etc/ssl/certs
-set -gx SSL_CERT_FILE $HOME/.guix-profile/etc/ssl/certs/ca-certificates.crt
-set -gx GIT_SSL_CAINFO $SSL_CERT_FILE
-
 # need fisher and https://github.com/oh-my-fish/plugin-foreign-env
-fenv source $GUIX_PROFILE/etc/profile
 fenv source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
 
 # aliases
