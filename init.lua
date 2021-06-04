@@ -36,6 +36,15 @@ require('packer').startup(function()
   use 'dart-lang/dart-vim-plugin'
 end)
 
+vim.cmd [[
+set autoindent
+set expandtab
+set shiftwidth=2
+set smartindent
+set softtabstop=2
+set tabstop=2
+]]
+
 --Incremental live completion
 vim.o.inccommand = "nosplit"
 
@@ -106,6 +115,8 @@ vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
 vim.g.indent_blankline_char_highlight = 'LineNr'
 
 vim.o.expandtab = true
+
+-- haskell
 
 
 -- Toggle to disable mouse mode and indentlines for easier paste
