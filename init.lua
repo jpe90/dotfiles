@@ -20,6 +20,8 @@ require('packer').startup(function()
   use 'tpope/vim-fugitive'           -- Git commands in nvim
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
+  use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
+  use 'kassio/neoterm'
   use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
@@ -34,6 +36,7 @@ require('packer').startup(function()
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
+  use 'sdiehl/vim-ormolu'
 end)
 
 vim.cmd [[
@@ -114,7 +117,7 @@ vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
 vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
 vim.g.indent_blankline_char_highlight = 'LineNr'
 
-vim.o.expandtab = true
+
 
 -- haskell
 

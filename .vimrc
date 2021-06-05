@@ -20,6 +20,7 @@ Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'dag/vim-fish'
 Plug 'arcticicestudio/nord-vim'
+Plug 'sdiehl/vim-ormolu'
 
 call plug#end()
 
