@@ -38,6 +38,7 @@ require('packer').startup(function()
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
   use 'sdiehl/vim-ormolu'
+  use 'dag/vim-fish'
 end)
 
 vim.cmd [[
