@@ -39,6 +39,8 @@ require('packer').startup(function()
   use 'dart-lang/dart-vim-plugin'
   use 'sdiehl/vim-ormolu'
   use 'dag/vim-fish'
+--  use 'hrsh7th/vim-vsnip'
+--  use 'hrsh7th/vim-vsnip-integ'
 end)
 
 vim.cmd [[
