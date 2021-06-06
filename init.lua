@@ -22,10 +22,11 @@ require('packer').startup(function()
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'kassio/neoterm'
-  use 'ludovicchabant/vim-gutentags' -- Automatic tags management
+  --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
-  use 'arcticicestudio/nord-vim'
+  --use 'arcticicestudio/nord-vim'
+  use 'morhetz/gruvbox'
   use 'itchyny/lightline.vim'        -- Fancier statusline
   -- Add indentation guides even on blank lines
   use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
@@ -81,11 +82,11 @@ vim.wo.signcolumn="yes"
 
 --Set colorscheme (order is important here)
 vim.o.termguicolors = true
-vim.g.nord_terminal_italics = 2
-vim.cmd[[colorscheme nord]]
+vim.g.gruvbox_terminal_italics = 2
+vim.cmd[[colorscheme gruvbox]]
 
 --Set statusbar
-vim.g.lightline = { colorscheme = 'nord';
+vim.g.lightline = { colorscheme = 'gruvbox';
       active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
       component_function = { gitbranch = 'fugitive#head', };
 }
