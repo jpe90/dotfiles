@@ -10,7 +10,7 @@ main =
         terminal = "kitty",
         --terminal = "st",
         normalBorderColor = "#cccccc",
-        focusedBorderColor = "#fe8019"
+        focusedBorderColor = "#fb4934"
       }
       `additionalKeys` [ ((mod4Mask .|. shiftMask, xK_q), kill),
                          ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%"),
