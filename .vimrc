@@ -1,5 +1,6 @@
 syntax on
 set termguicolors
+set background=dark
 set hidden
 set wildmenu
 set number
@@ -36,11 +37,11 @@ Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
 " Plug 'sdiehl/vim-ormolu'
 Plug 'dag/vim-fish'
-Plug 'wojciechkepka/vim-github-dark'
+Plug 'morhetz/gruvbox'
 
 call plug#end()
 
-:colorscheme ghdark
+:colorscheme gruvbox
 " ################# VIM-FUGITIVE ##############
 
 nmap <leader>gh :diffget //2<CR>

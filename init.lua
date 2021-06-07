@@ -69,7 +69,7 @@ set autoindent
 set smartindent
 set ignorecase
 filetype plugin indent on
-colorscheme ghdark
+colorscheme gruvbox
 ]]
 
 --Incremental live completion
