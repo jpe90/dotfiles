@@ -2,13 +2,13 @@
 set fish_greeting
 
 #set -gx TERM xterm-256color
-set -gx MOZ_ENABLE_WAYLAND 1
+#set -gx MOZ_ENABLE_WAYLAND 1
 set -gx _JAVA_AWT_WM_NONREPARENTING 1
 set -gx EDITOR "nvim"
 #set -gx JAVA_HOME "/usr/lib/jvm/default"
 
 # need fisher and https://github.com/oh-my-fish/plugin-foreign-env
-fenv source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
+#fenv source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
 
 # aliases
 # alias em "TERM=xterm-256color emacs -nw -q --load ~/.emacs.d/custom_lisp/quick_init.el"

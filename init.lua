@@ -6,7 +6,6 @@ local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.n
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   execute('!git clone https://github.com/wbthomason/packer.nvim '.. install_path)
 end
-
 vim.api.nvim_exec([[
   augroup Packer
     autocmd!
@@ -21,13 +20,9 @@ require('packer').startup(function()
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
-  use 'kassio/neoterm'
   --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
-  --use 'arcticicestudio/nord-vim'
-  use 'morhetz/gruvbox'
-  use 'itchyny/lightline.vim'        -- Fancier statusline
   -- Add indentation guides even on blank lines
   use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
   -- Add git related info in the signs columns and popups
@@ -37,19 +32,42 @@ require('packer').startup(function()
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
-  use 'sdiehl/vim-ormolu'
+  --use 'sdiehl/vim-ormolu'
+  use 'morhetz/gruvbox'
+  use 'agude/vim-eldar'
   use 'dag/vim-fish'
---  use 'hrsh7th/vim-vsnip'
---  use 'hrsh7th/vim-vsnip-integ'
+  use 'hrsh7th/vim-vsnip'
+  use 'hrsh7th/vim-vsnip-integ'
+  use 'Neevash/awesome-flutter-snippets'
+  use "folke/lua-dev.nvim"
 end)
 
 vim.cmd [[
-set autoindent
+set hidden
+set wildmenu
+set number
+set relativenumber
+set laststatus=2
+set backspace=indent,eol,start
+set ruler
+set ignorecase
+set smartcase
+set incsearch
+nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
+set noerrorbells visualbell t_vb=
+set mouse+=a
+set splitbelow
+set tabstop=4
+set shiftwidth=4
+set softtabstop=-1
+set shiftwidth=0
+set shiftround
 set expandtab
-set shiftwidth=2
+set autoindent
 set smartindent
-set softtabstop=2
-set tabstop=2
+set ignorecase
+filetype plugin indent on
+colorscheme eldar
 ]]
 
 --Incremental live completion
@@ -83,17 +101,6 @@ vim.o.smartcase = true
 vim.o.updatetime = 250
 vim.wo.signcolumn="yes"
 
---Set colorscheme (order is important here)
-vim.o.termguicolors = true
-vim.g.gruvbox_terminal_italics = 2
-vim.cmd[[colorscheme gruvbox]]
-
---Set statusbar
-vim.g.lightline = { colorscheme = 'gruvbox';
-      active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
-      component_function = { gitbranch = 'fugitive#head', };
-}
-
 --Remap space as leader key
 vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent=true})
 vim.g.mapleader = " "
@@ -120,8 +127,6 @@ vim.g.indent_blankline_char = "┊"
 vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
 vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
 vim.g.indent_blankline_char_highlight = 'LineNr'
-
-
 
 -- haskell
 
@@ -220,39 +225,33 @@ local on_attach = function(_client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'ff', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+ --
 end
 
---require'lspconfig'.hls.setup{}
+local root_pattern = nvim_lsp.util.root_pattern
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+
 -- Enable the following language servers
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'hls', 'dartls'}
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'hls', 'dartls', 'sumneko_lua'}
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { on_attach = on_attach }
+  nvim_lsp[lsp].setup { 
+    on_attach = on_attach,
+    --root_dir = root_pattern(".git"),
+    capabilities = capabilities
+  }
 end
+  local luadev = require("lua-dev").setup({
+  -- add any options here, or leave empty to use the default settings
+   lspconfig = {
+     cmd = {"lua-language-server"}
+   },
+})
 
-local sumneko_root_path = vim.fn.getenv("HOME").."/.local/bin/sumneko_lua" -- Change to your sumneko root installation
-local sumneko_binary_path = "/usr/bin/lua-language-server" -- Change to your OS specific output folder
-nvim_lsp.sumneko_lua.setup {
-  cmd = {sumneko_root_path .. sumneko_binary_path, "-E", sumneko_root_path.."/main.lua" };
-  on_attach = on_attach,
-  settings = {
-      Lua = {
-          runtime = {
-              version = 'LuaJIT',
-              path = vim.split(package.path, ';'),
-          },
-          diagnostics = {
-              globals = {'vim'},
-          },
-          workspace = {
-              library = {
-                  [vim.fn.expand('$VIMRUNTIME/lua')] = true,
-                  [vim.fn.expand('$VIMRUNTIME/lua/vim/lsp')] = true,
-              },
-          },
-      },
-  },
-}
+local lspconfig = require('lspconfig')
+lspconfig.sumneko_lua.setup(luadev)
 
+--
 -- Map :Format to vim.lsp.buf.formatting()
 vim.cmd([[ command! Format execute 'lua vim.lsp.buf.formatting()' ]])
 
