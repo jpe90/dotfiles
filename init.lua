@@ -40,9 +40,11 @@ require('packer').startup(function()
   use 'hrsh7th/vim-vsnip-integ'
   use 'Neevash/awesome-flutter-snippets'
   use "folke/lua-dev.nvim"
+  use 'wojciechkepka/vim-github-dark'
 end)
 
 vim.cmd [[
+set termguicolors
 set hidden
 set wildmenu
 set number
@@ -67,7 +69,7 @@ set autoindent
 set smartindent
 set ignorecase
 filetype plugin indent on
-colorscheme eldar
+colorscheme ghdark
 ]]
 
 --Incremental live completion
