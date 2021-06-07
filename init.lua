@@ -34,7 +34,6 @@ require('packer').startup(function()
   use 'dart-lang/dart-vim-plugin'
   --use 'sdiehl/vim-ormolu'
   use 'morhetz/gruvbox'
-  use 'agude/vim-eldar'
   use 'dag/vim-fish'
   use 'hrsh7th/vim-vsnip'
   use 'hrsh7th/vim-vsnip-integ'
@@ -46,15 +45,10 @@ end)
 vim.cmd [[
 set termguicolors
 set hidden
-set wildmenu
 set number
 set relativenumber
-set laststatus=2
-set backspace=indent,eol,start
-set ruler
 set ignorecase
 set smartcase
-set incsearch
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 set noerrorbells visualbell t_vb=
 set mouse+=a
@@ -65,7 +59,6 @@ set softtabstop=-1
 set shiftwidth=0
 set shiftround
 set expandtab
-set autoindent
 set smartindent
 set ignorecase
 filetype plugin indent on
@@ -76,7 +69,7 @@ colorscheme gruvbox
 vim.o.inccommand = "nosplit"
 
 --Set highlight on search
-vim.o.hlsearch = false
+vim.o.hlsearch = true
 vim.o.incsearch = true
 
 --Make line numbers default
