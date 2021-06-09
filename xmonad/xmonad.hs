@@ -7,8 +7,8 @@ main =
     def
       { borderWidth = 2,
         modMask = mod4Mask,
-        terminal = "kitty",
-        --terminal = "st",
+        --terminal = "kitty",
+        terminal = "st",
         normalBorderColor = "#cccccc",
         focusedBorderColor = "#fb4934"
       }

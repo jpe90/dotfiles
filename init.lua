@@ -20,6 +20,7 @@ require('packer').startup(function()
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
+  use 'tpope/vim-eunuch'
   --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
@@ -40,21 +41,18 @@ require('packer').startup(function()
   use 'Neevash/awesome-flutter-snippets'
   use "folke/lua-dev.nvim"
   use 'wojciechkepka/vim-github-dark'
+  use 'Roboron3042/Cyberpunk-Neon'
+  use 'mechatroner/rainbow_csv'
 end)
 
 vim.cmd [[
 set termguicolors
-set hidden
-set number
-set relativenumber
-set ignorecase
-set smartcase
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 set noerrorbells visualbell t_vb=
 set mouse+=a
 set splitbelow
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set softtabstop=-1
 set shiftwidth=0
 set shiftround
