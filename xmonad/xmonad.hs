@@ -7,10 +7,10 @@ main =
     def
       { borderWidth = 2,
         modMask = mod4Mask,
-        --terminal = "kitty",
-        terminal = "st",
+        terminal = "kitty",
+        --terminal = "st",
         normalBorderColor = "#cccccc",
-        focusedBorderColor = "#fb4934"
+        focusedBorderColor = "#F44747"
       }
       `additionalKeys` [ ((mod4Mask .|. shiftMask, xK_q), kill),
                          ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%"),

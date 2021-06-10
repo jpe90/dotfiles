@@ -34,7 +34,9 @@ require('packer').startup(function()
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
   --use 'sdiehl/vim-ormolu'
-  use 'morhetz/gruvbox'
+  --use 'morhetz/gruvbox'
+  use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'Mofiqul/vscode.nvim'
   use 'dag/vim-fish'
   use 'hrsh7th/vim-vsnip'
   use 'hrsh7th/vim-vsnip-integ'
@@ -44,6 +46,7 @@ require('packer').startup(function()
   use 'Roboron3042/Cyberpunk-Neon'
   use 'mechatroner/rainbow_csv'
   use 'mhartington/oceanic-next'
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
 end)
 
 vim.cmd [[
@@ -61,7 +64,8 @@ set expandtab
 set smartindent
 set ignorecase
 filetype plugin indent on
-colorscheme OceanicNext
+set background=dark
+colorscheme vscode
 ]]
 
 --Incremental live completion
@@ -313,3 +317,10 @@ vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ignore_install = { "javascript" }, -- List of parsers to ignore installing
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+  },
+}
