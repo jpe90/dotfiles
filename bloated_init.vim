@@ -17,7 +17,7 @@ Plug 'ziglang/zig.vim'
 call plug#end()
 
 
-" ###### TESTING EXTENSIONS ###########
+" ###### TESTING EXTENSIONS ############
 " set runtimepath^=/home/solaire/Development/Typescript/coc-flutter
 " let g:coc_node_args = ['--nolazy', '--inspect-brk=6045']
 
