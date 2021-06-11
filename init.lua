@@ -33,20 +33,22 @@ require('packer').startup(function()
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
-  --use 'sdiehl/vim-ormolu'
-  --use 'morhetz/gruvbox'
   use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'Mofiqul/vscode.nvim'
   use 'dag/vim-fish'
   use 'hrsh7th/vim-vsnip'
   use 'hrsh7th/vim-vsnip-integ'
-  use 'Neevash/awesome-flutter-snippets'
   use "folke/lua-dev.nvim"
   use 'wojciechkepka/vim-github-dark'
   use 'Roboron3042/Cyberpunk-Neon'
   use 'mechatroner/rainbow_csv'
   use 'mhartington/oceanic-next'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+  use 'Neevash/awesome-flutter-snippets'
+  use 'b3nj5m1n/kommentary'
+  use {"akinsho/nvim-toggleterm.lua"}
+  use "rafamadriz/friendly-snippets"
+  use 'sdiehl/vim-ormolu'
 end)
 
 vim.cmd [[
@@ -99,6 +101,8 @@ vim.o.smartcase = true
 vim.o.updatetime = 250
 vim.wo.signcolumn="yes"
 
+vim.o.completeopt = "menuone,noselect,noinsert"
+
 --Remap space as leader key
 vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent=true})
 vim.g.mapleader = " "
@@ -127,6 +131,19 @@ vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
 vim.g.indent_blankline_char_highlight = 'LineNr'
 
 -- haskell
+
+--require'snippets'.use_suggested_mappings()
+
+--vim.o.completeopt = "menuone,noselect"
+
+--
+require('kommentary.config').configure_language("default", {
+    prefer_single_line_comments = true,
+})
+
+require("toggleterm").setup{
+   open_mapping = [[<c-\>]],
+}
 
 
 -- Toggle to disable mouse mode and indentlines for easier paste
@@ -165,7 +182,8 @@ require('telescope').setup {
 vim.api.nvim_set_keymap('n', '<leader>p', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>b', [[<cmd>lua require('telescope.builtin').buffers()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader><leader>', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>]], { noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<leader>t', [[<cmd>lua require('telescope.builtin').tags()<cr>]], { noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<leader>tg', [[<cmd>lua require('telescope.builtin').tags()<cr>]], { noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<leader>ts', [[<cmd>lua require('telescope.builtin').treesitter()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>fd', [[<cmd>lua require('telescope.builtin').grep_string()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>fp', [[<cmd>lua require('telescope.builtin').live_grep()<cr>]], { noremap = true, silent = true})
@@ -176,6 +194,14 @@ vim.api.nvim_set_keymap('n', '<leader>ca', [[<cmd>lua require('telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>gb', [[<cmd>lua require('telescope.builtin').git_branches()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gs', [[<cmd>lua require('telescope.builtin').git_status()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gp', [[<cmd>lua require('telescope.builtin').git_bcommits()<cr>]], { noremap = true, silent = true})
+
+--vim.api.nvim_set_keymap("n", "<leader>cic", "<Plug>kommentary_line_increase", {})
+--vim.api.nvim_set_keymap("n", "<leader>ci", "<Plug>kommentary_motion_increase", {})
+--vim.api.nvim_set_keymap("v", "<leader>ci", "<Plug>kommentary_visual_increase", {})
+--vim.api.nvim_set_keymap("n", "<leader>cdc", "<Plug>kommentary_line_decrease", {})
+--vim.api.nvim_set_keymap("n", "<leader>cd", "<Plug>kommentary_motion_decrease", {})
+--vim.api.nvim_set_keymap("v", "<leader>cd", "<Plug>kommentary_visual_decrease", {})
+
 
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
@@ -200,11 +226,22 @@ vim.api.nvim_exec([[
 
 -- Y yank until the end of line
 vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true})
+
+-- janky snippet shit
+--
+vim.api.nvim_set_keymap("i" , "<C-e>"      , "compe#confirm()" , { noremap = true , expr = true , silent = true })
+vim.api.nvim_set_keymap("i" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })  -- Ctrl-L to jump on placeholders.
+vim.api.nvim_set_keymap("s" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })
+vim.api.nvim_set_keymap("i" , "<C-space>" , "compe#complete()"      , { noremap = true , expr = true , silent = true })
+vim.api.nvim_set_keymap("i" ,  "<Tab>"    , '<Plug>(vsnip-jump-next)    ?   : <Tab>'  , { noremap = false, expr = true}) 
+vim.api.nvim_set_keymap("i" ,  "<Tab>"    , '<Plug>(vsnip-jump-next)    ?   : <Tab>'  , { noremap = false, expr = true}) 
+vim.api.nvim_set_keymap("i" ,  "<S-Tab>"  , '<Plug>(vsnip-jump-prev)    ?   : <S-Tab>', { noremap = false, expr = true}) 
+vim.api.nvim_set_keymap("i" ,  "<S-Tab>"  , '<Plug>(vsnip-jump-prev)    ?   : <S-Tab>', { noremap = false, expr = true}) 
 --
 -- LSP settings
 local nvim_lsp = require('lspconfig')
 local on_attach = function(_client, bufnr)
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  --vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
   vim.api.nvim_command("au BufWritePre <buffer> lua vim.lsp.buf.formatting_sync(nil, 1000)")
 
   local opts = { noremap=true, silent=true }
@@ -256,7 +293,7 @@ lspconfig.sumneko_lua.setup(luadev)
 vim.cmd([[ command! Format execute 'lua vim.lsp.buf.formatting()' ]])
 
 -- Set completeopt to have a better completion experience
-vim.o.completeopt="menuone,noinsert"
+--vim.o.completeopt="menuone,noinsert"
 
 -- Compe setup
 require'compe'.setup {
@@ -276,6 +313,7 @@ require'compe'.setup {
   source = {
     path = true;
     nvim_lsp = true;
+    vsnip = true;
   };
 }
 
