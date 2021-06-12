@@ -132,6 +132,14 @@ vim.g.indent_blankline_char_highlight = 'LineNr'
 
 -- haskell
 
+--vim.g.haskell_enable_quantification
+--vim.g.haskell_enable_recursivedo
+--vim.g.haskell_enable_arrowsyntax
+--vim.g.haskell_enable_pattern_synonyms
+--vim.g.haskell_enable_typeroles
+--vim.g.haskell_enable_static_pointers
+
+
 --require'snippets'.use_suggested_mappings()
 
 --vim.o.completeopt = "menuone,noselect"
@@ -270,7 +278,7 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Enable the following language servers
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'hls', 'dartls', 'sumneko_lua'}
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua'}
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { 
     on_attach = on_attach,
@@ -278,7 +286,12 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities
   }
 end
-  local luadev = require("lua-dev").setup({
+require('lspconfig').hls.setup {
+  on_attach = on_attach,
+  root_dir = root_pattern("*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml", "*.git", "*.hs", "*.xmonad"),
+  capabilities = capabilities
+}
+local luadev = require("lua-dev").setup({
   -- add any options here, or leave empty to use the default settings
    lspconfig = {
      cmd = {"lua-language-server"}
