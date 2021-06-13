@@ -33,7 +33,8 @@ require('packer').startup(function()
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
-  use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  --use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'morhetz/gruvbox'
   use 'Mofiqul/vscode.nvim'
   use 'dag/vim-fish'
   use 'hrsh7th/vim-vsnip'
@@ -67,7 +68,7 @@ set smartindent
 set ignorecase
 filetype plugin indent on
 set background=dark
-colorscheme vscode
+colorscheme gruvbox
 ]]
 
 --Incremental live completion
@@ -252,7 +253,7 @@ vim.api.nvim_set_keymap("i" ,  "<S-Tab>"  , '<Plug>(vsnip-jump-prev)    ?   : <S
 -- LSP settings
 local nvim_lsp = require('lspconfig')
 local on_attach = function(_client, bufnr)
-  --vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
+  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
   vim.api.nvim_command("au BufWritePre <buffer> lua vim.lsp.buf.formatting_sync(nil, 1000)")
 
   local opts = { noremap=true, silent=true }
