@@ -93,6 +93,9 @@ vim.o.breakindent = true
 --Save undo history
 vim.cmd[[set undofile]]
 
+-- share system clipboard
+vim.cmd[[set clipboard+=unnamedplus]]
+
 --Case insensitive searching UNLESS /C or capital in search
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -101,7 +104,7 @@ vim.o.smartcase = true
 vim.o.updatetime = 250
 vim.wo.signcolumn="yes"
 
-vim.o.completeopt = "menuone,noselect,noinsert"
+--vim.o.completeopt = "menuone,noselect,noinsert"
 
 --Remap space as leader key
 vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent=true})
@@ -140,9 +143,9 @@ vim.g.indent_blankline_char_highlight = 'LineNr'
 --vim.g.haskell_enable_static_pointers
 
 
---require'snippets'.use_suggested_mappings()
+-- require'snippets'.use_suggested_mappings()
 
---vim.o.completeopt = "menuone,noselect"
+vim.o.completeopt = "menuone,noselect"
 
 --
 require('kommentary.config').configure_language("default", {
@@ -150,7 +153,7 @@ require('kommentary.config').configure_language("default", {
 })
 
 require("toggleterm").setup{
-   open_mapping = [[<c-\>]],
+   open_mapping = [[<M-`>]],
 }
 
 
