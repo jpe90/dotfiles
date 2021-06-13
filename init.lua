@@ -50,6 +50,7 @@ require('packer').startup(function()
   use {"akinsho/nvim-toggleterm.lua"}
   use "rafamadriz/friendly-snippets"
   use 'sdiehl/vim-ormolu'
+  use 'airblade/vim-gitgutter'
 end)
 
 vim.cmd [[
@@ -221,7 +222,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
    -- Enable underline, use default values
    underline = true,
    -- Enable virtual text only on Warning or above, override spacing to 2
-   virtual_text = false,
+   --virtual_text = true,
  }
 )
 
@@ -244,12 +245,16 @@ vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true})
 vim.api.nvim_set_keymap("i" , "<C-e>"      , "compe#confirm()" , { noremap = true , expr = true , silent = true })
 vim.api.nvim_set_keymap("i" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })  -- Ctrl-L to jump on placeholders.
 vim.api.nvim_set_keymap("s" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })
-vim.api.nvim_set_keymap("i" , "<C-space>" , "compe#complete()"      , { noremap = true , expr = true , silent = true })
-vim.api.nvim_set_keymap("i" ,  "<Tab>"    , '<Plug>(vsnip-jump-next)    ?   : <Tab>'  , { noremap = false, expr = true}) 
-vim.api.nvim_set_keymap("i" ,  "<Tab>"    , '<Plug>(vsnip-jump-next)    ?   : <Tab>'  , { noremap = false, expr = true}) 
-vim.api.nvim_set_keymap("i" ,  "<S-Tab>"  , '<Plug>(vsnip-jump-prev)    ?   : <S-Tab>', { noremap = false, expr = true}) 
-vim.api.nvim_set_keymap("i" ,  "<S-Tab>"  , '<Plug>(vsnip-jump-prev)    ?   : <S-Tab>', { noremap = false, expr = true}) 
---
+-- vim.api.nvim_set_keymap("i" , "<C-space>" , "compe#complete()"      , { noremap = true , expr = true , silent = true })
+-- vim.api.nvim_set_keymap("i" ,  "<Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' : '<Tab>'"  , { noremap = false, expr = true})
+-- vim.api.nvim_set_keymap("s" ,  "<Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' : '<Tab>'"  , { noremap = false, expr = true})
+-- vim.api.nvim_set_keymap("i" ,  "<S-Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'"  , { noremap = false, expr = true})
+-- vim.api.nvim_set_keymap("s" ,  "<S-Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'"  , { noremap = false, expr = true})
+vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+
 -- LSP settings
 local nvim_lsp = require('lspconfig')
 local on_attach = function(_client, bufnr)
@@ -350,9 +355,28 @@ end
 -- Use (s-)tab to:
 --- move to prev/next item in completion menuone
 --- jump to prev/next snippet's placeholder
+-- _G.tab_complete = function()
+--   if vim.fn.pumvisible() == 1 then
+--     return t "<C-n>"
+--   elseif check_back_space() then
+--     return t "<Tab>"
+--   else
+--     return vim.fn['compe#complete']()
+--   end
+-- end
+-- _G.s_tab_complete = function()
+--   if vim.fn.pumvisible() == 1 then
+--     return t "<C-p>"
+--   else
+--     return t "<S-Tab>"
+--   end
+-- end
+
 _G.tab_complete = function()
   if vim.fn.pumvisible() == 1 then
     return t "<C-n>"
+  elseif vim.fn.call("vsnip#available", {1}) == 1 then
+    return t "<Plug>(vsnip-expand-or-jump)"
   elseif check_back_space() then
     return t "<Tab>"
   else
@@ -362,15 +386,12 @@ end
 _G.s_tab_complete = function()
   if vim.fn.pumvisible() == 1 then
     return t "<C-p>"
+  elseif vim.fn.call("vsnip#jumpable", {-1}) == 1 then
+    return t "<Plug>(vsnip-jump-prev)"
   else
     return t "<S-Tab>"
   end
 end
-
-vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 
 require'nvim-treesitter.configs'.setup {
   ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
