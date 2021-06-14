@@ -38,6 +38,7 @@ Plug 'neovimhaskell/haskell-vim'
 " Plug 'sdiehl/vim-ormolu'
 Plug 'dag/vim-fish'
 Plug 'morhetz/gruvbox'
+Plug 'tbastos/vim-lua'
 
 call plug#end()
 
