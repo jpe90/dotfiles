@@ -50,6 +50,7 @@ require('packer').startup(function()
   use {"akinsho/nvim-toggleterm.lua"}
   use "rafamadriz/friendly-snippets"
   use 'sdiehl/vim-ormolu'
+  use 'itchyny/lightline.vim'        -- Fancier statusline
   use 'airblade/vim-gitgutter'
 end)
 
