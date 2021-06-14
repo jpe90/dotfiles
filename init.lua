@@ -137,12 +137,12 @@ vim.g.indent_blankline_char_highlight = 'LineNr'
 
 -- haskell
 
---vim.g.haskell_enable_quantification
---vim.g.haskell_enable_recursivedo
---vim.g.haskell_enable_arrowsyntax
---vim.g.haskell_enable_pattern_synonyms
---vim.g.haskell_enable_typeroles
---vim.g.haskell_enable_static_pointers
+vim.g.haskell_enable_quantification   = true
+vim.g.haskell_enable_recursivedo= true
+vim.g.haskell_enable_arrowsyntax= true
+vim.g.haskell_enable_pattern_synonyms= true
+vim.g.haskell_enable_typeroles= true
+vim.g.haskell_enable_static_pointers= true
 
 
 -- require'snippets'.use_suggested_mappings()
@@ -157,7 +157,6 @@ require('kommentary.config').configure_language("default", {
 require("toggleterm").setup{
    open_mapping = [[<M-`>]],
 }
-
 
 -- Toggle to disable mouse mode and indentlines for easier paste
 ToggleMouse = function()
