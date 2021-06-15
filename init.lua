@@ -47,7 +47,7 @@ require('packer').startup(function()
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use 'Neevash/awesome-flutter-snippets'
   use 'b3nj5m1n/kommentary'
-  -- use {"akinsho/nvim-toggleterm.lua"}
+ -- use {"akinsho/nvim-toggleterm.lua"}
   use "rafamadriz/friendly-snippets"
   use 'sdiehl/vim-ormolu'
   use 'itchyny/lightline.vim'        -- Fancier statusline
@@ -164,7 +164,6 @@ require('kommentary.config').configure_language("default", {
 -- require("toggleterm").setup{
 --    open_mapping = [[<M-`>]],
 -- }
-
 
 -- Toggle to disable mouse mode and indentlines for easier paste
 ToggleMouse = function()
