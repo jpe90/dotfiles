@@ -47,7 +47,7 @@ require('packer').startup(function()
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
   use 'Neevash/awesome-flutter-snippets'
   use 'b3nj5m1n/kommentary'
-  use {"akinsho/nvim-toggleterm.lua"}
+  -- use {"akinsho/nvim-toggleterm.lua"}
   use "rafamadriz/friendly-snippets"
   use 'sdiehl/vim-ormolu'
   use 'itchyny/lightline.vim'        -- Fancier statusline
@@ -118,14 +118,14 @@ vim.g.maplocalleader = " "
 vim.api.nvim_set_keymap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { noremap=true, expr = true, silent = true})
 vim.api.nvim_set_keymap('n', 'j', "v:count == 0 ? 'gj' : 'j'", {noremap= true, expr = true, silent = true})
 
---Remap escape to leave terminal mode
-vim.api.nvim_exec([[
-  augroup Terminal
-    autocmd!
-    au TermOpen * tnoremap <buffer> <Esc> <c-\><c-n>
-    au TermOpen * set nonu
-  augroup end
-]], false)
+-- --Remap escape to leave terminal mode
+-- vim.api.nvim_exec([[
+--   augroup Terminal
+--     autocmd!
+--     au TermOpen * tnoremap <buffer> <Esc> <c-\><c-n>
+--     au TermOpen * set nonu
+--   augroup end
+-- ]], false)
 
 --Add map to enter paste mode
 vim.o.pastetoggle="<F3>"
@@ -138,12 +138,18 @@ vim.g.indent_blankline_char_highlight = 'LineNr'
 
 -- haskell
 
---vim.g.haskell_enable_quantification
---vim.g.haskell_enable_recursivedo
---vim.g.haskell_enable_arrowsyntax
---vim.g.haskell_enable_pattern_synonyms
---vim.g.haskell_enable_typeroles
---vim.g.haskell_enable_static_pointers
+vim.g.haskell_enable_quantification=1
+vim.g.haskell_enable_recursivedo=1
+vim.g.haskell_enable_arrowsyntax=1
+vim.g.haskell_enable_pattern_synonyms=1
+vim.g.haskell_enable_typeroles=1
+vim.g.haskell_enable_static_pointers=1
+
+--Set statusbar
+vim.g.lightline = { colorscheme = 'gruvbox';
+      active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
+      component_function = { gitbranch = 'fugitive#head', };
+}
 
 
 -- require'snippets'.use_suggested_mappings()
@@ -155,9 +161,9 @@ require('kommentary.config').configure_language("default", {
     prefer_single_line_comments = true,
 })
 
-require("toggleterm").setup{
-   open_mapping = [[<M-`>]],
-}
+-- require("toggleterm").setup{
+--    open_mapping = [[<M-`>]],
+-- }
 
 
 -- Toggle to disable mouse mode and indentlines for easier paste
