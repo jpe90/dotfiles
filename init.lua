@@ -21,6 +21,9 @@ require('packer').startup(function()
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-eunuch'
+  use 'hrsh7th/vim-vsnip'
+  use 'hrsh7th/vim-vsnip-integ'
+
   --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
@@ -39,20 +42,14 @@ require('packer').startup(function()
   }
   -- Add indentation guides even on blank lines
   use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
-  -- Add git related info in the signs columns and popups
-  --
   use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'} ,
     require('gitsigns').setup()
   }
   use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
-  use { 'hrsh7th/nvim-compe' , 
-    opt = true,
-    requires = {{'hrsh7th/vim-vsnip', opt = true}, {'hrsh7th/vim-vsnip-integ', opt = true}} 
-  }
+  use { 'hrsh7th/nvim-compe'  }
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
-  --use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'morhetz/gruvbox'
   use 'Mofiqul/vscode.nvim'
   use 'dag/vim-fish'
@@ -63,7 +60,6 @@ require('packer').startup(function()
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
---      ignore_install = { "javascript" }, -- List of parsers to ignore installing
       highlight = {
         enable = true,              -- false will disable the whole extension
       },
@@ -88,18 +84,20 @@ require('packer').startup(function()
 
   use 'rust-lang/rust.vim'
 
-  use { 'kyazdani42/nvim-tree.lua' 
---     require("nvim-tree").setup{
---      vim.api.nvim_set_keymap('n', '<leader>gp', [[<cmd>lua require('telescope.builtin').git_bcommits()<cr>]], 
---      { noremap = true, silent = true})
---    } 
-}
+  use { 'kyazdani42/nvim-tree.lua'  }
+  use 'sainnhe/sonokai'
+  use 'arcticicestudio/nord-vim'
 end)
+-- lightline
 
 vim.g.lightline = { colorscheme = 'gruvbox';
       active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
       component_function = { gitbranch = 'fugitive#head', };
 }
+
+-- nvim-tree
+
+vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 
 vim.cmd [[
@@ -161,6 +159,15 @@ vim.o.updatetime = 250
 vim.wo.signcolumn="yes"
 
 --vim.o.completeopt = "menuone,noselect,noinsert"
+-- tab navigation
+vim.api.nvim_set_keymap('n', '<A-1>', '1gt', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('n', '<A-2>', '2gt', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('n', '<A-3>', '3gt', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('n', '<A-4>', '4gt', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('n', '<A-5>', '5gt', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('n', '<A-6>', '6gt', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('n', '<A-7>', '7gt', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('n', '<A-8>', '8gt', { noremap = true, silent=true})
 
 --Remap space as leader key
 vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent=true})
@@ -199,9 +206,6 @@ vim.g.haskell_enable_typeroles=1
 vim.g.haskell_enable_static_pointers=1
 
 --Set statusbar
-
-
--- require'snippets'.use_suggested_mappings()
 
 vim.o.completeopt = "menuone,noselect"
 
@@ -245,6 +249,9 @@ vim.api.nvim_set_keymap('n', '<leader>ca', [[<cmd>lua require('telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>gb', [[<cmd>lua require('telescope.builtin').git_branches()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gs', [[<cmd>lua require('telescope.builtin').git_status()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gp', [[<cmd>lua require('telescope.builtin').git_bcommits()<cr>]], { noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<leader>gwd', [[<cmd>lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>]], { noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<leader>lr', [[<cmd>lua require('telescope.builtin').registers()<cr>]], { noremap = true, silent = true})
+vim.api.nvim_set_keymap('n', '<leader>col', [[<cmd>lua require('telescope.builtin').colorscheme()<cr>]], { noremap = true, silent = true})
 
 --vim.api.nvim_set_keymap("n", "<leader>cic", "<Plug>kommentary_line_increase", {})
 --vim.api.nvim_set_keymap("n", "<leader>ci", "<Plug>kommentary_motion_increase", {})
@@ -279,15 +286,9 @@ vim.api.nvim_exec([[
 vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true})
 
 -- janky snippet shit
---
 vim.api.nvim_set_keymap("i" , "<C-e>"      , "compe#confirm()" , { noremap = true , expr = true , silent = true })
 vim.api.nvim_set_keymap("i" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })  -- Ctrl-L to jump on placeholders.
 vim.api.nvim_set_keymap("s" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })
--- vim.api.nvim_set_keymap("i" , "<C-space>" , "compe#complete()"      , { noremap = true , expr = true , silent = true })
--- vim.api.nvim_set_keymap("i" ,  "<Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' : '<Tab>'"  , { noremap = false, expr = true})
--- vim.api.nvim_set_keymap("s" ,  "<Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-next)' : '<Tab>'"  , { noremap = false, expr = true})
--- vim.api.nvim_set_keymap("i" ,  "<S-Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'"  , { noremap = false, expr = true})
--- vim.api.nvim_set_keymap("s" ,  "<S-Tab>"    , "vsnip#jumpable(1) ? '<Plug>(vsnip-jump-prev)' : '<S-Tab>'"  , { noremap = false, expr = true})
 vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
@@ -310,8 +311,6 @@ local on_attach = function(_client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  --vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-  --vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
