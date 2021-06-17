@@ -50,5 +50,5 @@ fi
 
 exec blueberry-tray &
 feh --bg-fill ~/pictures/wallpaper.jpg
-picom &
+# picom &
 exec xmonad

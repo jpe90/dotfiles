@@ -23,13 +23,32 @@ require('packer').startup(function()
   use 'tpope/vim-eunuch'
   --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
-  use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
+  use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
+    require('telescope').setup {
+      defaults = {
+        mappings = {
+          i = {
+            ["<C-u>"] = false,
+            ["<C-d>"] = false,
+          },
+        },
+        generic_sorter =  require'telescope.sorters'.get_fzy_sorter,
+        file_sorter =  require'telescope.sorters'.get_fzy_sorter,
+      }
+    }
+  }
   -- Add indentation guides even on blank lines
   use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
   -- Add git related info in the signs columns and popups
-  use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'} }
+  --
+  use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'} ,
+    require('gitsigns').setup()
+  }
   use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
-  use 'hrsh7th/nvim-compe'           -- Autocompletion plugin
+  use { 'hrsh7th/nvim-compe' , 
+    opt = true,
+    requires = {{'hrsh7th/vim-vsnip', opt = true}, {'hrsh7th/vim-vsnip-integ', opt = true}} 
+  }
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
@@ -37,22 +56,51 @@ require('packer').startup(function()
   use 'morhetz/gruvbox'
   use 'Mofiqul/vscode.nvim'
   use 'dag/vim-fish'
-  use 'hrsh7th/vim-vsnip'
-  use 'hrsh7th/vim-vsnip-integ'
   use "folke/lua-dev.nvim"
   use 'wojciechkepka/vim-github-dark'
-  use 'Roboron3042/Cyberpunk-Neon'
   use 'mechatroner/rainbow_csv'
-  use 'mhartington/oceanic-next'
-  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
+    require'nvim-treesitter.configs'.setup {
+      ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+--      ignore_install = { "javascript" }, -- List of parsers to ignore installing
+      highlight = {
+        enable = true,              -- false will disable the whole extension
+      },
+    }
+  }
+
   use 'Neevash/awesome-flutter-snippets'
-  use 'b3nj5m1n/kommentary'
- -- use {"akinsho/nvim-toggleterm.lua"}
+  use { 'b3nj5m1n/kommentary',
+    require('kommentary.config').configure_language("default", {
+        prefer_single_line_comments = true,
+    })
+  }
+  use {"akinsho/nvim-toggleterm.lua",
+    require("toggleterm").setup{
+      open_mapping = [[<M-`>]],
+    }
+  }
   use "rafamadriz/friendly-snippets"
   use 'sdiehl/vim-ormolu'
-  use 'itchyny/lightline.vim'        -- Fancier statusline
-  use 'airblade/vim-gitgutter'
+
+  use  'itchyny/lightline.vim' 
+
+  use 'rust-lang/rust.vim'
+
+  use { 'kyazdani42/nvim-tree.lua' 
+--     require("nvim-tree").setup{
+--      vim.api.nvim_set_keymap('n', '<leader>gp', [[<cmd>lua require('telescope.builtin').git_bcommits()<cr>]], 
+--      { noremap = true, silent = true})
+--    } 
+}
 end)
+
+vim.g.lightline = { colorscheme = 'gruvbox';
+      active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
+      component_function = { gitbranch = 'fugitive#head', };
+}
+
 
 vim.cmd [[
 set termguicolors
@@ -73,11 +121,16 @@ set background=dark
 colorscheme gruvbox
 ]]
 
+-- netrw remove banner
+vim.g.netrw_banner = 0
+vim.g.netrw_browse_split = 1
+vim.g.netrw_winsize = 25
+
 --Incremental live completion
 vim.o.inccommand = "nosplit"
 
 --Set highlight on search
-vim.o.hlsearch = true
+vim.o.hlsearch = false
 vim.o.incsearch = true
 
 --Make line numbers default
@@ -146,10 +199,6 @@ vim.g.haskell_enable_typeroles=1
 vim.g.haskell_enable_static_pointers=1
 
 --Set statusbar
-vim.g.lightline = { colorscheme = 'gruvbox';
-      active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
-      component_function = { gitbranch = 'fugitive#head', };
-}
 
 
 -- require'snippets'.use_suggested_mappings()
@@ -157,13 +206,8 @@ vim.g.lightline = { colorscheme = 'gruvbox';
 vim.o.completeopt = "menuone,noselect"
 
 --
-require('kommentary.config').configure_language("default", {
-    prefer_single_line_comments = true,
-})
 
--- require("toggleterm").setup{
---    open_mapping = [[<M-`>]],
--- }
+
 
 -- Toggle to disable mouse mode and indentlines for easier paste
 ToggleMouse = function()
@@ -185,18 +229,6 @@ end
 vim.api.nvim_set_keymap('n', '<F10>', '<cmd>lua ToggleMouse()<cr>', { noremap = true })
 
 -- Telescope
-require('telescope').setup {
-  defaults = {
-    mappings = {
-      i = {
-        ["<C-u>"] = false,
-        ["<C-d>"] = false,
-      },
-    },
-    generic_sorter =  require'telescope.sorters'.get_fzy_sorter,
-    file_sorter =  require'telescope.sorters'.get_fzy_sorter,
-  }
-}
 --Add leader shortcuts
 vim.api.nvim_set_keymap('n', '<leader>p', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>b', [[<cmd>lua require('telescope.builtin').buffers()<cr>]], { noremap = true, silent = true})
@@ -399,10 +431,3 @@ _G.s_tab_complete = function()
   end
 end
 
-require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-  ignore_install = { "javascript" }, -- List of parsers to ignore installing
-  highlight = {
-    enable = true,              -- false will disable the whole extension
-  },
-}
