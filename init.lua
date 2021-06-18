@@ -46,7 +46,28 @@ require('packer').startup(function()
     require('gitsigns').setup()
   }
   use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
-  use { 'hrsh7th/nvim-compe'  }
+  use { 'hrsh7th/nvim-compe',
+    require'compe'.setup {
+      enabled = true;
+      autocomplete = true;
+      debug = false;
+      min_length = 1;
+      preselect = 'enable';
+      throttle_time = 80;
+      source_timeout = 200;
+      incomplete_delay = 400;
+      max_abbr_width = 100;
+      max_kind_width = 100;
+      max_menu_width = 100;
+      documentation = true;
+
+      source = {
+        path = true;
+        nvim_lsp = true;
+        vsnip = true;
+      };
+    }
+}
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
@@ -67,11 +88,6 @@ require('packer').startup(function()
   }
 
   use 'Neevash/awesome-flutter-snippets'
-  use { 'b3nj5m1n/kommentary',
-    require('kommentary.config').configure_language("default", {
-        prefer_single_line_comments = true,
-    })
-  }
   use {"akinsho/nvim-toggleterm.lua",
     require("toggleterm").setup{
       open_mapping = [[<M-`>]],
@@ -117,12 +133,9 @@ set ignorecase
 filetype plugin indent on
 set background=dark
 colorscheme gruvbox
+set undofile
+set clipboard+=unnamedplus
 ]]
-
--- netrw remove banner
-vim.g.netrw_banner = 0
-vim.g.netrw_browse_split = 1
-vim.g.netrw_winsize = 25
 
 --Incremental live completion
 vim.o.inccommand = "nosplit"
@@ -143,12 +156,6 @@ vim.o.mouse = "a"
 
 --Enable break indent
 vim.o.breakindent = true
-
---Save undo history
-vim.cmd[[set undofile]]
-
--- share system clipboard
-vim.cmd[[set clipboard+=unnamedplus]]
 
 --Case insensitive searching UNLESS /C or capital in search
 vim.o.ignorecase = true
@@ -209,10 +216,6 @@ vim.g.haskell_enable_static_pointers=1
 
 vim.o.completeopt = "menuone,noselect"
 
---
-
-
-
 -- Toggle to disable mouse mode and indentlines for easier paste
 ToggleMouse = function()
   if vim.o.mouse == 'a' then
@@ -252,15 +255,6 @@ vim.api.nvim_set_keymap('n', '<leader>gp', [[<cmd>lua require('telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>gwd', [[<cmd>lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>lr', [[<cmd>lua require('telescope.builtin').registers()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>col', [[<cmd>lua require('telescope.builtin').colorscheme()<cr>]], { noremap = true, silent = true})
-
---vim.api.nvim_set_keymap("n", "<leader>cic", "<Plug>kommentary_line_increase", {})
---vim.api.nvim_set_keymap("n", "<leader>ci", "<Plug>kommentary_motion_increase", {})
---vim.api.nvim_set_keymap("v", "<leader>ci", "<Plug>kommentary_visual_increase", {})
---vim.api.nvim_set_keymap("n", "<leader>cdc", "<Plug>kommentary_line_decrease", {})
---vim.api.nvim_set_keymap("n", "<leader>cd", "<Plug>kommentary_motion_decrease", {})
---vim.api.nvim_set_keymap("v", "<leader>cd", "<Plug>kommentary_visual_decrease", {})
-
-
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
  vim.lsp.diagnostic.on_publish_diagnostics, {
@@ -355,26 +349,6 @@ vim.cmd([[ command! Format execute 'lua vim.lsp.buf.formatting()' ]])
 --vim.o.completeopt="menuone,noinsert"
 
 -- Compe setup
-require'compe'.setup {
-  enabled = true;
-  autocomplete = true;
-  debug = false;
-  min_length = 1;
-  preselect = 'enable';
-  throttle_time = 80;
-  source_timeout = 200;
-  incomplete_delay = 400;
-  max_abbr_width = 100;
-  max_kind_width = 100;
-  max_menu_width = 100;
-  documentation = true;
-
-  source = {
-    path = true;
-    nvim_lsp = true;
-    vsnip = true;
-  };
-}
 
 local t = function(str)
   return vim.api.nvim_replace_termcodes(str, true, true, true)
@@ -388,26 +362,6 @@ local check_back_space = function()
         return false
     end
 end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
--- _G.tab_complete = function()
---   if vim.fn.pumvisible() == 1 then
---     return t "<C-n>"
---   elseif check_back_space() then
---     return t "<Tab>"
---   else
---     return vim.fn['compe#complete']()
---   end
--- end
--- _G.s_tab_complete = function()
---   if vim.fn.pumvisible() == 1 then
---     return t "<C-p>"
---   else
---     return t "<S-Tab>"
---   end
--- end
 
 _G.tab_complete = function()
   if vim.fn.pumvisible() == 1 then
