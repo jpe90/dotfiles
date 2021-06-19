@@ -19,5 +19,5 @@ main =
               ((0, xF86XK_MonBrightnessUp), spawn "light -A 5"),
               ((0, xF86XK_MonBrightnessDown), spawn "light -U 5")
             ]
-            `mappend` keys defaultConfig c
+            <> keys defaultConfig c
       }
