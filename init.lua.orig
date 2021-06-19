@@ -29,11 +29,18 @@ require('packer').startup(function()
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}} }
   -- Add indentation guides even on blank lines
   use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
+<<<<<<< HEAD
+  -- Add git related info in the signs columns and popups
+  use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'} }
+  use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
+  use 'hrsh7th/nvim-compe'           -- Autocompletion plugin
+=======
   use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'} ,
     require('gitsigns').setup()
   }
   use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
   use { 'hrsh7th/nvim-compe'  }
+>>>>>>> 28539c2db16d13c4065a29e61bc1b0fc633ebb4b
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
@@ -46,7 +53,11 @@ require('packer').startup(function()
   use 'wojciechkepka/vim-github-dark'
   use 'Roboron3042/Cyberpunk-Neon'
   use 'mechatroner/rainbow_csv'
+<<<<<<< HEAD
   use 'mhartington/oceanic-next'
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' }
+=======
+
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -55,11 +66,18 @@ require('packer').startup(function()
       },
     }
   }
+
+>>>>>>> 28539c2db16d13c4065a29e61bc1b0fc633ebb4b
   use 'Neevash/awesome-flutter-snippets'
   use 'b3nj5m1n/kommentary'
  -- use {"akinsho/nvim-toggleterm.lua"}
   use "rafamadriz/friendly-snippets"
   use 'sdiehl/vim-ormolu'
+<<<<<<< HEAD
+  use 'itchyny/lightline.vim'        -- Fancier statusline
+  use 'airblade/vim-gitgutter'
+=======
+
   use  'itchyny/lightline.vim' 
 
   use 'rust-lang/rust.vim'
@@ -67,12 +85,23 @@ require('packer').startup(function()
   use { 'kyazdani42/nvim-tree.lua'  }
   use 'sainnhe/sonokai'
   use 'arcticicestudio/nord-vim'
+>>>>>>> 28539c2db16d13c4065a29e61bc1b0fc633ebb4b
 end)
 -- lightline
+
+<<<<<<< HEAD
+=======
+vim.g.lightline = { colorscheme = 'gruvbox';
+      active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
+      component_function = { gitbranch = 'fugitive#head', };
+}
 
 -- nvim-tree
 
 vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
+
+
+>>>>>>> 28539c2db16d13c4065a29e61bc1b0fc633ebb4b
 vim.cmd [[
 set termguicolors
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
