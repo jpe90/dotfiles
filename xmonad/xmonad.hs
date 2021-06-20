@@ -10,7 +10,7 @@ main =
         terminal = "kitty",
         -- terminal = "st",
         normalBorderColor = "#cccccc",
-        focusedBorderColor = "#fb4934",
+        focusedBorderColor = "#c62f37",
         keys = \c ->
           fromList
             [ ((mod4Mask .|. shiftMask, xK_q), kill),

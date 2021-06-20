@@ -75,12 +75,13 @@ set shiftround
 set expandtab
 set smartindent
 set ignorecase
-filetype plugin indent on
 set background=dark
-colorscheme gruvbox
+colorscheme vscode
 set undofile
 set clipboard+=unnamedplus
 ]]
+
+-- filetype plugin indent on
 
 --Incremental live completion
 vim.o.inccommand = "nosplit"
