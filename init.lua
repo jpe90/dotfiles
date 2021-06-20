@@ -21,20 +21,12 @@ require('packer').startup(function()
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-eunuch'
-  use 'hrsh7th/vim-vsnip'
-  use 'hrsh7th/vim-vsnip-integ'
 
   --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   -- UI to select things (files, grep results, open buffers...)
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     require('telescope').setup {
       defaults = {
-        -- mappings = {
-        --   i = {
-        --     ["<C-u>"] = false,
-        --     ["<C-d>"] = false,
-        --   },
-        -- },
         generic_sorter =  require'telescope.sorters'.get_fzy_sorter,
         file_sorter =  require'telescope.sorters'.get_fzy_sorter,
       }
@@ -42,42 +34,14 @@ require('packer').startup(function()
   }
   -- Add indentation guides even on blank lines
   use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
-  use {'lewis6991/gitsigns.nvim', requires = {'nvim-lua/plenary.nvim'} ,
-    require('gitsigns').setup()
-  }
-  use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
-  use { 'hrsh7th/nvim-compe',
-    require'compe'.setup {
-      enabled = true;
-      autocomplete = true;
-      debug = false;
-      min_length = 1;
-      preselect = 'enable';
-      throttle_time = 80;
-      source_timeout = 200;
-      incomplete_delay = 400;
-      max_abbr_width = 100;
-      max_kind_width = 100;
-      max_menu_width = 100;
-      documentation = true;
-
-      source = {
-        path = true;
-        nvim_lsp = true;
-        vsnip = true;
-      };
-    }
-}
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
   use 'morhetz/gruvbox'
   use 'Mofiqul/vscode.nvim'
   use 'dag/vim-fish'
-  use "folke/lua-dev.nvim"
   use 'wojciechkepka/vim-github-dark'
   use 'mechatroner/rainbow_csv'
-
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -86,36 +50,15 @@ require('packer').startup(function()
       },
     }
   }
-
-  use 'Neevash/awesome-flutter-snippets'
-  use {"akinsho/nvim-toggleterm.lua",
-    require("toggleterm").setup{
-      open_mapping = [[<M-`>]],
-    }
-  }
-  use "rafamadriz/friendly-snippets"
   use 'sdiehl/vim-ormolu'
-
-  use  'itchyny/lightline.vim' 
-
   use 'rust-lang/rust.vim'
-
   use { 'kyazdani42/nvim-tree.lua'  }
   use 'sainnhe/sonokai'
   use 'arcticicestudio/nord-vim'
-  -- use 'jiangmiao/auto-pairs'
 end)
--- lightline
-
-vim.g.lightline = { colorscheme = 'gruvbox';
-      active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
-      component_function = { gitbranch = 'fugitive#head', };
-}
-
 -- nvim-tree
-
 vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
-vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>! $TERMINAL . & disown<cr><cr>', { noremap = true, silent=true})
+--vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>! $TERMINAL . & disown<cr><cr>', { noremap = true, silent=true})
 
 
 vim.cmd [[
@@ -250,26 +193,13 @@ vim.api.nvim_set_keymap('n', '<leader>fd', [[<cmd>lua require('telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>fp', [[<cmd>lua require('telescope.builtin').live_grep()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>o', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gc', [[<cmd>lua require('telescope.builtin').git_commits()<cr>]], { noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<leader>gr', [[<cmd>lua require('telescope.builtin').lsp_references()<cr>]], { noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<leader>ca', [[<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gb', [[<cmd>lua require('telescope.builtin').git_branches()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gs', [[<cmd>lua require('telescope.builtin').git_status()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>gp', [[<cmd>lua require('telescope.builtin').git_bcommits()<cr>]], { noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<leader>gwd', [[<cmd>lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>lr', [[<cmd>lua require('telescope.builtin').registers()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>col', [[<cmd>lua require('telescope.builtin').colorscheme()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>ky', [[<cmd>lua require('telescope.builtin').keymaps()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>mk', [[<cmd>lua require('telescope.builtin').marks()<cr>]], { noremap = true, silent = true})
-
-
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
- vim.lsp.diagnostic.on_publish_diagnostics, {
-   -- Enable underline, use default values
-   underline = true,
-   -- Enable virtual text only on Warning or above, override spacing to 2
-   --virtual_text = true,
- }
-)
 
 -- Change preview window location
 vim.g.splitbelow = true
@@ -282,111 +212,4 @@ vim.api.nvim_exec([[
   augroup end
 ]], false)
 
--- Y yank until the end of line
-vim.api.nvim_set_keymap('n', 'Y', 'y$', { noremap = true})
-
--- janky snippet shit
-vim.api.nvim_set_keymap("i" , "<C-e>"      , "compe#confirm()" , { noremap = true , expr = true , silent = true })
-vim.api.nvim_set_keymap("i" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })  -- Ctrl-L to jump on placeholders.
-vim.api.nvim_set_keymap("s" , "<C-l>"     , "vsnip#available(1)  ? '<Plug>(vsnip-expand-or-jump)' : '<C-l>'" , { noremap = false , expr = true })
-vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-
--- LSP settings
-local nvim_lsp = require('lspconfig')
-local on_attach = function(_client, bufnr)
-  vim.api.nvim_buf_set_option(bufnr, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
-  vim.api.nvim_command("au BufWritePre <buffer> lua vim.lsp.buf.formatting_sync(nil, 1000)")
-
-  local opts = { noremap=true, silent=true }
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'ff', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
- --
-end
-
-local root_pattern = nvim_lsp.util.root_pattern
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-
--- Enable the following language servers
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua'}
-for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { 
-    on_attach = on_attach,
-    --root_dir = root_pattern(".git"),
-    capabilities = capabilities
-  }
-end
-require('lspconfig').hls.setup {
-  on_attach = on_attach,
-  root_dir = root_pattern("*.cabal", "stack.yaml", "cabal.project", "package.yaml", "hie.yaml", "*.git", "*.hs", "*.xmonad"),
-  capabilities = capabilities
-}
-local luadev = require("lua-dev").setup({
-  -- add any options here, or leave empty to use the default settings
-   lspconfig = {
-     cmd = {"lua-language-server"}
-   },
-})
-
-local lspconfig = require('lspconfig')
-lspconfig.sumneko_lua.setup(luadev)
-
---
--- Map :Format to vim.lsp.buf.formatting()
-vim.cmd([[ command! Format execute 'lua vim.lsp.buf.formatting()' ]])
-
--- Set completeopt to have a better completion experience
---vim.o.completeopt="menuone,noinsert"
-
--- Compe setup
-
-local t = function(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
-end
-
-local check_back_space = function()
-    local col = vim.fn.col('.') - 1
-    if col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
-        return true
-    else
-        return false
-    end
-end
-
-_G.tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-n>"
-  elseif vim.fn.call("vsnip#available", {1}) == 1 then
-    return t "<Plug>(vsnip-expand-or-jump)"
-  elseif check_back_space() then
-    return t "<Tab>"
-  else
-    return vim.fn['compe#complete']()
-  end
-end
-_G.s_tab_complete = function()
-  if vim.fn.pumvisible() == 1 then
-    return t "<C-p>"
-  elseif vim.fn.call("vsnip#jumpable", {-1}) == 1 then
-    return t "<Plug>(vsnip-jump-prev)"
-  else
-    return t "<S-Tab>"
-  end
-end
 

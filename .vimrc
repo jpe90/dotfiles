@@ -15,8 +15,8 @@ nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 set noerrorbells visualbell t_vb=
 set mouse+=a
 set splitbelow
-set tabstop=4
-set shiftwidth=4
+set tabstop=2
+set shiftwidth=2
 set softtabstop=-1
 set shiftwidth=0
 set shiftround
@@ -25,6 +25,7 @@ set autoindent
 set smartindent
 set ignorecase
 set modeline
+set clipboard+=unnamedplus
 filetype plugin indent on
 
 
@@ -35,10 +36,12 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-eunuch'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
-" Plug 'sdiehl/vim-ormolu'
+Plug 'sdiehl/vim-ormolu'
 Plug 'dag/vim-fish'
 Plug 'morhetz/gruvbox'
 Plug 'tbastos/vim-lua'
+Plug 'mechatroner/rainbow_csv'
+Plug 'rust-lang/rust.vim'
 
 call plug#end()
 
