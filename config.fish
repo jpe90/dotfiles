@@ -5,6 +5,7 @@ set fish_greeting
 #set -gx MOZ_ENABLE_WAYLAND 1
 set -gx _JAVA_AWT_WM_NONREPARENTING 1
 set -gx EDITOR "nvim"
+set -gx TERMINAL "/usr/bin/kitty"
 #set -gx JAVA_HOME "/usr/lib/jvm/default"
 
 # need fisher and https://github.com/oh-my-fish/plugin-foreign-env

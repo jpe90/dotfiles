@@ -21,9 +21,6 @@ require('packer').startup(function()
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-eunuch'
-
-  --use 'ludovicchabant/vim-gutentags' -- Automatic tags management
-  -- UI to select things (files, grep results, open buffers...)
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     require('telescope').setup {
       defaults = {
@@ -32,7 +29,6 @@ require('packer').startup(function()
       }
     }
   }
-  -- Add indentation guides even on blank lines
   use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
@@ -58,7 +54,6 @@ require('packer').startup(function()
 end)
 -- nvim-tree
 vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
---vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>! $TERMINAL . & disown<cr><cr>', { noremap = true, silent=true})
 
 
 vim.cmd [[
@@ -202,6 +197,8 @@ vim.api.nvim_set_keymap('n', '<leader>col', [[<cmd>lua require('telescope.builti
 vim.api.nvim_set_keymap('n', '<leader>ky', [[<cmd>lua require('telescope.builtin').keymaps()<cr>]], { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>mk', [[<cmd>lua require('telescope.builtin').marks()<cr>]], { noremap = true, silent = true})
 
+
+vim.api.nvim_set_keymap('n', '<leader>tm', '<cmd>! $TERMINAL . & disown<cr><cr>', { noremap = true, silent=true})
 -- Change preview window location
 vim.g.splitbelow = true
 
