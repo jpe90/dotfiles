@@ -7,14 +7,14 @@ main =
     def
       { borderWidth = 2,
         modMask = mod4Mask,
-        terminal = "kitty",
-        -- terminal = "st",
+        -- terminal = "kitty",
+        terminal = "st",
         normalBorderColor = "#cccccc",
-        focusedBorderColor = "#c62f37",
+        -- focusedBorderColor = "#c62f37", -- vscode
+        focusedBorderColor = "#fb4934", -- gruvbox
         keys = \c ->
           fromList
-            [ ((mod4Mask .|. shiftMask, xK_q), kill),
-              ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%"),
+            [ ((0, xF86XK_AudioRaiseVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ +5%"),
               ((0, xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%"),
               ((0, xF86XK_MonBrightnessUp), spawn "light -A 5"),
               ((0, xF86XK_MonBrightnessDown), spawn "light -U 5")

@@ -71,7 +71,7 @@ set expandtab
 set smartindent
 set ignorecase
 set background=dark
-colorscheme vscode
+colorscheme gruvbox
 set undofile
 set clipboard+=unnamedplus
 ]]
@@ -105,6 +105,9 @@ vim.o.smartcase = true
 --Decrease update time
 vim.o.updatetime = 250
 vim.wo.signcolumn="yes"
+
+-- gruvbox contrast
+vim.g.gruvbox_contrast_dark="hard"
 
 --vim.o.completeopt = "menuone,noselect,noinsert"
 -- tab navigation
