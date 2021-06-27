@@ -42,6 +42,7 @@ Plug 'morhetz/gruvbox'
 Plug 'tbastos/vim-lua'
 Plug 'mechatroner/rainbow_csv'
 Plug 'rust-lang/rust.vim'
+Plug 'rhysd/conflict-marker.vim'
 
 call plug#end()
 
