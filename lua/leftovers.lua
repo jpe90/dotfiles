@@ -24,12 +24,6 @@ vim.g.lightline = { colorscheme = 'gruvbox';
       component_function = { gitbranch = 'fugitive#head', };
 }
 
--- toggleterm
-
-require("toggleterm").setup{
-  open_mapping = [[<M-`>]],
-}
-
 
 -- lsp telescope
 require'compe'.setup {
