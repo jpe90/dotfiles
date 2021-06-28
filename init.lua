@@ -76,7 +76,6 @@ vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 
 
 vim.cmd [[
-set termguicolors
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
 set noerrorbells visualbell t_vb=
 set mouse+=a

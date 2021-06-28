@@ -1,5 +1,4 @@
 syntax on
-set termguicolors
 set background=dark
 set hidden
 set wildmenu
@@ -26,7 +25,7 @@ set smartindent
 set ignorecase
 set modeline
 set clipboard+=unnamedplus
-filetype plugin indent on
+"filetype plugin indent on
 
 
 call plug#begin('~/.vim/plugged')
@@ -34,15 +33,22 @@ call plug#begin('~/.vim/plugged')
 Plug 'ziglang/zig.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-eunuch'
+Plug 'tpope/vim-surround'
+Plug 'tpope/vim-commentary'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'sdiehl/vim-ormolu'
 Plug 'dag/vim-fish'
 Plug 'morhetz/gruvbox'
+Plug 'sainnhe/sonokai'
 Plug 'tbastos/vim-lua'
 Plug 'mechatroner/rainbow_csv'
 Plug 'rust-lang/rust.vim'
 Plug 'rhysd/conflict-marker.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+
 
 call plug#end()
 
@@ -52,3 +58,7 @@ call plug#end()
 nmap <leader>gh :diffget //2<CR>
 nmap <leader>gl :diffget //3<CR>
 nmap <leader>gs :G<CR>
+
+" ################ HASKELL
+
+let g:haskell_indent_disable = 1

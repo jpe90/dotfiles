@@ -78,6 +78,15 @@
 
 (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 (add-hook 'prog-mode-hook 'evil-local-mode)
+
+;;; projectile
+
+(projectile-mode +1)
+;; Recommended keymap prefix on macOS
+(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+;; Recommended keymap prefix on Windows/Linux
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+
 ;;; treesitter
 
 (require 'tree-sitter)
@@ -265,6 +274,7 @@
 (require 'helm-config)
 
 (global-set-key (kbd "C-x b") 'helm-mini)
+(global-set-key (kbd "M-x") 'helm-M-x)
 (global-set-key (kbd "C-s") 'helm-occur)
 (global-set-key (kbd "M-y") 'helm-show-kill-ring)
 
