@@ -1,4 +1,5 @@
 syntax on
+set undofile
 set background=dark
 set hidden
 set wildmenu
@@ -35,6 +36,7 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-unimpaired'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'sdiehl/vim-ormolu'
@@ -53,6 +55,16 @@ Plug 'junegunn/fzf.vim'
 call plug#end()
 
 :colorscheme gruvbox
+
+let g:mapleader = "\<Space>"
+
+" ################# VIM-FUGITIVE ##############
+
+  nnoremap <silent> <leader><space> :GFiles<CR>
+  nnoremap <silent> <leader>f :Files<CR>
+  nnoremap <silent> <leader>b :Buffers<CR>
+  nnoremap <silent> <leader>h :History<CR>
+
 " ################# VIM-FUGITIVE ##############
 
 nmap <leader>gh :diffget //2<CR>

@@ -29,51 +29,17 @@ require('packer').startup(function()
       }
     }
   }
-  use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
+  -- use { 'lukas-reineke/indent-blankline.nvim', branch="lua" }
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
   use 'morhetz/gruvbox'
-  use 'Mofiqul/vscode.nvim'
   use 'dag/vim-fish'
-  use 'wojciechkepka/vim-github-dark'
   use 'mechatroner/rainbow_csv'
-  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
-    require'nvim-treesitter.configs'.setup {
-      ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
-      highlight = {
-        enable = true,              -- false will disable the whole extension
-      },
-    }
-  }
   use 'sdiehl/vim-ormolu'
   use 'rust-lang/rust.vim'
-  use { 'kyazdani42/nvim-tree.lua'  }
-  use 'sainnhe/sonokai'
-  use 'arcticicestudio/nord-vim'
   use "akinsho/nvim-toggleterm.lua"
-  ------------------------ heavy
-  --use 'hrsh7th/vim-vsnip'
-  --use 'hrsh7th/vim-vsnip-integ'
-  --
-  --use 'hrsh7th/nvim-compe'
-  --
-  --
-  --use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
-  --use "folke/lua-dev.nvim"
-  --
-  --use 'Neevash/awesome-flutter-snippets'
-  --use "rafamadriz/friendly-snippets"
-  --use  'itchyny/lightline.vim' 
-  --
-
 end)
-
--- require('leftovers')
-
--- nvim-tree
-vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
-
 
 vim.cmd [[
 nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
@@ -93,8 +59,6 @@ colorscheme gruvbox
 set undofile
 set clipboard+=unnamedplus
 ]]
-
--- filetype plugin indent on
 
 --Incremental live completion
 vim.o.inccommand = "nosplit"
@@ -122,10 +86,7 @@ vim.o.smartcase = true
 
 --Decrease update time
 vim.o.updatetime = 250
-vim.wo.signcolumn="yes"
-
--- gruvbox contrast
--- vim.g.gruvbox_contrast_dark="hard"
+vim.wo.signcolumn="no"
 
 --vim.o.completeopt = "menuone,noselect,noinsert"
 -- tab navigation
@@ -160,10 +121,10 @@ vim.api.nvim_exec([[
 vim.o.pastetoggle="<F3>"
 
 --Map blankline
-vim.g.indent_blankline_char = "┊"
-vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
-vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
-vim.g.indent_blankline_char_highlight = 'LineNr'
+-- vim.g.indent_blankline_char = "┊"
+-- vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
+-- vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
+-- vim.g.indent_blankline_char_highlight = 'LineNr'
 
 -- toggleterm
 
@@ -179,29 +140,6 @@ vim.g.haskell_enable_arrowsyntax=1
 vim.g.haskell_enable_pattern_synonyms=1
 vim.g.haskell_enable_typeroles=1
 vim.g.haskell_enable_static_pointers=1
-
---Set statusbar
-
-vim.o.completeopt = "menuone,noselect"
-
--- Toggle to disable mouse mode and indentlines for easier paste
-ToggleMouse = function()
-  if vim.o.mouse == 'a' then
-    vim.cmd[[IndentBlanklineDisable]]
-    vim.wo.signcolumn='no'
-    vim.o.mouse = 'v'
-    vim.wo.number = false
-    print("Mouse disabled")
-  else
-    vim.cmd[[IndentBlanklineEnable]]
-    vim.wo.signcolumn='yes'
-    vim.o.mouse = 'a'
-    vim.wo.number = true
-    print("Mouse enabled")
-  end
-end
-
-vim.api.nvim_set_keymap('n', '<F10>', '<cmd>lua ToggleMouse()<cr>', { noremap = true })
 
 -- Telescope
 --Add leader shortcuts
@@ -225,7 +163,7 @@ vim.api.nvim_set_keymap('n', '<leader>ky', [[<cmd>lua require('telescope.builtin
 vim.api.nvim_set_keymap('n', '<leader>mk', [[<cmd>lua require('telescope.builtin').marks()<cr>]], { noremap = true, silent = true})
 
 
-vim.api.nvim_set_keymap('n', '<leader>tm', '<cmd>! $TERMINAL . & disown<cr><cr>', { noremap = true, silent=true})
+-- vim.api.nvim_set_keymap('n', '<leader>tm', '<cmd>! $TERMINAL . & disown<cr><cr>', { noremap = true, silent=true})
 -- vim.api.nvim_set_keymap('n', '<leader>od', 'yi(<cmd>yi(<cr>', { noremap = true, silent=true})
 -- Change preview window location
 vim.g.splitbelow = true
