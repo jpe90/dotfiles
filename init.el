@@ -59,6 +59,22 @@
 
 ;;; goddamn comments
 
+
+(setq display-line-numbers-type 'relative)
+;; (global-display-line-numbers-mode)
+
+(use-package evil
+  :ensure t
+  )
+;; (evil-mode 1)
+
+(use-package evil-surround
+  :ensure t
+  :config
+  (global-evil-surround-mode 1))
+
+(add-hook 'prog-mode-hook 'display-line-numbers-mode)
+(add-hook 'prog-mode-hook 'evil-local-mode)
 ;;; treesitter
 
 (require 'tree-sitter)
@@ -71,18 +87,6 @@
 
 ;; evil
 
-;; (setq display-line-numbers-type 'relative)
-;; (global-display-line-numbers-mode)
-
-;; (use-package evil
-;;   :ensure t
-;;   )
-;; (evil-mode 1)
-
-;; (use-package evil-surround
-;;   :ensure t
-;;   :config
-;;   (global-evil-surround-mode 1))
 
 ;;; python
 
@@ -115,8 +119,15 @@
 (require 'haskell-interactive-mode)
 (require 'haskell-process)
 
+(use-package haskell-mode
+  :ensure t
+  )
+
+(add-hook 'haskell-mode-hook 'evil-local-mode)
+
 (use-package lsp-haskell
   :ensure t
+  :disabled t
   :config
   (setq lsp-log-io t)
 )
@@ -133,16 +144,15 @@
 
 (use-package lsp-mode
   :ensure t
-  ;; :disabled t
+  :disabled t
   )
 
 (use-package lsp-ui
-  ;; :init (add-hook 'lsp-mode-hook 'lsp-ui-mode)
   :ensure t
-  ;; :disabled t
-  ;; :hook (lsp-mode . lsp-ui-mode)
+  :disabled ;; :hook (lsp-mode . lsp-ui-mode)
   :hook (lsp-mode . lsp-ui-mode)
   )
+(setq lsp-headerline-breadcrumb-enable nil)
 ;; doesn't work
 ;;(define-key lsp-mode-map (kbd "C-z C-z") lsp-command-map)
 
@@ -491,7 +501,7 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; needs to be after config
 
-;;;(add-hook 'haskell-mode-hook 'lsp)
+
 ;;;(add-hook 'haskell-literate-mode-hook 'lsp)
 ;;;(add-hook 'rust-mode-hook 'lsp)
 (setq haskell-process-type 'stack-ghci)
