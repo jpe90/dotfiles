@@ -90,7 +90,7 @@ set expandtab
 set smartindent
 set ignorecase
 set background=dark
-colorscheme sonokai
+colorscheme gruvbox
 set undofile
 set clipboard+=unnamedplus
 ]]
