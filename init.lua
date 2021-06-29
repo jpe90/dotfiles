@@ -33,12 +33,23 @@ require('packer').startup(function()
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
-  use 'morhetz/gruvbox'
+  use 'sainnhe/gruvbox-material'
+  use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'dag/vim-fish'
   use 'mechatroner/rainbow_csv'
   use 'sdiehl/vim-ormolu'
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
+  -- use 'tjdevries/colorbuddy.vim'
+  -- use 'tjdevries/gruvbuddy.nvim'
+  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
+    require'nvim-treesitter.configs'.setup {
+      ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+      highlight = {
+        enable = false,              -- false will disable the whole extension
+      },
+    }
+  }
 end)
 
 vim.cmd [[
@@ -55,10 +66,15 @@ set expandtab
 set smartindent
 set ignorecase
 set background=dark
-colorscheme gruvbox
 set undofile
 set clipboard+=unnamedplus
+set termguicolors
+colorscheme gruvbox
 ]]
+
+-- require('colorbuddy').colorscheme('gruvbuddy')
+
+vim.g.gruvbox_contrast_dark = "hard"
 
 --Incremental live completion
 vim.o.inccommand = "nosplit"
@@ -66,6 +82,7 @@ vim.o.inccommand = "nosplit"
 --Set highlight on search
 vim.o.hlsearch = false
 vim.o.incsearch = true
+
 
 --Make line numbers default
 vim.wo.number = true
