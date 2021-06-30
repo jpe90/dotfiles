@@ -41,8 +41,8 @@ require('packer').startup(function()
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
   use 'tjdevries/colorbuddy.vim'
-  -- use '/home/solaire/development/neovim/gruvbuddy.nvim'
-  use 'jpe90/gruvbuddy.nvim'
+  use '/home/solaire/development/nvim/gruvbuddy.nvim'
+  -- use 'jpe90/gruvbuddy.nvim'
   -- use 'tjdevries/gruvbuddy.nvim'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {

@@ -1,4 +1,5 @@
 syntax on
+" set syntax
 set undofile
 set background=dark
 set hidden
@@ -26,6 +27,7 @@ set smartindent
 set ignorecase
 set modeline
 set clipboard+=unnamedplus
+filetype on
 "filetype plugin indent on
 
 
