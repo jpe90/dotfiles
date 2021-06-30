@@ -40,7 +40,9 @@ require('packer').startup(function()
   use 'sdiehl/vim-ormolu'
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
-  -- use 'tjdevries/colorbuddy.vim'
+  use 'tjdevries/colorbuddy.vim'
+  -- use '/home/solaire/development/neovim/gruvbuddy.nvim'
+  use 'jpe90/gruvbuddy.nvim'
   -- use 'tjdevries/gruvbuddy.nvim'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
@@ -69,10 +71,11 @@ set background=dark
 set undofile
 set clipboard+=unnamedplus
 set termguicolors
-colorscheme gruvbox
 ]]
+-- colorscheme gruvbox
 
--- require('colorbuddy').colorscheme('gruvbuddy')
+
+require('colorbuddy').colorscheme('gruvbuddy')
 
 vim.g.gruvbox_contrast_dark = "hard"
 
