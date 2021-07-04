@@ -56,8 +56,8 @@ URxvt*scrollBar: false
 !
 ! Xft: Terminus fonts
 !  Fedora/debian packages: terminus-fonts/xfonts-terminus
-URxvt*font: xft:terminus:pixelsize=12
-URxvt*boldFont: xft:terminus:bold:pixelsize=12
+URxvt*font: xft:terminus:pixelsize=14
+URxvt*boldFont: xft:terminus:bold:pixelsize=14
 
 ! Traditional fonts - a more traditional font setup in lieu of xft
 !URxvt*font:-*-courier-medium-r-normal-*-14-*-*-*-*-*-iso8859-1
@@ -86,10 +86,10 @@ URxvt*boldFont: xft:terminus:bold:pixelsize=12
 !! installed pacman -S urxvt-perls
 !!-> To enable extensions place the following in ~/.Xresources
 !! Common settingd for URxvt.perl.-ext-common, set more features in succession
-!!URxvt.perl-ext-common:default,clipboard,keyboard-select,url-select,tabbedex
+URxvt.perl-ext-common:default,clipboard,keyboard-select,url-select,tabbedex
 
 !URxvt.perl-ext-common:default,tabbedex
-URxvt.perl-ext-common:default
+!URxvt.perl-ext-common:default,clipboard
 
 
 !! CUT AND PASTE
@@ -101,6 +101,7 @@ URxvt.perl-ext-common:default
 URxvt.iso14755: false
 URxvt.iso14755_52: false
 
+URxvt.clipboard.autocopy: true
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 
@@ -149,38 +150,6 @@ URxvt.url-select.underline: true
 !! COLORS
 !-------------------------------------------------------------------------------
 ! font color (default is black)
-!URxvt*foreground: White
-!URxvt.foreground:   #4ad5e1
-!!URxvt*background: Black
-!!URxvt.background:   #0e0e0e
-!URxvt.background: rgb:33/33/33
-!!paars
-!!URxvt.background: #400060
-!!URxvt.background: #6C7B8B
-!
-!
-!!! Other colors
-!URxvt.cursorColor:  #dc74d1
-!URxvt.pointerColor: #dc74d1
-!URxvt*color0: black
-!URxvt*color1: red3
-!URxvt*color2: green3
-!URxvt*color3: yellow3
-!!URxvt*color4: blue2
-!URxvt*color4: RoyalBlue
-!URxvt*color5: magenta3
-!URxvt*color6: cyan3
-!URxvt*color7: gray90
-!URxvt*color8: grey50
-!URxvt*color9: red
-!URxvt*color10: green
-!URxvt*color11: yellow
-!URxvt*color12: RoyalBlue
-!!URxvt*color12: blue
-!URxvt*color13: magenta
-!URxvt*color14: cyan
-!URxvt*color15: white
-
 
 ! -----------------------------------------------------------------------------
 ! File: gruvbox-dark.xresources
@@ -193,10 +162,11 @@ URxvt.url-select.underline: true
 ! hard contrast: 
 URxvt.cursorColor:  #ebdbb2
 URxvt.pointerColor: #ebdbb2
-URxvt.background: #1d2021
+!URxvt.background: #1d2021
 URxvt.highlightColor: #ebdbb2
 URxvt.highlighTextColor: #ebdbb2
-!*background: #282828
+! medium contrast
+URxvt*background: #282828
 ! soft contrast: *background: #32302f
 URxvt.foreground: #ebdbb2
 ! Black + DarkGrey
@@ -225,46 +195,81 @@ URxvt*color7:  #a89984
 URxvt*color15: #ebdbb2
 
 
-!! test pretty girl scheme
-!URxvt.cursorColor:  #dc74d1
-!URxvt.pointerColor: #dc74d1
-!URxvt.background:   #0e0e0e
-!URxvt.foreground:   #4ad5e1
-!URxvt.color0:       #000000
-!URxvt.color8:       #8b8f93
-!URxvt.color1:       #dc74d1
-!URxvt.color9:       #dc74d1
-!URxvt.color2:       #0eb8c7
-!URxvt.color10:      #0eb8c7
-!URxvt.color3:       #dfe37e
-!URxvt.color11:      #dfe37e
-!URxvt.color5:       #9e88f0
-!URxvt.color13:      #9e88f0
-!URxvt.color6:       #73f7ff
-!URxvt.color14:      #73f7ff
-!URxvt.color7:       #e1dddd
-!URxvt.color15:      #e1dddd
+! gruvbox light
 
-!Theme Seven
-!URxvt.background: rgb:67/67/67
-!URxvt.foreground: rgb:ff/ff/ff
-!URxvt.color0:     rgb:00/00/00
-!URxvt.color1:     rgb:bf/46/46
-!URxvt.color2:     rgb:67/b2/5f
-!URxvt.color3:     rgb:cf/c4/4e
-!URxvt.color4:     rgb:51/60/83
-!URxvt.color5:     rgb:ca/6e/ff
-!URxvt.color6:     rgb:92/b2/f8
-!URxvt.color7:     rgb:d5/d5/d5
-!URxvt.color8:     rgb:00/00/00
-!URxvt.color9:     rgb:f4/8a/8a
-!URxvt.color10:    rgb:a5/d7/9f
-!URxvt.color11:    rgb:e1/da/84
-!URxvt.color12:    rgb:a2/bb/ff
-!URxvt.color13:    rgb:e2/b0/ff
-!URxvt.color14:    rgb:ba/cd/f8
-!URxvt.color15:    rgb:d5/d5/d5
+!! hard contrast: *background: #f9f5d7
+!*background: #fbf1c7
+!! soft contrast: *background: #f2e5bc
+!*foreground: #3c3836
+!! Black + DarkGrey
+!*color0:  #fdf4c1
+!*color8:  #928374
+!! DarkRed + Red
+!*color1:  #cc241d
+!*color9:  #9d0006
+!! DarkGreen + Green
+!*color2:  #98971a
+!*color10: #79740e
+!! DarkYellow + Yellow
+!*color3:  #d79921
+!*color11: #b57614
+!! DarkBlue + Blue
+!*color4:  #458588
+!*color12: #076678
+!! DarkMagenta + Magenta
+!*color5:  #b16286
+!*color13: #8f3f71
+!! DarkCyan + Cyan
+!*color6:  #689d6a
+!*color14: #427b58
+!! LightGrey + White
+!*color7:  #7c6f64
+!*color15: #3c3836
+!
 
+!Tokyo Night theme
+! general
+!*foreground: #a9b1d6
+!*background: #1a1b26
+!*cursorColor: #a9b1d6
+!
+!! terminal padding color
+!*borderColor: #1a1b26
+!
+!! black
+!*color0: #1a1b26
+!*color8: #4e5173
+!
+!! red
+!*color1: #F7768E
+!*color9: #F7768E
+!
+!! green
+!*color2: #9ECE6A
+!*color10: #9ECE6A
+!
+!! yellow
+!*color3: #E0AF68
+!*color11: #E0AF68
+!
+!! blue
+!*color4: #7AA2F7
+!*color12: #7AA2F7
+!
+!! magenta
+!*color5: #9a7ecc
+!*color13: #9a7ecc
+!
+!! cyan
+!*color6: #4abaaf
+!*color14: #4abaaf
+!
+!! white
+!*color7: #acb0d0
+!*color15: #acb0d0
+! Tokyo Night theme ends
+
+! vscode?
 !Theme Eight
 !URxvt.background: rgb:10/10/10
 !URxvt.foreground: rgb:d3/d3/d3

@@ -34,6 +34,7 @@
         monokai-pro-theme
         projectile
         helm-projectile
+        racket-mode
         ; nix-mode
         )
       )
@@ -62,6 +63,8 @@
 
 ;;; goddamn comments
 
+ (use-package racket-mode
+             :ensure t)
 
 (setq display-line-numbers-type 'relative)
 ;; (global-display-line-numbers-mode)
@@ -227,7 +230,9 @@
     (add-hook 'clojure-mode-hook 'paredit-mode)
     (add-hook 'clojurescript-mode-hook 'paredit-mode)
     (add-hook 'clojurec-mode-hook 'paredit-mode)
-    (add-hook 'cider-repl-mode-hook 'paredit-mode)))
+    (add-hook 'cider-repl-mode-hook 'paredit-mode))
+    (add-hook 'racket-mode-hook 'paredit-mode)
+  )
 ;;;(paredit-mode 1)
 ;;;(add-hook 'clojure-mode-hook #'paredit-mode)
 ;;;(show-paren-mode 1)

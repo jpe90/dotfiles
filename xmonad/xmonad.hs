@@ -25,7 +25,6 @@ main =
               ((0, xF86XK_AudioLowerVolume), spawn "pactl set-sink-volume @DEFAULT_SINK@ -5%"),
               ((0, xF86XK_MonBrightnessUp), spawn "light -A 5"),
               ((0, xF86XK_MonBrightnessDown), spawn "light -U 5"),
-              -- ((mod4Mask, xK_Return), rotAllUp),
               ((mod4Mask, xK_Tab), toggleWS)
             ]
             <> keys defaultConfig c

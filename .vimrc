@@ -27,9 +27,9 @@ set smartindent
 set ignorecase
 set modeline
 set clipboard+=unnamedplus
+set termguicolors
 filetype on
 "filetype plugin indent on
-
 
 call plug#begin('~/.vim/plugged')
 
@@ -39,6 +39,7 @@ Plug 'tpope/vim-eunuch'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-unimpaired'
+Plug 'tpope/vim-repeat'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
 Plug 'sdiehl/vim-ormolu'
@@ -56,12 +57,13 @@ Plug 'junegunn/fzf.vim'
 
 call plug#end()
 
-let g:gruvbox_contrast_dark = 'hard'
+"let g:gruvbox_contrast_dark = 'hard'
+
 :colorscheme gruvbox
 
 let g:mapleader = "\<Space>"
 
-" ################# VIM-FUGITIVE ##############
+" ################# FZF #######################
 
   nnoremap <silent> <leader><space> :GFiles<CR>
   nnoremap <silent> <leader>f :Files<CR>
@@ -77,3 +79,12 @@ nmap <leader>gs :G<CR>
 " ################ HASKELL
 
 let g:haskell_indent_disable = 1
+
+
+" ############## syntax highlighting fix for vim
+
+if $TERM =~# '256color' && ( $TERM =~# '^screen'  || $TERM =~# '^tmux' )
+    let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+    let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+    set termguicolors
+endif
