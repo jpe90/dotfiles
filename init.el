@@ -34,7 +34,6 @@
         monokai-pro-theme
         projectile
         helm-projectile
-        racket-mode
         ; nix-mode
         )
       )
@@ -62,9 +61,6 @@
       '((js . t)))
 
 ;;; goddamn comments
-
- (use-package racket-mode
-             :ensure t)
 
 (setq display-line-numbers-type 'relative)
 ;; (global-display-line-numbers-mode)
