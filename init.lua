@@ -52,7 +52,7 @@ require('packer').startup(function()
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
       highlight = {
-        enable = false,              -- false will disable the whole extension
+        enable = true,              -- false will disable the whole extension
       },
     }
   }
@@ -77,6 +77,7 @@ require('packer').startup(function()
   use 'kyazdani42/nvim-web-devicons'
   use 'kyazdani42/nvim-tree.lua'
   use 'elixir-editors/vim-elixir'
+  use 'tomasiser/vim-code-dark'
   -- use {"npxbr/glow.nvim", run = ":GlowInstall"}
 end)
 
@@ -111,8 +112,13 @@ vim.g.lightline = { colorscheme = 'gruvbox';
       component_function = { gitbranch = 'fugitive#head', };
 }
 
+vim.g.sonokai_style = 'andromeda'
+-- vim.g.sonokai_enable_italic=1
+
 
 vim.g.nvim_tree_show_icons = { git = 0 }
+vim.g.nvim_tree_auto_close = 1
+vim.g.nvim_tree_hijack_netrw = 1
 
 vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
@@ -278,7 +284,7 @@ for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { 
     on_attach = on_attach,
     --root_dir = root_pattern(".git"),
-    capabilities = capabilities
+    capabilities = capabilities,
   }
 end
 

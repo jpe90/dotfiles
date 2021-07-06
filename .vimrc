@@ -52,8 +52,7 @@ Plug 'rust-lang/rust.vim'
 Plug 'rhysd/conflict-marker.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-
-
+Plug 'justinmk/vim-sneak'
 
 call plug#end()
 
@@ -66,7 +65,7 @@ let g:mapleader = "\<Space>"
 " ################# FZF #######################
 
   nnoremap <silent> <leader><space> :GFiles<CR>
-  nnoremap <silent> <leader>f :Files<CR>
+  nnoremap <silent> <leader>f :Rg<CR>
   nnoremap <silent> <leader>b :Buffers<CR>
   nnoremap <silent> <leader>h :History<CR>
 
@@ -76,12 +75,11 @@ nmap <leader>gh :diffget //2<CR>
 nmap <leader>gl :diffget //3<CR>
 nmap <leader>gs :G<CR>
 
-" ################ HASKELL
+" ################ HASKELL ####################
 
 let g:haskell_indent_disable = 1
 
-
-" ############## syntax highlighting fix for vim
+" ############## syntax highlighting fix for tmux
 
 if $TERM =~# '256color' && ( $TERM =~# '^screen'  || $TERM =~# '^tmux' )
     let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
