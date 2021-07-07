@@ -77,7 +77,7 @@ nmap <leader>gs :G<CR>
 
 " ################ HASKELL ####################
 
-let g:haskell_indent_disable = 1
+" let g:haskell_indent_disable = 1
 
 " ############## syntax highlighting fix for tmux
 
