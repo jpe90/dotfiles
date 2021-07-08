@@ -22,6 +22,8 @@ require('packer').startup(function()
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-eunuch'
   use 'tpope/vim-unimpaired'
+  use 'tpope/vim-repeat'
+  use 'justinmk/vim-sneak'
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     require('telescope').setup {
       defaults = {
@@ -41,12 +43,7 @@ require('packer').startup(function()
   use 'sdiehl/vim-ormolu'
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
-  -- use 'tjdevries/colorbuddy.vim'
   use 'sainnhe/sonokai'
-  -- use 'nekonako/xresources-nvim'
-  -- use '/home/solaire/development/nvim/gruvbuddy.nvim'
-  -- use 'jpe90/gruvbuddy.nvim'
-  -- use 'tjdevries/gruvbuddy.nvim'
   use 'folke/tokyonight.nvim'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
@@ -78,7 +75,6 @@ require('packer').startup(function()
   use 'kyazdani42/nvim-tree.lua'
   use 'elixir-editors/vim-elixir'
   use 'tomasiser/vim-code-dark'
-  -- use {"npxbr/glow.nvim", run = ":GlowInstall"}
 end)
 
 vim.cmd [[
@@ -99,14 +95,9 @@ set clipboard+=unnamedplus
 set termguicolors
 colorscheme gruvbox
 ]]
--- colorscheme ugruvbox
 
 vim.o.background = "dark" -- or "light" for light mode
 
-
--- require('colorbuddy').colorscheme('gruvbuddy')
--- require('xresources')
---
 vim.g.lightline = { colorscheme = 'gruvbox';
       active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
       component_function = { gitbranch = 'fugitive#head', };
@@ -121,9 +112,6 @@ vim.g.nvim_tree_auto_close = 1
 vim.g.nvim_tree_hijack_netrw = 1
 
 vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
-
--- vim.g.gruvbox_contrast_dark = "hard"
--- vim.g.gruvbox_material_palette = 'original'
 
 --Incremental live completion
 vim.o.inccommand = "nosplit"
@@ -193,12 +181,6 @@ vim.api.nvim_exec([[
 --Add map to enter paste mode
 vim.o.pastetoggle="<F3>"
 
---Map blankline
--- vim.g.indent_blankline_char = "┊"
--- vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
--- vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
--- vim.g.indent_blankline_char_highlight = 'LineNr'
-
 -- toggleterm
 
 require("toggleterm").setup{
@@ -267,6 +249,7 @@ local on_attach = function(_client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'ff', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   vim.api.nvim_set_keymap('n', '<leader>ca', [[<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>]], { noremap = true, silent = true})
   vim.api.nvim_set_keymap('n', '<leader>gr', [[<cmd>lua require('telescope.builtin').lsp_references()<cr>]], { noremap = true, silent = true})
   vim.api.nvim_set_keymap('n', '<leader>wd', [[<cmd>lua require('telescope.builtin').lsp_workspace_diagnostics()<cr>]], { noremap = true, silent = true})
