@@ -26,7 +26,7 @@ set autoindent
 set smartindent
 set ignorecase
 set modeline
-set clipboard+=unnamedplus
+set clipboard=unnamedplus
 set termguicolors
 filetype on
 "filetype plugin indent on
@@ -45,7 +45,6 @@ Plug 'neovimhaskell/haskell-vim'
 Plug 'sdiehl/vim-ormolu'
 Plug 'dag/vim-fish'
 Plug 'morhetz/gruvbox'
-Plug 'sainnhe/sonokai'
 Plug 'tbastos/vim-lua'
 Plug 'mechatroner/rainbow_csv'
 Plug 'rust-lang/rust.vim'
