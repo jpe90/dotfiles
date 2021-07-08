@@ -36,15 +36,15 @@ require('packer').startup(function()
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
-  use 'sainnhe/gruvbox-material'
+  -- use 'sainnhe/gruvbox-material'
   use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'dag/vim-fish'
-  use 'mechatroner/rainbow_csv'
+  -- use 'mechatroner/rainbow_csv'
   use 'sdiehl/vim-ormolu'
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
-  use 'sainnhe/sonokai'
-  use 'folke/tokyonight.nvim'
+  -- use 'sainnhe/sonokai'
+  -- use 'folke/tokyonight.nvim'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -103,7 +103,7 @@ vim.g.lightline = { colorscheme = 'gruvbox';
       component_function = { gitbranch = 'fugitive#head', };
 }
 
-vim.g.sonokai_style = 'andromeda'
+-- vim.g.sonokai_style = 'andromeda'
 -- vim.g.sonokai_enable_italic=1
 
 
@@ -262,7 +262,8 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Enable the following language servers
-local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua', 'hls', 'elixirls'}
+-- local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua', 'hls', 'elixirls'}
+local servers = { 'clangd',  'pyright',  'dartls', 'hls' }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { 
     on_attach = on_attach,
@@ -271,11 +272,11 @@ for _, lsp in ipairs(servers) do
   }
 end
 
-require'lspconfig'.elixirls.setup{
-    capabilities = capabilities,
-    on_attach = on_attach,
-    cmd = { "/usr/lib/elixir-ls/language_server.sh" };
-}
+-- require'lspconfig'.elixirls.setup{
+--     capabilities = capabilities,
+--     on_attach = on_attach,
+--     cmd = { "/usr/lib/elixir-ls/language_server.sh" };
+-- }
 
 
 local t = function(str)
@@ -290,26 +291,6 @@ local check_back_space = function()
         return false
     end
 end
-
--- Use (s-)tab to:
---- move to prev/next item in completion menuone
---- jump to prev/next snippet's placeholder
--- _G.tab_complete = function()
---   if vim.fn.pumvisible() == 1 then
---     return t "<C-n>"
---   elseif check_back_space() then
---     return t "<Tab>"
---   else
---     return vim.fn['compe#complete']()
---   end
--- end
--- _G.s_tab_complete = function()
---   if vim.fn.pumvisible() == 1 then
---     return t "<C-p>"
---   else
---     return t "<S-Tab>"
---   end
--- end
 
 _G.tab_complete = function()
   if vim.fn.pumvisible() == 1 then
