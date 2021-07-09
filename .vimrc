@@ -78,6 +78,10 @@ nmap <leader>gs :G<CR>
 
 " let g:haskell_indent_disable = 1
 
+" ############## new term in current dir
+
+:command Nu :silent ! nu
+
 " ############## syntax highlighting fix for tmux
 
 if $TERM =~# '256color' && ( $TERM =~# '^screen'  || $TERM =~# '^tmux' )
