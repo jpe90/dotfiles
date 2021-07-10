@@ -36,15 +36,15 @@ require('packer').startup(function()
   use 'neovimhaskell/haskell-vim'
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
-  -- use 'sainnhe/gruvbox-material'
+  use 'sainnhe/gruvbox-material'
   use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'dag/vim-fish'
   -- use 'mechatroner/rainbow_csv'
   use 'sdiehl/vim-ormolu'
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
-  -- use 'sainnhe/sonokai'
-  -- use 'folke/tokyonight.nvim'
+  use 'sainnhe/sonokai'
+  use 'folke/tokyonight.nvim'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -107,7 +107,7 @@ vim.g.lightline = { colorscheme = 'gruvbox';
 -- vim.g.sonokai_enable_italic=1
 
 
-vim.g.nvim_tree_show_icons = { git = 0 }
+-- vim.g.nvim_tree_show_icons = { git = 0 }
 vim.g.nvim_tree_auto_close = 1
 vim.g.nvim_tree_hijack_netrw = 1
 
@@ -263,7 +263,7 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Enable the following language servers
 -- local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua', 'hls', 'elixirls'}
-local servers = { 'clangd',  'pyright',  'dartls', 'hls' }
+local servers = { 'clangd',  'pyright',  'dartls', 'hls', }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { 
     on_attach = on_attach,
@@ -272,11 +272,11 @@ for _, lsp in ipairs(servers) do
   }
 end
 
--- require'lspconfig'.elixirls.setup{
---     capabilities = capabilities,
---     on_attach = on_attach,
---     cmd = { "/usr/lib/elixir-ls/language_server.sh" };
--- }
+require'lspconfig'.elixirls.setup{
+    capabilities = capabilities,
+    on_attach = on_attach,
+    cmd = { "/usr/lib/elixir-ls/language_server.sh" };
+}
 
 
 local t = function(str)
