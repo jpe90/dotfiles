@@ -56,8 +56,8 @@ URxvt*scrollBar: false
 !
 ! Xft: Terminus fonts
 !  Fedora/debian packages: terminus-fonts/xfonts-terminus
-URxvt*font: xft:terminus:pixelsize=12
-URxvt*boldFont: xft:terminus:bold:pixelsize=12
+URxvt*font: xft:monospace:pixelsize=12
+URxvt*boldFont: xft:monospace:bold:pixelsize=12
 
 ! Traditional fonts - a more traditional font setup in lieu of xft
 !URxvt*font:-*-courier-medium-r-normal-*-14-*-*-*-*-*-iso8859-1
