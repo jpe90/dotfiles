@@ -13,9 +13,9 @@ main =
     def
       { borderWidth = 2,
         modMask = mod4Mask,
-        -- terminal = "kitty",
+        terminal = "kitty",
         -- terminal = "st",
-        terminal = "urxvt",
+        -- terminal = "urxvt",
         normalBorderColor = "#cccccc",
         -- focusedBorderColor = "#c62f37", -- vscode
         focusedBorderColor = "#fb4934", -- gruvbox

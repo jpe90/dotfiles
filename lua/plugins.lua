@@ -77,7 +77,7 @@ require('packer').startup(function()
     end
   }
   use "folke/lua-dev.nvim"
-  use 'itchyny/lightline.vim'        -- Fancier statusline
+  -- use 'itchyny/lightline.vim'        -- Fancier statusline
   use 'kyazdani42/nvim-web-devicons'
   use 'kyazdani42/nvim-tree.lua'
   use 'elixir-editors/vim-elixir'
@@ -97,11 +97,15 @@ vim.g.nvim_tree_hijack_netrw = 1
 vim.api.nvim_set_keymap('n', '<C-n>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
+vim.cmd [[
+colorscheme gruvbox-material
+]]
+vim.o.background = "light" -- or "light" for light mode
 -- vim.g.sonokai_enable_italic=1
-vim.g.lightline = { colorscheme = 'tokyonight';
-      active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
-      component_function = { gitbranch = 'fugitive#head', };
-}
+-- vim.g.lightline = { colorscheme = 'gruvbox-material';
+--       active = { left = { { 'mode', 'paste' }, { 'gitbranch', 'readonly', 'filename', 'modified' } } };
+--       component_function = { gitbranch = 'fugitive#head', };
+-- }
 
 -- toggleterm
 

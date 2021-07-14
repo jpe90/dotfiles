@@ -1,5 +1,4 @@
 
-vim.o.background = "dark" -- or "light" for light mode
 vim.o.inccommand = "nosplit"
 
 --Set highlight on search
@@ -87,7 +86,6 @@ set ignorecase
 set undofile
 set clipboard+=unnamedplus
 set termguicolors
-colorscheme tokyonight
 ]]
 
 
