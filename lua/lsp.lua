@@ -32,7 +32,7 @@ end
 
 local root_pattern = nvim_lsp.util.root_pattern
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
+-- capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Enable the following language servers
 -- local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua', 'hls', 'elixirls'}

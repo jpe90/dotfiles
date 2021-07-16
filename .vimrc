@@ -1,5 +1,4 @@
 syntax on
-" set syntax
 set undofile
 set background=dark
 set hidden
@@ -27,9 +26,9 @@ set smartindent
 set ignorecase
 set modeline
 set clipboard=unnamedplus
-set termguicolors
+" set termguicolors
 filetype on
-"filetype plugin indent on
+filetype plugin indent on
 
 call plug#begin('~/.vim/plugged')
 
@@ -42,7 +41,6 @@ Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-repeat'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'neovimhaskell/haskell-vim'
-" Plug 'sdiehl/vim-ormolu'
 Plug 'dag/vim-fish'
 Plug 'morhetz/gruvbox'
 Plug 'tbastos/vim-lua'
@@ -52,21 +50,35 @@ Plug 'rhysd/conflict-marker.vim'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-sneak'
+Plug 'preservim/nerdtree'
+Plug 'mg979/vim-visual-multi'
+Plug 'LnL7/vim-nix'
+Plug 'jiangmiao/auto-pairs'
 
 call plug#end()
 
 "let g:gruvbox_contrast_dark = 'hard'
 
-:colorscheme gruvbox
+colorscheme gruvbox
 
 let g:mapleader = "\<Space>"
 
 " ################# FZF #######################
 
-  nnoremap <silent> <leader><space> :GFiles<CR>
-  nnoremap <silent> <leader>f :Rg<CR>
-  nnoremap <silent> <leader>b :Buffers<CR>
-  nnoremap <silent> <leader>h :History<CR>
+nnoremap <silent> <C-p> :GFiles<CR>
+nnoremap <silent> <leader><space> :Files<CR>
+nnoremap <silent> <C-f> :Rg<CR>
+nnoremap <silent> <leader>b :Buffers<CR>
+nnoremap <silent> <leader>h :History<CR>
+nnoremap <leader>1 1gt
+nnoremap <leader>2 2gt
+nnoremap <leader>3 3gt
+nnoremap <leader>4 4gt
+nnoremap <leader>5 5gt
+nnoremap <leader>6 6gt
+nnoremap <leader>7 7gt
+nnoremap <leader>8 8gt
+nnoremap <leader>9 9gt
 
 " ################# VIM-FUGITIVE ##############
 
@@ -81,6 +93,12 @@ nmap <leader>gs :G<CR>
 " ############## new term in current dir
 
 :command Nu :silent ! nu
+
+" ############### NERDTREE
+
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-b> :NERDTreeToggle<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
 
 " ############## syntax highlighting fix for tmux
 

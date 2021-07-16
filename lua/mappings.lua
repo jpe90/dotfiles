@@ -6,13 +6,14 @@ end
 --Incremental live completion
 
 
+map("n", "<C-p>", ":Files<cr>", {silent = true, noremap = true})
 map("n", "<leader>ff", ":GFiles<cr>", {silent = true, noremap = true})
-map("n", "<leader>p", ":Rg<cr>", {silent = true, noremap = true})
+map("n", "<leader>rg", ":Rg<cr>", {silent = true, noremap = true})
 -- Telescope
 --Add leader shortcuts
-map('n', '<leader><leader>', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})
+map('n', '<C-p>', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>b', [[<cmd>lua require('telescope.builtin').buffers()<cr>]], { noremap = true, silent = true})
-map('n', '<leader>cb', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>]], { noremap = true, silent = true})
+map('n', '<C-f>', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>tg', [[<cmd>lua require('telescope.builtin').tags()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>ts', [[<cmd>lua require('telescope.builtin').treesitter()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<cr>]], { noremap = true, silent = true})
