@@ -26,11 +26,6 @@ require('packer').startup(function()
   use 'tpope/vim-unimpaired'
   use 'tpope/vim-repeat'
   use 'justinmk/vim-sneak'
-  use {"junegunn/fzf",
-        run = function()
-          vim.fn["fzf#install"]()
-        end}
-  use "junegunn/fzf.vim"
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     require('telescope').setup {
       defaults = {
@@ -52,7 +47,7 @@ require('packer').startup(function()
   use 'folke/tokyonight.nvim'
   use 'Th3Whit3Wolf/one-nvim'
   use 'axvr/photon.vim'
-  -- use 'jpe90/monokai.nvim'
+  use 'jpe90/monokai.nvim'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -61,7 +56,7 @@ require('packer').startup(function()
       },
     }
   }
-  -- use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
+  use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
   -- Add git related info in the signs columns and popups
   use {
     'lewis6991/gitsigns.nvim',
