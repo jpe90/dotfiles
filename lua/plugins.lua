@@ -77,6 +77,11 @@ require('packer').startup(function()
   use 'LnL7/vim-nix'
   -- use 'nvim-treesitter/playground'
   use 'mg979/vim-visual-multi'
+  use 'hrsh7th/nvim-compe'
+  use 'hrsh7th/vim-vsnip'
+  use 'hrsh7th/vim-vsnip-integ'
+  use "rafamadriz/friendly-snippets"
+
 end)
 
 -- require "nvim-treesitter.configs".setup {
