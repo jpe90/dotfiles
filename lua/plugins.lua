@@ -42,7 +42,15 @@ require('packer').startup(function()
   -- use {"/home/solaire/git/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'dag/vim-fish'
   use 'rust-lang/rust.vim'
-  use "akinsho/nvim-toggleterm.lua"
+  use {
+    "akinsho/nvim-toggleterm.lua", 
+    opt = true,
+    config = function() 
+      require("toggleterm").setup{
+        open_mapping = [[<M-`>]],
+      }
+    end
+  }
   use 'sainnhe/sonokai'
   use 'folke/tokyonight.nvim'
   use 'Th3Whit3Wolf/one-nvim'
@@ -56,7 +64,7 @@ require('packer').startup(function()
       },
     }
   }
-  use 'neovim/nvim-lspconfig'        -- Collection of configurations for built-in LSP client
+  use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
   -- Add git related info in the signs columns and popups
   use {
     'lewis6991/gitsigns.nvim',
@@ -67,7 +75,7 @@ require('packer').startup(function()
       require('gitsigns').setup()
     end
   }
-  use "folke/lua-dev.nvim"
+  use {"folke/lua-dev.nvim", opt = true}
   use 'kyazdani42/nvim-web-devicons'
   use 'kyazdani42/nvim-tree.lua'
   use 'elixir-editors/vim-elixir'
@@ -77,10 +85,15 @@ require('packer').startup(function()
   use 'LnL7/vim-nix'
   -- use 'nvim-treesitter/playground'
   use 'mg979/vim-visual-multi'
-  use 'hrsh7th/nvim-compe'
-  use 'hrsh7th/vim-vsnip'
-  use 'hrsh7th/vim-vsnip-integ'
-  use "rafamadriz/friendly-snippets"
+  use {
+    'hrsh7th/nvim-compe',
+    opt = true,
+    requires = {
+      { 'hrsh7th/vim-vsnip' , opt = true},
+      { 'hrsh7th/vim-vsnip-integ' , opt = true},
+      { "rafamadriz/friendly-snippets" , opt = true}
+    }
+  }
 
 end)
 
@@ -125,9 +138,6 @@ vim.o.background = "dark" -- or "light" for light mode
 
 -- toggleterm
 
-require("toggleterm").setup{
-  open_mapping = [[<M-`>]],
-}
 
 -- haskell
 
