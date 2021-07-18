@@ -114,7 +114,7 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 --colors
 -- require('monokai')
 -- vim.cmd('colorscheme monokai')
-vim.cmd('colorscheme gruvbox')
+vim.cmd('colorscheme sonokai')
 vim.o.background = "dark" -- or "light" for light mode
 -- vim.g.sonokai_enable_italic=1
 
