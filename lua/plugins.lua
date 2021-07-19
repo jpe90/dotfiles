@@ -42,15 +42,8 @@ require('packer').startup(function()
   -- use {"/home/solaire/git/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'dag/vim-fish'
   use 'rust-lang/rust.vim'
-  use {
-    "akinsho/nvim-toggleterm.lua", 
-    opt = true,
-    config = function() 
-      require("toggleterm").setup{
-        open_mapping = [[<M-`>]],
-      }
-    end
-  }
+  use "akinsho/nvim-toggleterm.lua"
+
   use 'sainnhe/sonokai'
   use 'folke/tokyonight.nvim'
   use 'Th3Whit3Wolf/one-nvim'
@@ -87,41 +80,23 @@ require('packer').startup(function()
   use 'mg979/vim-visual-multi'
   use {
     'hrsh7th/nvim-compe',
-    opt = true,
     requires = {
-      { 'hrsh7th/vim-vsnip' , opt = true},
-      { 'hrsh7th/vim-vsnip-integ' , opt = true},
-      { "rafamadriz/friendly-snippets" , opt = true}
+      { 'hrsh7th/vim-vsnip' },
+      { 'hrsh7th/vim-vsnip-integ'},
+      { "rafamadriz/friendly-snippets"}
     }
   }
 
 end)
 
--- require "nvim-treesitter.configs".setup {
---   playground = {
---     enable = true,
---     disable = {},
---     updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
---     persist_queries = false, -- Whether the query persists across vim sessions
---     keybindings = {
---       toggle_query_editor = 'o',
---       toggle_hl_groups = 'i',
---       toggle_injected_languages = 't',
---       toggle_anonymous_nodes = 'a',
---       toggle_language_display = 'I',
---       focus_language = 'f',
---       unfocus_language = 'F',
---       update = 'R',
---       goto_node = '<cr>',
---       show_help = '?',
---     },
---   }
--- }
+
+require("toggleterm").setup{
+  open_mapping = [[<M-`>]],
+}
 
 
 require('nvim-autopairs').setup()
--- vim.g.sonokai_style = 'andromeda'
--- vim.g.nvim_tree_show_icons = { git = 0 }
+ vim.g.sonokai_style = 'andromeda'
 
 
 -- tree
@@ -130,13 +105,10 @@ vim.g.nvim_tree_hijack_netrw = 1
 vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
--- require('monokai')
--- vim.cmd('colorscheme monokai')
 vim.cmd('colorscheme sonokai')
 vim.o.background = "dark" -- or "light" for light mode
 -- vim.g.sonokai_enable_italic=1
 
--- toggleterm
 
 
 -- haskell
