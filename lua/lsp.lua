@@ -10,6 +10,7 @@ local on_attach = function(_client, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gd', '<Cmd>lua vim.lsp.buf.definition()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>a', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
@@ -49,6 +50,56 @@ require'lspconfig'.elixirls.setup{
     on_attach = on_attach,
     cmd = { "/usr/lib/elixir-ls/language_server.sh" };
 }
+local function get_lua_runtime()
+    local result = {}
+    for _, path in pairs(vim.api.nvim_list_runtime_paths()) do
+        local lua_path = path .. "/lua/"
+        if vim.fn.isdirectory(lua_path) then
+            result[lua_path] = true
+        end
+    end
+    result[vim.fn.expand("$VIMRUNTIME/lua")] = true
+    result[vim.fn.expand("~/dev/neovim/src/nvim/lua")] = true
+
+    return result
+end
+
+require'lspconfig'.sumneko_lua.setup {
+    on_attach = on_attach,
+    cmd = {"lua-language-server"},
+    settings = {
+        Lua = {
+            runtime = {
+                version = "LuaJIT"
+            },
+            completion = {
+                keywordSnippet = "Disable"
+            },
+            diagnostics = {
+                enable = true,
+                globals = {
+                    -- Neovim
+                    "vim",
+                    -- Busted
+                    "describe",
+                    "it",
+                    "before_each",
+                    "after_each",
+                    "teardown",
+                    "pending",
+                    -- packer
+                    "use"
+                },
+                workspace = {
+                    library = get_lua_runtime(),
+                    maxPreload = 1000,
+                    preloadFileSize = 1000
+                }
+            }
+        }
+    }
+}
+
 
 -- all compe
 

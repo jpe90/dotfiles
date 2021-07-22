@@ -51,7 +51,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'justinmk/vim-sneak'
 Plug 'preservim/nerdtree'
-Plug 'mg979/vim-visual-multi'
 Plug 'LnL7/vim-nix'
 Plug 'jiangmiao/auto-pairs'
 

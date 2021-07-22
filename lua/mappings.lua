@@ -5,7 +5,7 @@ function map(mode, lhs, rhs, opts)
 end
 --Incremental live completion
 
-
+vim.cmd(':command! Nu :silent ! nu')
 -- Telescope
 --Add leader shortcuts
 map('n', '<C-p>', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})

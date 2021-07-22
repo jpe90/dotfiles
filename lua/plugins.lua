@@ -26,6 +26,7 @@ require('packer').startup(function()
   use 'tpope/vim-unimpaired'
   use 'tpope/vim-repeat'
   use 'justinmk/vim-sneak'
+  -- use 'ggandor/lightspeed.nvim'
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     require('telescope').setup {
       defaults = {
@@ -39,11 +40,9 @@ require('packer').startup(function()
   use 'ziglang/zig.vim'
   use 'dart-lang/dart-vim-plugin'
   use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
-  -- use {"/home/solaire/git/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'dag/vim-fish'
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
-
   use 'sainnhe/sonokai'
   use 'folke/tokyonight.nvim'
   use 'Th3Whit3Wolf/one-nvim'
@@ -51,7 +50,7 @@ require('packer').startup(function()
   use 'jpe90/monokai.nvim'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
-      ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+      ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
       highlight = {
         enable = true,              -- false will disable the whole extension
       },
@@ -72,11 +71,8 @@ require('packer').startup(function()
   use 'kyazdani42/nvim-web-devicons'
   use 'kyazdani42/nvim-tree.lua'
   use 'elixir-editors/vim-elixir'
-  use 'tomasiser/vim-code-dark'
-  -- use 'bluz71/vim-nightfly-guicolors'
   use 'windwp/nvim-autopairs'
   use 'LnL7/vim-nix'
-  -- use 'nvim-treesitter/playground'
   use 'mg979/vim-visual-multi'
   use {
     'hrsh7th/nvim-compe',
@@ -105,7 +101,7 @@ vim.g.nvim_tree_hijack_netrw = 1
 vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
-vim.cmd('colorscheme sonokai')
+vim.cmd('colorscheme gruvbox')
 vim.o.background = "dark" -- or "light" for light mode
 -- vim.g.sonokai_enable_italic=1
 
