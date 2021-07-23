@@ -1,6 +1,6 @@
 -- LSP settings
 local nvim_lsp = require('lspconfig')
-local on_attach = function(_client, bufnr)
+local on_attach = function(_, bufnr)
   -- vim.api.nvim_buf_set_option(0, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   -- turn this on to format on save
@@ -32,7 +32,7 @@ end
 
 local root_pattern = nvim_lsp.util.root_pattern
 local capabilities = vim.lsp.protocol.make_client_capabilities()
--- capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Enable the following language servers
 -- local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua', 'hls', 'elixirls'}
