@@ -25,3 +25,4 @@ map('n', '<leader>reg', [[<cmd>lua require('telescope.builtin').registers()<cr>]
 map('n', '<leader>col', [[<cmd>lua require('telescope.builtin').colorscheme()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>ky', [[<cmd>lua require('telescope.builtin').keymaps()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>mk', [[<cmd>lua require('telescope.builtin').marks()<cr>]], { noremap = true, silent = true})
+map('i', '<C-c>', '<Esc>')

@@ -43,11 +43,12 @@ require('packer').startup(function()
   use 'dag/vim-fish'
   use 'rust-lang/rust.vim'
   use "akinsho/nvim-toggleterm.lua"
-  use 'sainnhe/sonokai'
   use 'folke/tokyonight.nvim'
   use 'Th3Whit3Wolf/one-nvim'
   use 'axvr/photon.vim'
-  use 'jpe90/monokai.nvim'
+  -- use 'jpe90/monokai.nvim'
+  -- use 'tanvirtin/monokai.nvim'
+  use 'sainnhe/sonokai'
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -82,6 +83,7 @@ require('packer').startup(function()
       { "rafamadriz/friendly-snippets"}
     }
   }
+
 
 end)
 
@@ -136,7 +138,7 @@ require("toggleterm").setup{
 
 
 require('nvim-autopairs').setup()
- vim.g.sonokai_style = 'andromeda'
+vim.g.sonokai_style = 'espresso'
 
 
 -- tree
@@ -145,8 +147,9 @@ vim.g.nvim_tree_hijack_netrw = 1
 vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
-vim.cmd('colorscheme tokyonight')
-vim.o.background = "dark" -- or "light" for light mode
+-- require('monokai')
+vim.cmd('colorscheme sonokai')
+-- vim.o.background = "dark" -- or "light" for light mode
 -- vim.g.sonokai_enable_italic=1
 
 

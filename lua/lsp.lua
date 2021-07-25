@@ -171,5 +171,7 @@ require'compe'.setup {
   };
 }
 
+-- vim.api.nvim_command [[autocmd CursorHold,CursorHoldI,InsertLeave <buffer> lua vim.lsp.codelens.refresh()]]
+-- vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>l", "<Cmd>lua vim.lsp.codelens.run()<CR>", {silent = true;})
 
 vim.lsp.set_log_level("debug")
