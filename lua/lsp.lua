@@ -30,13 +30,19 @@ local on_attach = function(_, bufnr)
  --
 end
 
+local test_hls_attach = function(_,bufnr)
+  vim.api.nvim_command [[autocmd CursorHold,CursorHoldI,InsertLeave <buffer> lua vim.lsp.codelens.refresh()]]
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>l", "<Cmd>lua vim.lsp.codelens.run()<CR>", {silent = true;})
+  on_attach(_,bufnr)
+end
+
 local root_pattern = nvim_lsp.util.root_pattern
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 -- Enable the following language servers
 -- local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua', 'hls', 'elixirls'}
-local servers = { 'clangd',  'pyright',  'dartls', 'hls', }
+local servers = { 'clangd',  'pyright',  'dartls', }
 for _, lsp in ipairs(servers) do
   nvim_lsp[lsp].setup { 
     on_attach = on_attach,
@@ -44,6 +50,11 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities,
   }
 end
+
+require'lspconfig'.hls.setup{
+    capabilities = capabilities,
+    on_attach = test_hls_attach,
+}
 
 require'lspconfig'.elixirls.setup{
     capabilities = capabilities,

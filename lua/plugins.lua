@@ -35,6 +35,7 @@ require('packer').startup(function()
   }
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'projekt0n/github-nvim-theme'
   -- use "akinsho/nvim-toggleterm.lua"
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
@@ -42,6 +43,9 @@ require('packer').startup(function()
       highlight = {
         enable = true,              -- false will disable the whole extension
       },
+      indent = {
+        enable = true,
+      }
     }
   }
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
@@ -86,7 +90,12 @@ require('nvim-autopairs').setup()
 -- vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
+vim.g.gruvbox_italic = 0
+vim.g.gruvbox_italicize_comments = 0
 vim.cmd('colorscheme gruvbox')
+-- -- Lua
+-- require('github-theme').setup()
+
 
 --Map blankline
 
