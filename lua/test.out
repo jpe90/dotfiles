@@ -1,0 +1,94 @@
+
+
+times in msec
+ clock   self+sourced   self:  sourced script
+ clock   elapsed:              other lines
+
+000.007  000.007: --- NVIM STARTING ---
+000.247  000.240: locale set
+000.511  000.264: inits 1
+000.521  000.010: window checked
+003.331  002.811: parsing arguments
+003.402  000.071: expanding arguments
+003.417  000.015: inits 2
+003.693  000.276: init highlight
+003.694  000.001: waiting for UI
+004.403  000.709: done waiting for UI
+004.414  000.011: initialized screen early for UI
+004.636  000.155  000.155: sourcing /usr/share/nvim/runtime/syntax/syncolor.vim
+004.868  000.006  000.006: sourcing /usr/share/nvim/archlinux.vim
+004.871  000.020  000.014: sourcing /etc/xdg//nvim/sysinit.vim
+041.120  000.124  000.124: sourcing /usr/share/nvim/runtime/syntax/syncolor.vim
+044.250  012.433  012.309: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/gruvbox.nvim/colors/gruvbox.vim
+049.940  045.058  032.625: sourcing /home/solaire/.config/nvim/init.lua
+049.946  000.299: sourcing vimrc file(s)
+054.658  000.009  000.009: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/gdscript.vim
+054.675  000.007  000.007: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/gomod.vim
+054.695  000.013  000.013: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/hcl.vim
+054.716  000.013  000.013: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/query.vim
+054.732  000.008  000.008: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/yang.vim
+054.746  000.007  000.007: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-fugitive/ftdetect/fugitive.vim
+055.091  005.125  005.069: sourcing /usr/share/nvim/runtime/filetype.vim
+055.297  000.024  000.024: sourcing /usr/share/nvim/runtime/ftplugin.vim
+055.494  000.021  000.021: sourcing /usr/share/nvim/runtime/indent.vim
+055.758  000.061  000.061: sourcing /usr/share/nvim/runtime/syntax/synload.vim
+055.812  000.146  000.085: sourcing /usr/share/nvim/runtime/syntax/syntax.vim
+056.842  000.157  000.157: sourcing /usr/share/nvim/runtime/plugin/gzip.vim
+056.858  000.006  000.006: sourcing /usr/share/nvim/runtime/plugin/health.vim
+056.917  000.052  000.052: sourcing /usr/share/nvim/runtime/plugin/man.vim
+057.289  000.142  000.142: sourcing /usr/share/nvim/runtime/pack/dist/opt/matchit/plugin/matchit.vim
+057.353  000.428  000.286: sourcing /usr/share/nvim/runtime/plugin/matchit.vim
+057.466  000.104  000.104: sourcing /usr/share/nvim/runtime/plugin/matchparen.vim
+057.771  000.297  000.297: sourcing /usr/share/nvim/runtime/plugin/netrwPlugin.vim
+057.897  000.007  000.007: sourcing /home/solaire/.local/share/nvim/rplugin.vim
+057.901  000.100  000.093: sourcing /usr/share/nvim/runtime/plugin/rplugin.vim
+057.979  000.068  000.068: sourcing /usr/share/nvim/runtime/plugin/shada.vim
+058.009  000.016  000.016: sourcing /usr/share/nvim/runtime/plugin/spellfile.vim
+058.128  000.106  000.106: sourcing /usr/share/nvim/runtime/plugin/tarPlugin.vim
+058.204  000.060  000.060: sourcing /usr/share/nvim/runtime/plugin/tohtml.vim
+058.228  000.011  000.011: sourcing /usr/share/nvim/runtime/plugin/tutor.vim
+058.376  000.138  000.138: sourcing /usr/share/nvim/runtime/plugin/zipPlugin.vim
+058.869  000.434  000.434: sourcing /usr/share/vim/vimfiles/plugin/fzf.vim
+059.853  000.933  000.933: sourcing /home/solaire/.config/nvim/plugin/packer_compiled.lua
+060.009  001.837: loading plugins
+060.434  000.011  000.011: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim/autoload/indent_blankline/helper.vim
+061.617  001.329  001.318: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim/plugin/indent_blankline.vim
+061.729  000.026  000.026: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/lush.nvim/plugin/lush.vim
+062.074  000.254  000.254: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-autopairs/plugin/nvim-autopairs.vim
+062.252  000.097  000.097: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-compe/plugin/compe.vim
+062.402  000.052  000.052: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-lspconfig/plugin/lspconfig.vim
+062.942  000.454  000.454: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/plugin/nvim-treesitter.vim
+063.030  000.009  000.009: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/gdscript.vim
+063.050  000.007  000.007: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/gomod.vim
+063.075  000.012  000.012: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/hcl.vim
+063.098  000.011  000.011: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/query.vim
+063.117  000.007  000.007: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-treesitter/ftdetect/yang.vim
+063.227  000.024  000.024: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/plenary.nvim/plugin/plenary.vim
+063.642  000.308  000.308: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/telescope.nvim/plugin/telescope.vim
+063.823  000.100  000.100: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-commentary/plugin/commentary.vim
+064.898  000.991  000.991: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-fugitive/plugin/fugitive.vim
+064.971  000.007  000.007: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-fugitive/ftdetect/fugitive.vim
+065.136  000.085  000.085: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-rhubarb/plugin/rhubarb.vim
+066.054  000.831  000.831: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-sneak/plugin/sneak.vim
+066.416  000.268  000.268: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-surround/plugin/surround.vim
+071.395  004.885  004.885: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-unimpaired/plugin/unimpaired.vim
+071.790  000.301  000.301: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-vsnip/plugin/vsnip.vim
+071.947  000.051  000.051: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-vsnip-integ/plugin/vsnip_integ.vim
+072.056  001.936: loading packages
+072.156  000.017  000.017: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-vsnip-integ/autoload/vsnip_integ/integration.vim
+072.236  000.043  000.043: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-vsnip-integ/autoload/vsnip_integ/detection.vim
+072.920  000.812  000.751: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/vim-vsnip-integ/after/plugin/vsnip_integ.vim
+074.361  001.382  001.382: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/nvim-compe/after/plugin/compe.vim
+074.558  000.309: loading after plugins
+074.569  000.011: inits 3
+076.246  001.677: reading ShaDa
+076.618  000.016  000.016: sourcing /home/solaire/.local/share/nvim/site/pack/packer/start/indent-blankline.nvim/autoload/indent_blankline.vim
+076.747  000.485: opening buffers
+076.807  000.060: BufEnter autocommands
+076.809  000.002: editing files in windows
+077.097  000.288: VimEnter autocommands
+077.099  000.002: UIEnter autocommands
+077.369  000.155  000.155: sourcing /usr/share/nvim/runtime/autoload/provider/clipboard.vim
+077.373  000.119: before starting main loop
+078.110  000.737: first screen update
+078.112  000.002: --- NVIM STARTED ---
