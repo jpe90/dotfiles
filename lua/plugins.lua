@@ -35,6 +35,7 @@ require('packer').startup(function()
   }
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'folke/tokyonight.nvim'
   use 'projekt0n/github-nvim-theme'
   -- use "akinsho/nvim-toggleterm.lua"
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
@@ -63,6 +64,7 @@ require('packer').startup(function()
   -- use 'kyazdani42/nvim-web-devicons'
   -- use 'kyazdani42/nvim-tree.lua'
   use 'windwp/nvim-autopairs'
+  use 'projekt0n/github-nvim-theme'
   use {
     'hrsh7th/nvim-compe',
     requires = {
@@ -90,11 +92,19 @@ require('nvim-autopairs').setup()
 -- vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
+-- vim.g.tokyonight_style = "storm"
+-- vim.g.tokyonight_italic_functions = false
+-- vim.g.tokyonight_italic_comments = false
+-- vim.cmd[[colorscheme tokyonight]]
+--
 vim.g.gruvbox_italic = 0
 vim.g.gruvbox_italicize_comments = 0
 vim.cmd('colorscheme gruvbox')
 -- -- Lua
--- require('github-theme').setup()
+-- require("github-theme").setup({
+--   themeStyle = "dark",
+--   -- ... your github-theme config
+-- })
 
 
 --Map blankline
