@@ -38,7 +38,7 @@ require('packer').startup(function()
   -- use 'folke/tokyonight.nvim'
   use '/home/solaire/git/tokyonight.nvim'
   use 'projekt0n/github-nvim-theme'
-  use "akinsho/nvim-toggleterm.lua"
+  -- use "akinsho/nvim-toggleterm.lua"
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -80,9 +80,9 @@ end)
 
 require('gitsigns').setup {}
 
-require("toggleterm").setup{
-  open_mapping = [[<M-`>]],
-}
+-- require("toggleterm").setup{
+--   open_mapping = [[<M-`>]],
+-- }
 
 
 require('nvim-autopairs').setup()
@@ -98,6 +98,11 @@ vim.g.tokyonight_italic_functions = false
 vim.g.tokyonight_italic_comments = false
 vim.cmd[[colorscheme tokyonight]]
 --
+-- if (tonumber(os.date('%I'))<8)
+--   then vim.g.background='dark'
+--   else
+--     vim.g.background='light'
+-- end
 -- vim.g.gruvbox_italic = 0
 -- vim.g.gruvbox_italicize_comments = 0
 -- vim.cmd('colorscheme gruvbox')
