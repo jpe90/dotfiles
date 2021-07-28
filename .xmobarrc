@@ -1,4 +1,5 @@
-Config { font = "-misc-fixed-*-*-*-*-10-*-*-*-*-*-*-*"
+Config { 
+         font =         "xft:Bitstream Vera Sans Mono:size=9:bold:antialias=true"
        , additionalFonts = []
        , borderColor = "black"
        , border = TopB
@@ -15,15 +16,11 @@ Config { font = "-misc-fixed-*-*-*-*-10-*-*-*-*-*-*-*"
        , iconRoot = "."
        , allDesktops = True
        , overrideRedirect = True
-       , commands = [ Run Weather "KIAD" ["-t","<station>: <tempF>F",
+       , commands = [ Run Weather "KGAI" ["-t","<tempF>F",
                                           "-L","40","-H","80",
                                           "--normal","green",
                                           "--high","red",
                                           "--low","lightblue"] 36000
-                    , Run Network "eth0" ["-L","0","-H","32",
-                                          "--normal","green","--high","red"] 10
-                    , Run Network "eth1" ["-L","0","-H","32",
-                                          "--normal","green","--high","red"] 10
                     , Run Cpu ["-L","3","-H","50",
                                "--normal","green","--high","red"] 10
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
@@ -33,6 +30,6 @@ Config { font = "-misc-fixed-*-*-*-*-10-*-*-*-*-*-*-*"
        , sepChar = "%"
        , alignSep = "}{"
        , template = "%cpu% | %memory%  }\
-                    \{ <fc=#ee9a00>%date%</fc>| %KIAD% | %uname%"
+                    \{ <fc=#ee9a00>%date%</fc>| %KGAI% | %uname%"
        }
 

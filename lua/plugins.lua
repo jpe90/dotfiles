@@ -35,9 +35,10 @@ require('packer').startup(function()
   }
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
-  use 'folke/tokyonight.nvim'
+  -- use 'folke/tokyonight.nvim'
+  use '/home/solaire/git/tokyonight.nvim'
   use 'projekt0n/github-nvim-theme'
-  -- use "akinsho/nvim-toggleterm.lua"
+  use "akinsho/nvim-toggleterm.lua"
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -61,8 +62,8 @@ require('packer').startup(function()
     end
   }
   use {"folke/lua-dev.nvim", opt = true}
-  -- use 'kyazdani42/nvim-web-devicons'
-  -- use 'kyazdani42/nvim-tree.lua'
+  use 'kyazdani42/nvim-web-devicons'
+  use 'kyazdani42/nvim-tree.lua'
   use 'windwp/nvim-autopairs'
   use 'projekt0n/github-nvim-theme'
   use {
@@ -79,27 +80,27 @@ end)
 
 require('gitsigns').setup {}
 
--- require("toggleterm").setup{
---   open_mapping = [[<M-`>]],
--- }
+require("toggleterm").setup{
+  open_mapping = [[<M-`>]],
+}
 
 
 require('nvim-autopairs').setup()
 
 -- tree
--- vim.g.nvim_tree_auto_close = 1
--- vim.g.nvim_tree_hijack_netrw = 1
--- vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
+vim.g.nvim_tree_auto_close = 1
+vim.g.nvim_tree_hijack_netrw = 1
+vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
--- vim.g.tokyonight_style = "storm"
--- vim.g.tokyonight_italic_functions = false
--- vim.g.tokyonight_italic_comments = false
--- vim.cmd[[colorscheme tokyonight]]
+vim.g.tokyonight_style = "storm"
+vim.g.tokyonight_italic_functions = false
+vim.g.tokyonight_italic_comments = false
+vim.cmd[[colorscheme tokyonight]]
 --
-vim.g.gruvbox_italic = 0
-vim.g.gruvbox_italicize_comments = 0
-vim.cmd('colorscheme gruvbox')
+-- vim.g.gruvbox_italic = 0
+-- vim.g.gruvbox_italicize_comments = 0
+-- vim.cmd('colorscheme gruvbox')
 -- -- Lua
 -- require("github-theme").setup({
 --   themeStyle = "dark",
