@@ -91,12 +91,13 @@ require('nvim-autopairs').setup()
 vim.g.nvim_tree_auto_close = 1
 vim.g.nvim_tree_hijack_netrw = 1
 vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
+-- vim.cmd[[set rtp+=/home/solaire/git/nvim-highlite]]
 
 --colors
-vim.g.tokyonight_style = "storm"
-vim.g.tokyonight_italic_functions = false
-vim.g.tokyonight_italic_comments = false
-vim.cmd[[colorscheme tokyonight]]
+-- vim.g.tokyonight_style = "storm"
+-- vim.g.tokyonight_italic_functions = true
+-- vim.g.tokyonight_italic_comments = true
+-- vim.cmd[[colorscheme tokyonight]]
 --
 -- if (tonumber(os.date('%I'))<8)
 --   then vim.g.background='dark'
@@ -105,7 +106,10 @@ vim.cmd[[colorscheme tokyonight]]
 -- end
 -- vim.g.gruvbox_italic = 0
 -- vim.g.gruvbox_italicize_comments = 0
--- vim.cmd('colorscheme gruvbox')
+vim.g.gruvbox_contrast_light = "hard"
+vim.cmd('colorscheme gruvbox')
+vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+
 -- -- Lua
 -- require("github-theme").setup({
 --   themeStyle = "dark",
@@ -119,3 +123,7 @@ vim.g.indent_blankline_char = "┊"
 vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
 vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
 vim.g.indent_blankline_char_highlight = 'LineNr'
+
+
+-- require('monokai')
+-- vim.cmd('colorscheme monokai')
