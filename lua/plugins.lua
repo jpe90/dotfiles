@@ -13,11 +13,10 @@ vim.api.nvim_exec([[
   augroup end
 ]], false)
 
-
-
 local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim'       -- Package manager
+  use 'maksimr/vim-jsbeautify'
   use 'tpope/vim-fugitive'           -- Git commands in nvim
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
@@ -34,10 +33,11 @@ require('packer').startup(function()
     }
   }
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
-  use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
-  -- use 'folke/tokyonight.nvim'
-  use '/home/solaire/git/tokyonight.nvim'
+  -- use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'projekt0n/github-nvim-theme'
+  use 'nvim-treesitter/playground'
+  use 'neovimhaskell/haskell-vim'
   -- use "akinsho/nvim-toggleterm.lua"
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
@@ -65,7 +65,6 @@ require('packer').startup(function()
   use 'kyazdani42/nvim-web-devicons'
   use 'kyazdani42/nvim-tree.lua'
   use 'windwp/nvim-autopairs'
-  use 'projekt0n/github-nvim-theme'
   use {
     'hrsh7th/nvim-compe',
     requires = {
@@ -90,6 +89,8 @@ require('nvim-autopairs').setup()
 -- tree
 vim.g.nvim_tree_auto_close = 1
 vim.g.nvim_tree_hijack_netrw = 1
+vim.g.nvim_tree_quit_on_open = 1
+vim.g.nvim_tree_lsp_diagnostics = 1
 vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 -- vim.cmd[[set rtp+=/home/solaire/git/nvim-highlite]]
 
@@ -107,8 +108,12 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.g.gruvbox_italic = 0
 -- vim.g.gruvbox_italicize_comments = 0
 vim.g.gruvbox_contrast_light = "hard"
+vim.g.gruvbox_contrast_dark = "hard"
 vim.cmd('colorscheme gruvbox')
-vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+-- vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+
+-- require('monokai')
+-- vim.cmd('colorscheme monokai')
 
 -- -- Lua
 -- require("github-theme").setup({
@@ -125,5 +130,3 @@ vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
 vim.g.indent_blankline_char_highlight = 'LineNr'
 
 
--- require('monokai')
--- vim.cmd('colorscheme monokai')

@@ -1,0 +1,15 @@
+{
+	"Evaluate Code Block": {
+		"prefix": "eval",
+		"body": [
+			"{-",
+			">>> $1",
+			"-}"
+		],
+		"description": "Evaluate a code block"
+	},
+	"Language Extension": {
+		"prefix": "ext",
+		"body": "{-# LANGUAGE $1 #-}"
+	}
+}

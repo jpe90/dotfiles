@@ -32,7 +32,8 @@ end
 
 local test_hls_attach = function(_,bufnr)
   vim.api.nvim_command [[autocmd CursorHold,CursorHoldI,InsertLeave <buffer> lua vim.lsp.codelens.refresh()]]
-  vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>l", "<Cmd>lua vim.lsp.codelens.run()<CR>", {silent = true;})
+  vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>ll", "<Cmd>lua vim.lsp.codelens.run()<CR>", {silent = true;})
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lr', '<cmd>LspRestart<CR>',{noremap=true,silent=true})
   on_attach(_,bufnr)
 end
 
