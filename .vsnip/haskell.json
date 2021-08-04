@@ -11,5 +11,12 @@
 	"Language Extension": {
 		"prefix": "ext",
 		"body": "{-# LANGUAGE $1 #-}"
-	}
+	},
+	"Section Comment": {
+		"prefix": "secom",
+    "body": [ 
+      "{- ",
+      "     $1",
+      "-}"
+    ]	}
 }

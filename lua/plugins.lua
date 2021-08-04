@@ -77,8 +77,6 @@ require('packer').startup(function()
 
 end)
 
-require('gitsigns').setup {}
-
 -- require("toggleterm").setup{
 --   open_mapping = [[<M-`>]],
 -- }
