@@ -15,14 +15,29 @@ vim.api.nvim_exec([[
 
 local use = require('packer').use
 require('packer').startup(function()
+
   use 'wbthomason/packer.nvim'       -- Package manager
-  use 'maksimr/vim-jsbeautify'
+
+  -- languages
+  use 'lervag/vimtex'
+  use 'neovimhaskell/haskell-vim'
+
+  -- THE POPE
   use 'tpope/vim-fugitive'           -- Git commands in nvim
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
   use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-unimpaired'
   use 'tpope/vim-repeat'
+
+  -- visuals
+  use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
+  use 'maksimr/vim-jsbeautify'
+  
+
+  -- utilities
+  use 'kyazdani42/nvim-web-devicons'
+  use 'kyazdani42/nvim-tree.lua'
   use 'justinmk/vim-sneak'
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     require('telescope').setup {
@@ -32,13 +47,41 @@ require('packer').startup(function()
       }
     }
   }
-  use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
-  -- use {"npxbr/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
-  use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
-  use 'projekt0n/github-nvim-theme'
-  use 'nvim-treesitter/playground'
-  use 'neovimhaskell/haskell-vim'
-  -- use "akinsho/nvim-toggleterm.lua"
+  use {
+    'hrsh7th/nvim-compe',
+    requires = {
+      { 'hrsh7th/vim-vsnip' },
+      { 'hrsh7th/vim-vsnip-integ'},
+      { "rafamadriz/friendly-snippets"}
+    }
+  }
+  use {
+    'lewis6991/gitsigns.nvim',
+    requires = {
+      'nvim-lua/plenary.nvim'
+    },
+    config = function()
+      require('gitsigns').setup()
+    end
+  }
+  use 'steelsojka/pears.nvim'
+  -- use {'steelsojka/pears.nvim',
+  --   config=function()
+  --     require "pears".setup(function(conf)
+  --       conf.on_enter(function(pears_handle)
+  --         if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
+  --           return vim.fn["compe#confirm"]("<CR>")
+  --         else
+  --           pears_handle()
+  --         end
+  --       end)
+  --     end)
+  --   end}
+  -- use {'windwp/nvim-autopairs',
+  --   config = function()
+  --     require('nvim-autopairs').setup()
+  --   end
+  --   }
   use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
@@ -51,38 +94,32 @@ require('packer').startup(function()
     }
   }
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
-  -- Add git related info in the signs columns and popups
-  use {
-    'lewis6991/gitsigns.nvim',
-    requires = {
-      'nvim-lua/plenary.nvim'
-    },
-    config = function()
-      require('gitsigns').setup()
-    end
-  }
+
+  -- colors
+  use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'projekt0n/github-nvim-theme'
+  use 'navarasu/onedark.nvim'
+  use 'nvim-treesitter/playground'
   use {"folke/lua-dev.nvim", opt = true}
-  use 'kyazdani42/nvim-web-devicons'
-  use 'kyazdani42/nvim-tree.lua'
-  use 'windwp/nvim-autopairs'
-  use {
-    'hrsh7th/nvim-compe',
-    requires = {
-      { 'hrsh7th/vim-vsnip' },
-      { 'hrsh7th/vim-vsnip-integ'},
-      { "rafamadriz/friendly-snippets"}
-    }
-  }
 
 
 end)
+
+require "pears".setup(function(conf)
+  conf.on_enter(function(pears_handle)
+    if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
+      return vim.fn["compe#confirm"]("<CR>")
+    else
+      pears_handle()
+    end
+  end)
+end)
+
 
 -- require("toggleterm").setup{
 --   open_mapping = [[<M-`>]],
 -- }
 
-
-require('nvim-autopairs').setup()
 
 -- tree
 vim.g.nvim_tree_auto_close = 1
@@ -93,6 +130,8 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.cmd[[set rtp+=/home/solaire/git/nvim-highlite]]
 
 --colors
+vim.g.onedark_style='warm'
+vim.cmd('colorscheme onedark')
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
 -- vim.g.tokyonight_italic_comments = true
@@ -107,7 +146,7 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.g.gruvbox_italicize_comments = 0
 vim.g.gruvbox_contrast_light = "hard"
 vim.g.gruvbox_contrast_dark = "hard"
-vim.cmd('colorscheme gruvbox')
+-- vim.cmd('colorscheme gruvbox')
 -- vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
 
 -- require('monokai')
