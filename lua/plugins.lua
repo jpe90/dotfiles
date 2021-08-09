@@ -33,7 +33,6 @@ require('packer').startup(function()
   -- visuals
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use 'maksimr/vim-jsbeautify'
-  
 
   -- utilities
   use 'kyazdani42/nvim-web-devicons'
@@ -98,7 +97,7 @@ require('packer').startup(function()
   -- colors
   use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'projekt0n/github-nvim-theme'
-  use 'navarasu/onedark.nvim'
+  use 'jpe90/onedark.nvim'
   use 'nvim-treesitter/playground'
   use {"folke/lua-dev.nvim", opt = true}
 
