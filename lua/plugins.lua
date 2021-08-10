@@ -1,4 +1,4 @@
--- Install packer
+ -- Install packer
 local execute = vim.api.nvim_command
 
 local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
@@ -95,9 +95,11 @@ require('packer').startup(function()
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
 
   -- colors
-  use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  -- use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use {"/home/solaire/git/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'projekt0n/github-nvim-theme'
   use 'jpe90/onedark.nvim'
+  use 'ray-x/material_plus.nvim'
   use 'nvim-treesitter/playground'
   use {"folke/lua-dev.nvim", opt = true}
 
@@ -130,7 +132,7 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 
 --colors
 vim.g.onedark_style='warm'
-vim.cmd('colorscheme onedark')
+-- vim.cmd('colorscheme onedark')
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
 -- vim.g.tokyonight_italic_comments = true
