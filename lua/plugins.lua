@@ -101,6 +101,7 @@ require('packer').startup(function()
   use 'jpe90/onedark.nvim'
   use 'ray-x/material_plus.nvim'
   use 'nvim-treesitter/playground'
+  use 'folke/tokyonight.nvim'
   use {"folke/lua-dev.nvim", opt = true}
 
 
@@ -131,12 +132,14 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.cmd[[set rtp+=/home/solaire/git/nvim-highlite]]
 
 --colors
-vim.g.onedark_style='warm'
+-- vim.g.onedark_style='warm'
 -- vim.cmd('colorscheme onedark')
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
--- vim.g.tokyonight_italic_comments = true
--- vim.cmd[[colorscheme tokyonight]]
+vim.g.tokyonight_transparent = true
+vim.g.tokyonight_transparent_sidebar = true
+vim.g.tokyonight_italic_comments = true
+vim.cmd[[colorscheme tokyonight]]
 --
 -- if (tonumber(os.date('%I'))<8)
 --   then vim.g.background='dark'

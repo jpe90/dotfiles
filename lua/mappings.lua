@@ -25,4 +25,18 @@ map('n', '<leader>reg', [[<cmd>lua require('telescope.builtin').registers()<cr>]
 map('n', '<leader>col', [[<cmd>lua require('telescope.builtin').colorscheme()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>ky', [[<cmd>lua require('telescope.builtin').keymaps()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>mk', [[<cmd>lua require('telescope.builtin').marks()<cr>]], { noremap = true, silent = true})
-map('i', '<C-c>', '<Esc>')
+
+-- give C-c the same hook behavior as esc
+map('i', '<C-c>', '<Esc>', { noremap = true })
+
+-- make Y behave like other capital letters
+map('n', 'Y', 'y$', { noremap = true })
+
+map('n', 'n', 'nzzzv', { noremap = true })
+map('n', 'N', 'Nzzzv', { noremap = true })
+map('n', 'J', 'mzJ`z', { noremap = true })
+
+map('i', ',', ',<c-g>u', { noremap = true })
+map('i', '.', '.<c-g>u', { noremap = true })
+map('i', '!', '!<c-g>u', { noremap = true })
+map('i', '?', '?<c-g>u', { noremap = true })
