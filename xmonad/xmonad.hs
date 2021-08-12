@@ -10,11 +10,13 @@ import XMonad.Actions.CycleWindows
 import XMonad.Actions.RotSlaves
 
 main =
-  xmonad =<< xmobar
+  -- xmonad =<< xmobar
+  xmonad $
     def
       { borderWidth = 2,
         modMask = mod4Mask,
         terminal = "kitty",
+        focusedBorderColor = "#7aa2f7",
         -- terminal = "st",
         -- terminal = "urxvt",
         -- normalBorderColor = "#cccccc",

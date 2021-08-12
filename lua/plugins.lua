@@ -25,11 +25,12 @@ require('packer').startup(function()
   -- THE POPE
   use 'tpope/vim-fugitive'           -- Git commands in nvim
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
-  use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
+  -- use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-unimpaired'
   use 'tpope/vim-repeat'
 
+  use { 'b3nj5m1n/kommentary',}
   -- visuals
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use 'maksimr/vim-jsbeautify'
@@ -103,10 +104,17 @@ require('packer').startup(function()
   use 'nvim-treesitter/playground'
   use 'folke/tokyonight.nvim'
   use {"folke/lua-dev.nvim", opt = true}
+  use 'mizlan/iswap.nvim'
 
 
 end)
-
+require('kommentary.config').configure_language("default", {
+    prefer_single_line_comments = true,
+})
+require('kommentary.config').configure_language("dart", {
+    single_line_comment_string = "//",
+    multi_line_comment_strings = {"/*", "*/"},
+})
 require "pears".setup(function(conf)
   conf.on_enter(function(pears_handle)
     if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
