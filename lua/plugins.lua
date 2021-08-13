@@ -25,11 +25,12 @@ require('packer').startup(function()
   -- THE POPE
   use 'tpope/vim-fugitive'           -- Git commands in nvim
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
-  use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
+  -- use 'tpope/vim-commentary'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-surround'         -- "gc" to comment visual regions/lines
   use 'tpope/vim-unimpaired'
   use 'tpope/vim-repeat'
 
+  use { 'b3nj5m1n/kommentary',}
   -- visuals
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use 'maksimr/vim-jsbeautify'
@@ -101,11 +102,19 @@ require('packer').startup(function()
   use 'jpe90/onedark.nvim'
   use 'ray-x/material_plus.nvim'
   use 'nvim-treesitter/playground'
+  use 'folke/tokyonight.nvim'
   use {"folke/lua-dev.nvim", opt = true}
+  use 'mizlan/iswap.nvim'
 
 
 end)
-
+require('kommentary.config').configure_language("default", {
+    prefer_single_line_comments = true,
+})
+require('kommentary.config').configure_language("dart", {
+    single_line_comment_string = "//",
+    multi_line_comment_strings = {"/*", "*/"},
+})
 require "pears".setup(function(conf)
   conf.on_enter(function(pears_handle)
     if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
@@ -131,12 +140,14 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.cmd[[set rtp+=/home/solaire/git/nvim-highlite]]
 
 --colors
-vim.g.onedark_style='warm'
+-- vim.g.onedark_style='warm'
 -- vim.cmd('colorscheme onedark')
 -- vim.g.tokyonight_style = "storm"
 -- vim.g.tokyonight_italic_functions = true
--- vim.g.tokyonight_italic_comments = true
--- vim.cmd[[colorscheme tokyonight]]
+vim.g.tokyonight_transparent = true
+vim.g.tokyonight_transparent_sidebar = true
+vim.g.tokyonight_italic_comments = true
+vim.cmd[[colorscheme tokyonight]]
 --
 -- if (tonumber(os.date('%I'))<8)
 --   then vim.g.background='dark'

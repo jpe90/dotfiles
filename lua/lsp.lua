@@ -21,7 +21,7 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', 'for', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>for', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
   -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   map('n', '<leader>ca', [[<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>]], { noremap = true, silent = true})
   map('n', '<leader>gr', [[<cmd>lua require('telescope.builtin').lsp_references()<cr>]], { noremap = true, silent = true})
@@ -30,14 +30,14 @@ local on_attach = function(_, bufnr)
  --
 end
 
-local test_hls_attach = function(_,bufnr)
+local hls_attach = function(_,bufnr)
   vim.api.nvim_command [[autocmd CursorHold,CursorHoldI,InsertLeave <buffer> lua vim.lsp.codelens.refresh()]]
   vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>ll", "<Cmd>lua vim.lsp.codelens.run()<CR>", {silent = true;})
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>lr', '<cmd>LspRestart<CR>',{noremap=true,silent=true})
   on_attach(_,bufnr)
 end
 
-local root_pattern = nvim_lsp.util.root_pattern
+-- local root_pattern = nvim_lsp.util.root_pattern
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
@@ -45,7 +45,7 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 -- local servers = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'dartls', 'sumneko_lua', 'hls', 'elixirls'}
 local servers = { 'clangd',  'pyright',  'dartls', }
 for _, lsp in ipairs(servers) do
-  nvim_lsp[lsp].setup { 
+  nvim_lsp[lsp].setup {
     on_attach = on_attach,
     --root_dir = root_pattern(".git"),
     capabilities = capabilities,
@@ -54,7 +54,7 @@ end
 
 require'lspconfig'.hls.setup{
     capabilities = capabilities,
-    on_attach = test_hls_attach,
+    on_attach = hls_attach,
 }
 
 require'lspconfig'.elixirls.setup{
@@ -155,7 +155,7 @@ vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
 vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
-vim.api.nvim_set_keymap('i', '<C-Space>', [[compe#complete())]], {silent = true, expr = true})
+vim.api.nvim_set_keymap('i', '<C-Space>', [[compe#complete('<CR>')]], {silent = true, expr = true})
 -- vim.api.nvim_set_keymap('i', '<CR>', [[compe#confirm(luaeval("require 'nvim-autopairs'.autopairs_cr()"))]], {silent = true, expr = true})
 vim.api.nvim_set_keymap('i', '<CR>', [[compe#confirm('<CR>')]], {silent = true, expr = true})
 vim.api.nvim_set_keymap('i', '<C-e>', [[compe#close('<C-e>')]], {silent = true, expr = true})
@@ -178,6 +178,7 @@ require'compe'.setup {
   documentation = true;
 
   source = {
+    buffer = true;
     path = true;
     nvim_lsp = true;
     vsnip = true;
@@ -187,4 +188,4 @@ require'compe'.setup {
 -- vim.api.nvim_command [[autocmd CursorHold,CursorHoldI,InsertLeave <buffer> lua vim.lsp.codelens.refresh()]]
 -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>l", "<Cmd>lua vim.lsp.codelens.run()<CR>", {silent = true;})
 
-vim.lsp.set_log_level("debug")
+-- vim.lsp.set_log_level("debug")
