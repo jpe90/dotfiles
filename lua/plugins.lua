@@ -70,6 +70,7 @@ require('packer').startup(function()
 
   -- colors
   use {"/home/solaire/git/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'rafamadriz/neon'
   use 'projekt0n/github-nvim-theme'
   use 'jpe90/onedark.nvim'
   use 'ray-x/material_plus.nvim'
@@ -125,10 +126,25 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- end
 -- vim.g.gruvbox_italic = 0
 -- vim.g.gruvbox_italicize_comments = 0
-vim.g.gruvbox_contrast_light = "hard"
-vim.g.gruvbox_contrast_dark = "hard"
-vim.cmd('colorscheme gruvbox')
-vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+-- vim.g.gruvbox_contrast_light = "hard"
+-- vim.g.gruvbox_contrast_dark = "hard"
+-- vim.cmd('colorscheme gruvbox')
+-- vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+
+-- vim.g.neon_style = "default"
+-- vim.g.neon_italic_keyword = true
+-- vim.g.neon_italic_function = true
+-- vim.g.neon_transparent = true
+
+-- vim.cmd[[colorscheme neon]]
+
+require("github-theme").setup({
+  hideInactiveStatusline = true,
+  darkSidebar = false,
+  darkFloat = true,
+  transparent = true,
+  colors = {bg_statusline = "#000000"},
+})
 
 --Map blankline
 vim.g.indent_blankline_char = "┊"
