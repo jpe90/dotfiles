@@ -15,7 +15,6 @@ vim.api.nvim_exec([[
 
 local use = require('packer').use
 require('packer').startup(function()
-
   use 'wbthomason/packer.nvim'       -- Package manager
 
   -- languages
@@ -46,6 +45,11 @@ require('packer').startup(function()
         file_sorter =  require'telescope.sorters'.get_fzy_sorter,
       }
     }
+  }
+  use { 'ibhagwan/fzf-lua',
+    requires = {
+      'vijaymarupudi/nvim-fzf',
+      'kyazdani42/nvim-web-devicons' } -- optional for icons
   }
   use {
     'hrsh7th/nvim-compe',
@@ -82,17 +86,23 @@ require('packer').startup(function()
   --     require('nvim-autopairs').setup()
   --   end
   --   }
-  use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
+  use { '/home/solaire/git/nvim-treesitter', run = ':TSUpdate' ,
+  -- use { 'nvim-treesitter/nvim-treesitter', run = ':TSUpdate' ,
     require'nvim-treesitter.configs'.setup {
       ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
       highlight = {
         enable = true,              -- false will disable the whole extension
+        custom_captures = {
+          -- ["_string_fragment"] = "HsString",
+          ["escape"] = "Character",
+        }
       },
       indent = {
         enable = true,
       }
     }
   }
+  use { 'nvim-treesitter/nvim-treesitter-refactor',}
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
 
   -- colors
@@ -129,6 +139,41 @@ end)
 -- require("toggleterm").setup{
 --   open_mapping = [[<M-`>]],
 -- }
+vim.api.nvim_set_keymap('n', '<leader>tt', '<cmd>TSPlaygroundToggle<cr>', { noremap = true, silent = true})
+
+require "nvim-treesitter.configs".setup {
+  playground = {
+    enable = true,
+    disable = {},
+    updatetime = 25, -- Debounced time for highlighting nodes in the playground from source code
+    persist_queries = false, -- Whether the query persists across vim sessions
+    keybindings = {
+      toggle_query_editor = 'o',
+      toggle_hl_groups = 'i',
+      toggle_injected_languages = 't',
+      toggle_anonymous_nodes = 'a',
+      toggle_language_display = 'I',
+      focus_language = 'f',
+      unfocus_language = 'F',
+      update = 'R',
+      goto_node = '<cr>',
+      show_help = '?',
+    },
+  },
+  query_linter = {
+    enable = true,
+    use_virtual_text = true,
+    lint_events = {"BufWrite", "CursorHold"},
+  },
+    refactor = {
+    smart_rename = {
+      enable = true,
+      keymaps = {
+        smart_rename = "<leader>zz",
+      },
+    },
+  },
+}
 
 
 -- tree
@@ -178,4 +223,10 @@ vim.g.indent_blankline_filetype_exclude = { 'help', 'packer' }
 vim.g.indent_blankline_buftype_exclude = { 'terminal', 'nofile'}
 vim.g.indent_blankline_char_highlight = 'LineNr'
 
-
+local parser_config = require "nvim-treesitter.parsers".get_parser_configs()
+parser_config.porcupine = {
+  install_info = {
+    url = "/home/solaire/.config/nvim/tree-sitter/tree-sitter-porcupine",
+    files = {"src/parser.c"}
+  }
+}
