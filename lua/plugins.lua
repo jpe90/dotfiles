@@ -69,7 +69,8 @@ require('packer').startup(function()
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
 
   -- colors
-  use {"/home/solaire/git/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  -- use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'gruvbox-community/gruvbox'
   use 'rafamadriz/neon'
   use 'projekt0n/github-nvim-theme'
   use 'jpe90/onedark.nvim'
@@ -113,38 +114,40 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.g.onedark_style='warm'
 -- vim.cmd('colorscheme onedark')
 -- vim.g.tokyonight_style = "storm"
+
 -- vim.g.tokyonight_italic_functions = true
 -- vim.g.tokyonight_transparent = true
 -- vim.g.tokyonight_transparent_sidebar = true
 -- vim.g.tokyonight_italic_comments = true
 -- vim.cmd[[colorscheme tokyonight]]
---
--- if (tonumber(os.date('%I'))<8)
---   then vim.g.background='dark'
---   else
---     vim.g.background='light'
--- end
+
+-- -- if (tonumber(os.date('%I'))<8)
+-- --   then vim.g.background='dark'
+-- --   else
+-- --     vim.g.background='light'
+-- -- end
+
 -- vim.g.gruvbox_italic = 0
 -- vim.g.gruvbox_italicize_comments = 0
 -- vim.g.gruvbox_contrast_light = "hard"
 -- vim.g.gruvbox_contrast_dark = "hard"
--- vim.cmd('colorscheme gruvbox')
--- vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+vim.cmd('colorscheme gruvbox')
 
 -- vim.g.neon_style = "default"
 -- vim.g.neon_italic_keyword = true
 -- vim.g.neon_italic_function = true
 -- vim.g.neon_transparent = true
-
 -- vim.cmd[[colorscheme neon]]
 
-require("github-theme").setup({
-  hideInactiveStatusline = true,
-  darkSidebar = false,
-  darkFloat = true,
-  transparent = true,
-  colors = {bg_statusline = "#000000"},
-})
+vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+
+-- require("github-theme").setup({
+--   hideInactiveStatusline = true,
+--   darkSidebar = false,
+--   darkFloat = true,
+--   transparent = true,
+--   colors = {bg_statusline = "#000000"},
+-- })
 
 --Map blankline
 vim.g.indent_blankline_char = "┊"
