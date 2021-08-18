@@ -12,7 +12,7 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>a', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-  -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
@@ -50,7 +50,18 @@ for _, lsp in ipairs(servers) do
     --root_dir = root_pattern(".git"),
     capabilities = capabilities,
   }
+  -- vim.schedule(function ()
+  --   require("packer").loader("coq_nvim coq.artifacts")
+  --   nvim_lsp[lsp].setup(require("coq")().lsp_ensure_capabilities())
+  -- end)
 end
+
+
+vim.schedule(function ()
+  local lsp = require "lspconfig"
+  require("packer").loader("coq_nvim coq.artifacts")
+  nvim_lsp.hls.setup(require("coq")().lsp_ensure_capabilities())
+end)
 
 require'lspconfig'.hls.setup{
     capabilities = capabilities,
