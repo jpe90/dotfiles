@@ -54,7 +54,7 @@ require('packer').startup(function()
     'ms-jpq/coq_nvim',
     requires = {
       'ms-jpq/coq.artifacts'
-    }
+    },
   }
   use {
     'lewis6991/gitsigns.nvim',
@@ -70,6 +70,7 @@ require('packer').startup(function()
 
   -- colors
   use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'rakr/vim-one'
   use 'dracula/vim'
   -- use 'gruvbox-community/gruvbox'
   use 'rafamadriz/neon'
@@ -89,6 +90,13 @@ require('kommentary.config').configure_language("dart", {
     multi_line_comment_strings = {"/*", "*/"},
 })
 require "pears".setup()
+vim.g.coq_settings = {
+  ["auto_start"] = true,
+  ["keymap.jump_to_mark"] = "<c-n>",
+  ["keymap.bigger_preview"] = "<c-b>",
+  ["clients.tmux.enabled"] = false,
+  ["clients.tree_sitter.enabled"] = false,
+}
 -- TODO: add this if completion is buggy
 -- require "pears".setup(function(conf)
 --   conf.on_enter(function(pears_handle)
