@@ -58,17 +58,18 @@ end
 
 
 vim.schedule(function ()
-  local lsp = require "lspconfig"
   require("packer").loader("coq_nvim coq.artifacts")
-  nvim_lsp.hls.setup(require("coq")().lsp_ensure_capabilities())
+  nvim_lsp.hls.setup(
+  require("coq")().lsp_ensure_capabilities()
+  )
+  nvim_lsp.hls.setup{
+      capabilities = capabilities,
+      on_attach = hls_attach,
+  }
 end)
 
-require'lspconfig'.hls.setup{
-    capabilities = capabilities,
-    on_attach = hls_attach,
-}
 
-require'lspconfig'.elixirls.setup{
+nvim_lsp.elixirls.setup{
     capabilities = capabilities,
     on_attach = on_attach,
     cmd = { "/usr/lib/elixir-ls/language_server.sh" };
@@ -87,7 +88,7 @@ local function get_lua_runtime()
     return result
 end
 
-require'lspconfig'.sumneko_lua.setup {
+nvim_lsp.sumneko_lua.setup {
     on_attach = on_attach,
     cmd = {"lua-language-server"},
     settings = {
