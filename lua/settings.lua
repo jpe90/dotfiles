@@ -4,8 +4,8 @@ vim.o.hlsearch = false
 vim.o.incsearch = true
 vim.o.ignorecase = true
 vim.o.smartcase = true
--- vim.o.termguicolors = true
-vim.o.termguicolors = false
+vim.o.termguicolors = true
+-- vim.o.termguicolors = false
 vim.o.synmaxcol = 0
 -- expand tabs to spaces
 vim.o.expandtab = true

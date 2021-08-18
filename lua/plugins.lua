@@ -69,8 +69,9 @@ require('packer').startup(function()
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
 
   -- colors
-  -- use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
-  use 'gruvbox-community/gruvbox'
+  use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  use 'dracula/vim'
+  -- use 'gruvbox-community/gruvbox'
   use 'rafamadriz/neon'
   use 'projekt0n/github-nvim-theme'
   use 'jpe90/onedark.nvim'
@@ -87,6 +88,7 @@ require('kommentary.config').configure_language("dart", {
     single_line_comment_string = "//",
     multi_line_comment_strings = {"/*", "*/"},
 })
+require "pears".setup()
 -- TODO: add this if completion is buggy
 -- require "pears".setup(function(conf)
 --   conf.on_enter(function(pears_handle)
@@ -132,6 +134,10 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.g.gruvbox_contrast_light = "hard"
 -- vim.g.gruvbox_contrast_dark = "hard"
 vim.cmd('colorscheme gruvbox')
+
+-- vim.g.dracula_italic=0
+-- vim.cmd('colorscheme dracula')
+
 
 -- vim.g.neon_style = "default"
 -- vim.g.neon_italic_keyword = true
