@@ -126,7 +126,7 @@ require'lspconfig'.sumneko_lua.setup {
 
 -- all compe
 
-vim.o.completeopt = "menuone,noselect,noinsert"
+-- vim.o.completeopt = "menuone,noselect,noinsert"
 
 -- local t = function(str)
 --   return vim.api.nvim_replace_termcodes(str, true, true, true)

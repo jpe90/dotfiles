@@ -2,6 +2,11 @@
 local execute = vim.api.nvim_command
 
 local install_path = vim.fn.stdpath('data') .. '/site/pack/packer/start/packer.nvim'
+local function t(str)
+    -- Adjust boolean arguments as needed
+    return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
   execute('!git clone https://github.com/wbthomason/packer.nvim '.. install_path)
@@ -89,7 +94,7 @@ require('kommentary.config').configure_language("dart", {
     single_line_comment_string = "//",
     multi_line_comment_strings = {"/*", "*/"},
 })
-require "pears".setup()
+-- require "pears".setup()
 vim.g.coq_settings = {
   ["auto_start"] = true,
   ["keymap.jump_to_mark"] = "<c-n>",
@@ -97,16 +102,17 @@ vim.g.coq_settings = {
   ["clients.tmux.enabled"] = false,
   ["clients.tree_sitter.enabled"] = false,
 }
--- TODO: add this if completion is buggy
--- require "pears".setup(function(conf)
---   conf.on_enter(function(pears_handle)
---     if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
---       return vim.fn["compe#confirm"]("<CR>")
---     else
---       pears_handle()
---     end
---   end)
--- end)
+
+-- autopair with coq
+require "pears".setup(function(conf)
+  conf.on_enter(function(pears_handle)
+    if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
+      return (t'<C-y>')
+    else
+      pears_handle()
+    end
+  end)
+end)
 
 --[[ vim.g.coq_settings = {
   coq_settings.keymap.recommended = true,
