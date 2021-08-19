@@ -74,10 +74,12 @@ require('packer').startup(function()
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
 
   -- colors
-  use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
+  -- use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'rakr/vim-one'
   use 'dracula/vim'
-  -- use 'gruvbox-community/gruvbox'
+  -- use '/home/solaire/git/vim'
+  use 'gruvbox-community/gruvbox'
+  -- use '~/git/gruvbox'
   use 'rafamadriz/neon'
   use 'projekt0n/github-nvim-theme'
   use 'jpe90/onedark.nvim'
@@ -146,7 +148,7 @@ vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = tru
 -- vim.g.gruvbox_italic = 0
 -- vim.g.gruvbox_italicize_comments = 0
 -- vim.g.gruvbox_contrast_light = "hard"
--- vim.g.gruvbox_contrast_dark = "hard"
+vim.g.gruvbox_contrast_dark = "hard"
 vim.cmd('colorscheme gruvbox')
 
 -- vim.g.dracula_italic=0
