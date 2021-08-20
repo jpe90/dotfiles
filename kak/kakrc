@@ -1,0 +1,15 @@
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
+plug "andreyorst/plug.kak" noload
+plug "andreyorst/fzf.kak"
+plug "alexherbo2/auto-pairs.kak"
+plug "danr/kakoune-easymotion"
+plug "h-youhei/kakoune-surround"
+eval %sh{kak-lsp --kakoune -s $kak_session}  # Not needed if you load it with plug.kak.
+lsp-enable
+hook global WinCreate .* %{addhl number_lines -relative}
+map global user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
+
+map global normal <c-p> ': fzf-mode<ret>'
+map global user w :easy-motion-w<ret>
+map global user W :easy-motion-W<ret>
+map global user j :easy-motion-j<ret>

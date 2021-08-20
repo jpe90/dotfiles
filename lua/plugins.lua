@@ -26,6 +26,12 @@ require('packer').startup(function()
   use 'lervag/vimtex'
   use 'neovimhaskell/haskell-vim'
 
+  -- use {'karb94/neoscroll.nvim',
+  --   config = function()
+  --     require('neoscroll').setup()
+  --   end
+  -- }
+
   -- THE POPE
   use 'tpope/vim-fugitive'           -- Git commands in nvim
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
