@@ -15,7 +15,8 @@ main =
     def
       { borderWidth = 2,
         modMask = mod4Mask,
-        terminal = "st",
+        -- terminal = "st",
+        terminal = "kitty",
         focusedBorderColor = "#7aa2f7",
         -- terminal = "st",
         -- terminal = "urxvt",

@@ -8,8 +8,22 @@ eval %sh{kak-lsp --kakoune -s $kak_session}  # Not needed if you load it with pl
 lsp-enable
 hook global WinCreate .* %{addhl number_lines -relative}
 map global user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
+map global normal '#' ': comment-line<ret>'                   -docstring 'comment-line'
+map global normal '=' ': format<ret>'                         -docstring 'format'
 
 map global normal <c-p> ': fzf-mode<ret>'
 map global user w :easy-motion-w<ret>
 map global user W :easy-motion-W<ret>
 map global user j :easy-motion-j<ret>
+map global user k :easy-motion-k<ret>
+
+add-highlighter global/ number-lines -relative
+# colorscheme plain
+
+hook global WinSetOption filetype=haskell %{
+  set-option window formatcmd 'fourmolu -i'
+  set-option window indentwidth 2
+}
+# hook global WinSetOption filetype=haskell {
+# }
+
