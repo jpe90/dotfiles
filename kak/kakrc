@@ -19,6 +19,7 @@ map global user k :easy-motion-k<ret>
 
 add-highlighter global/ number-lines -relative
 # colorscheme plain
+# colorscheme tomorrow-night
 
 hook global WinSetOption filetype=haskell %{
   set-option window formatcmd 'fourmolu -i'
