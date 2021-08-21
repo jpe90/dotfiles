@@ -1,6 +1,12 @@
-Source "%val{config}/plugins/plug.kak/rc/plug.kak"
+source "%val{config}/plugins/plug.kak/rc/plug.kak"
 plug "andreyorst/plug.kak" noload
-plug "andreyorst/fzf.kak"
+
+plug "andreyorst/fzf.kak" config %{
+	map global normal <c-p> ': fzf-mode<ret>'
+} defer "fzf-grep" %{
+    set-option global fzf_grep_command 'rg'
+}
+
 eval %sh{kak-lsp --kakoune -s $kak_session}  # Not needed if you load it with plug.kak.
 lsp-enable
 hook global WinCreate .* %{addhl number_lines -relative}
@@ -8,11 +14,11 @@ hook global WinCreate .* %{addhl number_lines -relative}
 map global normal '#' ': comment-line<ret>'                   -docstring 'comment-line'
 map global normal '=' ': format<ret>'                         -docstring 'format'
 
-map global normal <c-p> ': fzf-mode<ret>'
 map global normal <c-l> ': enter-user-mode lsp<ret>' -docstring "LSP mode"
 
 add-highlighter global/ number-lines -relative
 # colorscheme plain
+colorscheme tomorrow-night
 
 hook global WinSetOption filetype=haskell %{
   set-option window formatcmd 'fourmolu -i'
@@ -27,6 +33,8 @@ hook global WinSetOption filetype=markdown %{
   set-option window indentwidth 2
 }
 
+# face global PrimaryCursor grey,white
+
 map global insert <tab> '<a-;><gt>'
 map global insert <s-tab> '<a-;><lt>'
 
@@ -36,7 +44,6 @@ plug "lePerdu/kakboard" %{
         hook global WinCreate .* %{ kakboard-enable }
 }
 
-set-option global fzf_grep_command rg
 
 hook global InsertCompletionShow .* %{
     try %{
