@@ -56,11 +56,13 @@ require('packer').startup(function()
       }
     }
   }
-  use { 'ibhagwan/fzf-lua',
-    requires = {
-      'vijaymarupudi/nvim-fzf',
-      'kyazdani42/nvim-web-devicons' } -- optional for icons
-  }
+
+  -- use { 'ibhagwan/fzf-lua',
+  --   requires = {
+  --     'vijaymarupudi/nvim-fzf',
+  --     'kyazdani42/nvim-web-devicons' } -- optional for icons
+  -- }
+
   use {
     'ms-jpq/coq_nvim',
     requires = {

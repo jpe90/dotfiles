@@ -8,14 +8,12 @@ end
 vim.cmd(':command! Nu :silent ! nu')
 -- Telescope
 --Add leader shortcuts
--- map('n', '<leader>gg', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})
--- map('n', '<leader>b', [[<cmd>lua require('telescope.builtin').buffers()<cr>]], { noremap = true, silent = true})
--- map('n', '<C-f>', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>]], { noremap = true, silent = true})
--- map('n', '<leader>?', [[<cmd>lua require('telescope.builtin').oldfiles()<cr>]], { noremap = true, silent = true})
--- map('n', '<leader>fd', [[<cmd>lua require('telescope.builtin').grep_string()<cr>]], { noremap = true, silent = true})
--- map('n', '<leader>gf', [[<cmd>lua require('telescope.builtin').live_grep()<cr>]], { noremap = true, silent = true})
+map('n', '<leader>p', [[<cmd>lua require('telescope.builtin').find_files()<cr>]], { noremap = true, silent = true})
+map('n', '<leader>b', [[<cmd>lua require('telescope.builtin').buffers()<cr>]], { noremap = true, silent = true})
+map('n', '<C-f>', [[<cmd>lua require('telescope.builtin').current_buffer_fuzzy_find()<cr>]], { noremap = true, silent = true})
+map('n', '<leader>f', [[<cmd>lua require('telescope.builtin').live_grep()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>o', [[<cmd>lua require('telescope.builtin').tags{ only_current_buffer = true }<cr>]], { noremap = true, silent = true})
--- map('n', '<leader>ga', [[<cmd>lua require('telescope.builtin').git_commits()<cr>]], { noremap = true, silent = true})
+map('n', '<leader>ga', [[<cmd>lua require('telescope.builtin').git_commits()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>gp', [[<cmd>lua require('telescope.builtin').git_branches()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>gs', [[<cmd>lua require('telescope.builtin').git_status()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>gb', [[<cmd>lua require('telescope.builtin').git_bcommits()<cr>]], { noremap = true, silent = true})
@@ -25,15 +23,15 @@ map('n', '<leader>ky', [[<cmd>lua require('telescope.builtin').keymaps()<cr>]], 
 map('n', '<leader>mk', [[<cmd>lua require('telescope.builtin').marks()<cr>]], { noremap = true, silent = true})
 
 
-map('n', '<leader>ga', [[<cmd>lua require('fzf-lua').git_commits()<cr>]], { noremap = true, silent = true})
-map('n', '<leader>?', [[<cmd>lua require('fzf-lua').oldfiles()<cr>]], { noremap = true, silent = true})
-map('n', '<leader>p', [[<cmd>lua require('fzf-lua').files()<cr>]], { noremap = true, silent = true})
-map('n', '<leader>b', [[<cmd>lua require('fzf-lua').buffers()<cr>]], { noremap = true, silent = true})
-map('n', '<C-f>', [[<cmd>lua require('fzf-lua').grep_curbuf()<cr>]], { noremap = true, silent = true})
-map('n', '<C-p>', [[<cmd>lua require('fzf-lua').git_files()<cr>]], { noremap = true, silent = true})
-map('n', '<leader>f', [[<cmd>lua require('fzf-lua').live_grep()<cr>]], { noremap = true, silent = true})
--- give C-c the same hook behavior as esc
-map('i', '<C-c>', '<Esc>', { noremap = true })
+-- map('n', '<leader>ga', [[<cmd>lua require('fzf-lua').git_commits()<cr>]], { noremap = true, silent = true})
+-- map('n', '<leader>?', [[<cmd>lua require('fzf-lua').oldfiles()<cr>]], { noremap = true, silent = true})
+-- map('n', '<leader>p', [[<cmd>lua require('fzf-lua').files()<cr>]], { noremap = true, silent = true})
+-- map('n', '<leader>b', [[<cmd>lua require('fzf-lua').buffers()<cr>]], { noremap = true, silent = true})
+-- -- map('n', '<C-f>', [[<cmd>lua require('fzf-lua').grep_curbuf()<cr>]], { noremap = true, silent = true})
+-- map('n', '<C-p>', [[<cmd>lua require('fzf-lua').git_files()<cr>]], { noremap = true, silent = true})
+-- map('n', '<leader>f', [[<cmd>lua require('fzf-lua').live_grep()<cr>]], { noremap = true, silent = true})
+-- -- give C-c the same hook behavior as esc
+-- map('i', '<C-c>', '<Esc>', { noremap = true })
 
 -- make Y behave like other capital letters
 map('n', 'Y', 'y$', { noremap = true })
