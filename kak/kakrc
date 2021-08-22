@@ -18,7 +18,7 @@ map global normal <c-l> ': enter-user-mode lsp<ret>' -docstring "LSP mode"
 
 add-highlighter global/ number-lines -relative
 # colorscheme plain
-colorscheme tomorrow-night
+# colorscheme tomorrow-night
 
 hook global WinSetOption filetype=haskell %{
   set-option window formatcmd 'fourmolu -i'
@@ -43,7 +43,6 @@ hook global RawKey <mouse:press:middle:.*> %{ exec !xclip<space>-o<ret> }
 plug "lePerdu/kakboard" %{
         hook global WinCreate .* %{ kakboard-enable }
 }
-
 
 hook global InsertCompletionShow .* %{
     try %{
