@@ -1,0 +1,37 @@
+{
+    "layer": "bottom",
+    "modules-left": ["sway/workspaces", "sway/mode"],
+    "modules-right": ["backlight","pulseaudio","battery", "clock"],
+    "sway/window": {
+        "max-length": 50
+    },
+	"pulseaudio": {
+		"format": "Audio {volume}%",
+		"format-bluetooth": "Bluetooth {volume}%",
+		"format-muted": "Audio Muted",
+		"format-icons": {
+			"headphone": "",
+			"hands-free": "",
+			"headset": "",
+			"phone": "",
+			"portable": "",
+			"car": "",
+			"default": ["", ""]
+		},
+		"scroll-step": 1,
+		"on-click": "pavucontrol"
+	},
+    "battery": {
+        "format": "Battery {capacity}%",
+        "format-icons": ["", "", "", "", ""]
+    },
+    "clock": {
+        "format": "{:%a, %d %b %H:%M}"
+    },
+    "backlight": {
+        "format": "Backlight {percent}%",
+        "format-icons": [""],
+        "on-click": "light -A 1",
+        "on-click-right": "light -U 1"
+    },
+}
