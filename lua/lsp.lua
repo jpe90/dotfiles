@@ -4,7 +4,7 @@ local on_attach = function(_, bufnr)
   -- vim.api.nvim_buf_set_option(0, 'omnifunc', 'v:lua.vim.lsp.omnifunc')
 
   -- turn this on to format on save
-  vim.api.nvim_command("au BufWritePre <buffer> lua vim.lsp.buf.formatting_sync(nil, 1000)")
+  -- vim.api.nvim_command("au BufWritePre <buffer> lua vim.lsp.buf.formatting_sync(nil, 1000)")
 
   local opts = { noremap=true, silent=true }
   vim.api.nvim_buf_set_keymap(bufnr, 'n', 'gD', '<Cmd>lua vim.lsp.buf.declaration()<CR>', opts)
@@ -21,7 +21,7 @@ local on_attach = function(_, bufnr)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
   vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
-  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>for', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>=', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
   -- vim.api.nvim_buf_set_keymap(bufnr, 'n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
   map('n', '<leader>ca', [[<cmd>lua require('telescope.builtin').lsp_code_actions()<cr>]], { noremap = true, silent = true})
   map('n', '<leader>gr', [[<cmd>lua require('telescope.builtin').lsp_references()<cr>]], { noremap = true, silent = true})
@@ -37,6 +37,15 @@ local hls_attach = function(_,bufnr)
   on_attach(_,bufnr)
 end
 
+nvim_lsp.hls.setup {
+  on_attach = hls_attach,
+  settings = {
+      haskell = {
+        formattingProvider = "fourmolu"
+      }
+    }
+}
+
 -- local root_pattern = nvim_lsp.util.root_pattern
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -50,23 +59,7 @@ for _, lsp in ipairs(servers) do
     --root_dir = root_pattern(".git"),
     capabilities = capabilities,
   }
-  -- vim.schedule(function ()
-  --   require("packer").loader("coq_nvim coq.artifacts")
-  --   nvim_lsp[lsp].setup(require("coq")().lsp_ensure_capabilities())
-  -- end)
 end
-
-
-vim.schedule(function ()
-  require("packer").loader("coq_nvim coq.artifacts")
-  nvim_lsp.hls.setup(
-  require("coq")().lsp_ensure_capabilities()
-  )
-  nvim_lsp.hls.setup{
-      capabilities = capabilities,
-      on_attach = hls_attach,
-  }
-end)
 
 
 nvim_lsp.elixirls.setup{
@@ -127,75 +120,74 @@ nvim_lsp.sumneko_lua.setup {
 
 -- all compe
 
--- vim.o.completeopt = "menuone,noselect,noinsert"
+vim.o.completeopt = "menuone,noselect,noinsert"
 
--- local t = function(str)
---   return vim.api.nvim_replace_termcodes(str, true, true, true)
--- end
+local t = function(str)
+  return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
 
--- local check_back_space = function()
---     local col = vim.fn.col('.') - 1
---     return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
--- end
+local check_back_space = function()
+    local col = vim.fn.col('.') - 1
+    return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
+end
 
--- -- Use (s-)tab to:
--- --- move to prev/next item in completion menuone
--- --- jump to prev/next snippet's placeholder
--- _G.tab_complete = function()
---   if vim.fn.pumvisible() == 1 then
---     return t "<C-n>"
---   elseif vim.fn['vsnip#available'](1) == 1 then
---     return t "<Plug>(vsnip-expand-or-jump)"
---   elseif check_back_space() then
---     return t "<Tab>"
---   else
---     return vim.fn['compe#complete']()
---   end
--- end
--- _G.s_tab_complete = function()
---   if vim.fn.pumvisible() == 1 then
---     return t "<C-p>"
---   elseif vim.fn['vsnip#jumpable'](-1) == 1 then
---     return t "<Plug>(vsnip-jump-prev)"
---   else
---     -- If <S-Tab> is not working in your terminal, change it to <C-h>
---     return t "<S-Tab>"
---   end
--- end
+-- Use (s-)tab to:
+--- move to prev/next item in completion menuone
+--- jump to prev/next snippet's placeholder
+_G.tab_complete = function()
+  if vim.fn.pumvisible() == 1 then
+    return t "<C-n>"
+  elseif vim.fn['vsnip#available'](1) == 1 then
+    return t "<Plug>(vsnip-expand-or-jump)"
+  elseif check_back_space() then
+    return t "<Tab>"
+  else
+    return vim.fn['compe#complete']()
+  end
+end
+_G.s_tab_complete = function()
+  if vim.fn.pumvisible() == 1 then
+    return t "<C-p>"
+  elseif vim.fn['vsnip#jumpable'](-1) == 1 then
+    return t "<Plug>(vsnip-jump-prev)"
+  else
+    -- If <S-Tab> is not working in your terminal, change it to <C-h>
+    return t "<S-Tab>"
+  end
+end
 
--- vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
--- vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
--- vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
--- vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
--- vim.api.nvim_set_keymap('i', '<C-Space>', [[compe#complete('<CR>')]], {silent = true, expr = true})
--- -- vim.api.nvim_set_keymap('i', '<CR>', [[compe#confirm(luaeval("require 'nvim-autopairs'.autopairs_cr()"))]], {silent = true, expr = true})
--- vim.api.nvim_set_keymap('i', '<CR>', [[compe#confirm('<CR>')]], {silent = true, expr = true})
--- vim.api.nvim_set_keymap('i', '<C-e>', [[compe#close('<C-e>')]], {silent = true, expr = true})
--- vim.api.nvim_set_keymap('i', '<C-f>', [[compe#scroll({ 'delta': +4 })]], {silent = true, expr = true})
--- vim.api.nvim_set_keymap('i', '<C-d>', [[compe#scroll({ 'delta': -4 })]], {silent = true, expr = true})
+vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<Tab>", "v:lua.tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap("s", "<S-Tab>", "v:lua.s_tab_complete()", {expr = true})
+vim.api.nvim_set_keymap('i', '<C-Space>', [[compe#complete('<CR>')]], {silent = true, expr = true})
+-- vim.api.nvim_set_keymap('i', '<CR>', [[compe#confirm(luaeval("require 'nvim-autopairs'.autopairs_cr()"))]], {silent = true, expr = true})
+vim.api.nvim_set_keymap('i', '<CR>', [[compe#confirm('<CR>')]], {silent = true, expr = true})
+vim.api.nvim_set_keymap('i', '<C-e>', [[compe#close('<C-e>')]], {silent = true, expr = true})
+vim.api.nvim_set_keymap('i', '<C-f>', [[compe#scroll({ 'delta': +4 })]], {silent = true, expr = true})
+vim.api.nvim_set_keymap('i', '<C-d>', [[compe#scroll({ 'delta': -4 })]], {silent = true, expr = true})
 
--- -- Compe setup
--- require'compe'.setup {
---   enabled = true;
---   autocomplete = true;
---   debug = false;
---   min_length = 1;
---   preselect = 'enable';
---   throttle_time = 80;
---   source_timeout = 200;
---   incomplete_delay = 400;
---   max_abbr_width = 100;
---   max_kind_width = 100;
---   max_menu_width = 100;
---   documentation = true;
-
---   source = {
---     buffer = true;
---     path = true;
---     nvim_lsp = true;
---     vsnip = true;
---   };
--- }
+-- Compe setup
+require'compe'.setup {
+  enabled = true;
+  autocomplete = true;
+  debug = false;
+  min_length = 1;
+  preselect = 'enable';
+  throttle_time = 80;
+  source_timeout = 200;
+  incomplete_delay = 400;
+  max_abbr_width = 100;
+  max_kind_width = 100;
+  max_menu_width = 100;
+  documentation = true;
+  source = {
+    buffer = true;
+    path = true;
+    nvim_lsp = true;
+    vsnip = true;
+  };
+}
 
 -- vim.api.nvim_command [[autocmd CursorHold,CursorHoldI,InsertLeave <buffer> lua vim.lsp.codelens.refresh()]]
 -- vim.api.nvim_buf_set_keymap(bufnr, "n", "<leader>l", "<Cmd>lua vim.lsp.codelens.run()<CR>", {silent = true;})

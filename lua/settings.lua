@@ -75,3 +75,9 @@ set expandtab
 set undofile
 set clipboard+=unnamedplus
 ]]
+
+window_on_create = function()
+    vim.cmd("set winhl=Normal:Normal")  -- popup bg to match normal windows
+    vim.api.nvim_buf_set_keymap(0, "t", "<Esc>", "<C-c>", { nowait = true, silent = true })
+  end
+
