@@ -83,11 +83,28 @@ require('packer').startup(function()
   use 'hrsh7th/cmp-buffer'
   use 'saadparwaiz1/cmp_luasnip'
 
+    --[[ config = function()
+      local actions = require "fzf-lua.actions"
+      require'fzf-lua'.setup {
+        previewers = {
+          bat = {
+          cmd             = "bat",
+          args            = "--style=numbers,changes --color always",
+          theme           = 'gruvbox-dark', -- bat preview theme (bat --list-themes)
+          config          = nil,            -- nil uses $BAT_CONFIG_PATH
+		},
+	
+        },
+
+      } ]]
+    -- end
   use { 'ibhagwan/fzf-lua',
+    local actions = require "fzf-lua.actions",
     requires = {
       'vijaymarupudi/nvim-fzf',
       'kyazdani42/nvim-web-devicons' } -- optional for icons
   }
+  
 
 
   use {
