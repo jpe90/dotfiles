@@ -166,7 +166,7 @@ vim.cmd('colorscheme gruvbox')
 -- vim.g.neon_transparent = true
 -- vim.cmd[[colorscheme neon]]
 
-vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+-- vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
 
 -- require("github-theme").setup({
 --   hideInactiveStatusline = true,
