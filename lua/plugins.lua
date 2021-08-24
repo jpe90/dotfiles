@@ -93,6 +93,7 @@ require('packer').startup(function()
   use 'jpe90/onedark.nvim'
   use 'ray-x/material_plus.nvim'
   use 'folke/tokyonight.nvim'
+  use 'fladson/vim-kitty'
   use {"folke/lua-dev.nvim", opt = true}
 
 
