@@ -26,12 +26,6 @@ require('packer').startup(function()
   use 'lervag/vimtex'
   use 'neovimhaskell/haskell-vim'
 
-  -- use {'karb94/neoscroll.nvim',
-  --   config = function()
-  --     require('neoscroll').setup()
-  --   end
-  -- }
-
   -- THE POPE
   use 'tpope/vim-fugitive'           -- Git commands in nvim
   use 'tpope/vim-rhubarb'            -- Fugitive-companion to interact with github
@@ -46,7 +40,22 @@ require('packer').startup(function()
 
   -- utilities
   use 'kyazdani42/nvim-web-devicons'
-  use 'kyazdani42/nvim-tree.lua'
+  -- use 'kyazdani42/nvim-tree.lua'
+  use {
+    'mcchrish/nnn.vim',
+    config = function()
+      require("nnn").setup({
+      command = "nnn -o -C",
+      set_default_mappings = 0,
+      replace_netrw = 1,
+      action = {
+        ["<c-t>"] = "tab split",
+        ["<c-s>"] = "split",
+        ["<c-v>"] = "vsplit",
+        -- ["<c-o>"] = copy_to_clipboard,
+        },
+      })
+    end}
   use 'justinmk/vim-sneak'
   use {'nvim-telescope/telescope.nvim', requires = {{'nvim-lua/popup.nvim'}, {'nvim-lua/plenary.nvim'}},
     require('telescope').setup {
@@ -57,18 +66,21 @@ require('packer').startup(function()
     }
   }
 
-  -- use { 'ibhagwan/fzf-lua',
-  --   requires = {
-  --     'vijaymarupudi/nvim-fzf',
-  --     'kyazdani42/nvim-web-devicons' } -- optional for icons
-  -- }
-
   use {
-    'ms-jpq/coq_nvim',
+    'hrsh7th/nvim-compe',
     requires = {
-      'ms-jpq/coq.artifacts'
-    },
+      { 'hrsh7th/vim-vsnip' },
+      { 'hrsh7th/vim-vsnip-integ'},
+      { "rafamadriz/friendly-snippets"}
+    }
   }
+  use { 'ibhagwan/fzf-lua',
+    requires = {
+      'vijaymarupudi/nvim-fzf',
+      'kyazdani42/nvim-web-devicons' } -- optional for icons
+  }
+
+
   use {
     'lewis6991/gitsigns.nvim',
     requires = {
@@ -81,23 +93,16 @@ require('packer').startup(function()
   use 'steelsojka/pears.nvim'
   use {'neovim/nvim-lspconfig'}        -- Collection of configurations for built-in LSP client
 
-  -- colors
-  -- use {"jpe90/gruvbox.nvim", requires = {"rktjmp/lush.nvim"}}
   use 'rakr/vim-one'
   use 'dracula/vim'
-  -- use '/home/solaire/git/vim'
   use 'gruvbox-community/gruvbox'
-  -- use '~/git/gruvbox'
   use 'rafamadriz/neon'
-  use 'projekt0n/github-nvim-theme'
   use 'jpe90/onedark.nvim'
-  use 'ray-x/material_plus.nvim'
   use 'folke/tokyonight.nvim'
   use 'fladson/vim-kitty'
   use {"folke/lua-dev.nvim", opt = true}
-
-
 end)
+
 require('kommentary.config').configure_language("default", {
     prefer_single_line_comments = true,
 })
@@ -105,37 +110,17 @@ require('kommentary.config').configure_language("dart", {
     single_line_comment_string = "//",
     multi_line_comment_strings = {"/*", "*/"},
 })
--- require "pears".setup()
-vim.g.coq_settings = {
-  ["auto_start"] = true,
-  ["keymap.jump_to_mark"] = "<c-n>",
-  ["keymap.bigger_preview"] = "<c-b>",
-  ["clients.tmux.enabled"] = false,
-  ["clients.tree_sitter.enabled"] = false,
-}
 
 -- autopair with coq
 require "pears".setup(function(conf)
   conf.on_enter(function(pears_handle)
     if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
-      return (t'<C-y>')
+      return vim.fn["compe#confirm"]("<CR>")
     else
       pears_handle()
     end
   end)
 end)
-
---[[ vim.g.coq_settings = {
-  coq_settings.keymap.recommended = true,
-} ]]
--- vim.g.coq_settings.keymap.recommended=true
-
--- tree
-vim.g.nvim_tree_auto_close = 1
-vim.g.nvim_tree_hijack_netrw = 1
-vim.g.nvim_tree_quit_on_open = 1
-vim.g.nvim_tree_lsp_diagnostics = 1
-vim.api.nvim_set_keymap('n', '<C-b>', '<cmd>NvimTreeToggle<cr>', { noremap = true, silent=true})
 
 --colors
 -- vim.g.onedark_style='warm'
