@@ -66,14 +66,23 @@ require('packer').startup(function()
     }
   }
 
-  use {
-    'hrsh7th/nvim-compe',
-    requires = {
-      { 'hrsh7th/vim-vsnip' },
-      { 'hrsh7th/vim-vsnip-integ'},
-      { "rafamadriz/friendly-snippets"}
-    }
-  }
+  -- use {
+  --   'hrsh7th/nvim-compe',
+  --   requires = {
+  --     { 'hrsh7th/vim-vsnip' },
+  --     { 'hrsh7th/vim-vsnip-integ'},
+  --     { "rafamadriz/friendly-snippets"}
+  --   }
+  -- }
+
+  use 'L3MON4D3/LuaSnip'
+  use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
+  use 'hrsh7th/cmp-nvim-lsp'
+  -- use 'hrsh7th/cmp-vsnip'
+  use 'hrsh7th/cmp-path'
+  use 'hrsh7th/cmp-buffer'
+  use 'saadparwaiz1/cmp_luasnip'
+
   use { 'ibhagwan/fzf-lua',
     requires = {
       'vijaymarupudi/nvim-fzf',
@@ -111,16 +120,18 @@ require('kommentary.config').configure_language("dart", {
     multi_line_comment_strings = {"/*", "*/"},
 })
 
--- autopair with coq
-require "pears".setup(function(conf)
-  conf.on_enter(function(pears_handle)
-    if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
-      return vim.fn["compe#confirm"]("<CR>")
-    else
-      pears_handle()
-    end
-  end)
-end)
+require "pears".setup()
+
+-- -- autopair with coq
+-- require "pears".setup(function(conf)
+--   conf.on_enter(function(pears_handle)
+--     if vim.fn.pumvisible() == 1 and vim.fn.complete_info().selected ~= -1 then
+--       return vim.fn["compe#confirm"]("<CR>")
+--     else
+--       pears_handle()
+--     end
+--   end)
+-- end)
 
 --colors
 -- vim.g.onedark_style='warm'
