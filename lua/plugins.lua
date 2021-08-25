@@ -22,7 +22,11 @@ local use = require('packer').use
 require('packer').startup(function()
   use 'wbthomason/packer.nvim'       -- Package manager
 
-  -- languages
+  -- lua dev
+
+  use 'bfredl/nvim-luadev' -- languages
+  use {"folke/lua-dev.nvim"}
+
   use 'lervag/vimtex'
   use 'neovimhaskell/haskell-vim'
 
@@ -52,7 +56,7 @@ require('packer').startup(function()
         ["<c-t>"] = "tab split",
         ["<c-s>"] = "split",
         ["<c-v>"] = "vsplit",
-        -- ["<c-o>"] = copy_to_clipboard,
+        ["<c-o>"] = copy_to_clipboard,
         },
       })
     end}
@@ -83,23 +87,9 @@ require('packer').startup(function()
   use 'hrsh7th/cmp-buffer'
   use 'saadparwaiz1/cmp_luasnip'
 
-    --[[ config = function()
-      local actions = require "fzf-lua.actions"
-      require'fzf-lua'.setup {
-        previewers = {
-          bat = {
-          cmd             = "bat",
-          args            = "--style=numbers,changes --color always",
-          theme           = 'gruvbox-dark', -- bat preview theme (bat --list-themes)
-          config          = nil,            -- nil uses $BAT_CONFIG_PATH
-		},
-	
-        },
-
-      } ]]
-    -- end
-  use { 'ibhagwan/fzf-lua',
-    local actions = require "fzf-lua.actions",
+  -- use { 'ibhagwan/fzf-lua',
+  use { '/home/solaire/git/fzf-lua',
+    -- local actions = require "fzf-lua.actions",
     requires = {
       'vijaymarupudi/nvim-fzf',
       'kyazdani42/nvim-web-devicons' } -- optional for icons
@@ -125,8 +115,8 @@ require('packer').startup(function()
   use 'rafamadriz/neon'
   use 'jpe90/onedark.nvim'
   use 'folke/tokyonight.nvim'
+  use 'tanvirtin/monokai.nvim'
   use 'fladson/vim-kitty'
-  use {"folke/lua-dev.nvim", opt = true}
 end)
 
 require('kommentary.config').configure_language("default", {
@@ -138,6 +128,29 @@ require('kommentary.config').configure_language("dart", {
 })
 
 require "pears".setup()
+
+local actions = require "fzf-lua.actions"
+require'fzf-lua'.setup {
+  previewers = {
+    bat = {
+      cmd             = "bat",
+      args            = "--style=numbers,changes --color always",
+      theme           = 'gruvbox-dark', -- bat preview theme (bat --list-themes)
+      config          = nil,            -- nil uses $BAT_CONFIG_PATH
+    },
+  },
+  git = {
+    commits = {
+      prompt          = 'Commits❯ ',
+      cmd             = "git log --pretty=oneline --abbrev-commit --color",
+      preview         = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
+      actions = {
+        ["default"] = actions.git_checkout,
+        ["ctrl-v"] = actions.file_vsplit,
+      },
+    },
+  }
+}
 
 -- -- autopair with coq
 -- require "pears".setup(function(conf)

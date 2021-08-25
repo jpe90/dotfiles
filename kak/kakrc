@@ -7,7 +7,38 @@ plug "andreyorst/fzf.kak" config %{
     set-option global fzf_grep_command 'rg'
 }
 
+plug "andreyorst/smarttab.kak" defer smarttab %{
+    set-option global softtabstop 4
+} config %{
+    set-option global expandtab
+    hook global WinSetOption filetype=(dart|haskell|python|markdown) softtabstop 2
+}
+
+set-option global indentwidth 4
+set-option global tabstop 4
+
+hook global WinSetOption filetype=haskell %{
+  set-option window formatcmd 'fourmolu -i'
+  set-option window indentwidth 2
+  set-option window tabstop 2
+}
+
+hook global WinSetOption filetype=dart %{
+  set-option window indentwidth 2
+  set-option window tabstop 2
+}
+
+hook global WinSetOption filetype=python %{
+  set-option window indentwidth 2
+  set-option window tabstop 2
+}
+hook global WinSetOption filetype=markdown %{
+  set-option window indentwidth 2
+  set-option window tabstop 2
+}
+
 eval %sh{kak-lsp --kakoune -s $kak_session}  # Not needed if you load it with plug.kak.
+
 lsp-enable
 hook global WinCreate .* %{addhl number_lines -relative}
 # map global user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
@@ -18,21 +49,9 @@ map global normal <c-l> ': enter-user-mode lsp<ret>' -docstring "LSP mode"
 
 add-highlighter global/ number-lines -relative
 # colorscheme plain
-# colorscheme tomorrow-night
-colorscheme plainplus
+colorscheme tomorrow-night
+# colorscheme plainplus
 
-hook global WinSetOption filetype=haskell %{
-  set-option window formatcmd 'fourmolu -i'
-  set-option window indentwidth 2
-}
-
-hook global WinSetOption filetype=dart %{
-  set-option window indentwidth 2
-}
-
-hook global WinSetOption filetype=markdown %{
-  set-option window indentwidth 2
-}
 
 # face global PrimaryCursor grey,white
 

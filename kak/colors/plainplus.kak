@@ -36,7 +36,7 @@ face global LineNumberCursor default
 face global MenuForeground black,blue
 face global MenuBackground blue,black
 face global MenuInfo default
-face global Information default
+face global Information blue,black
 face global Error default
 face global StatusLine default
 face global StatusLineMode default
