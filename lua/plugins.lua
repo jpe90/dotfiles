@@ -27,7 +27,7 @@ require('packer').startup(function()
   use 'bfredl/nvim-luadev' -- languages
   use {"folke/lua-dev.nvim"}
 
-  use 'lervag/vimtex'
+  -- use 'lervag/vimtex'
   use 'neovimhaskell/haskell-vim'
 
   -- THE POPE
@@ -116,6 +116,7 @@ require('packer').startup(function()
   use 'jpe90/onedark.nvim'
   use 'folke/tokyonight.nvim'
   use 'tanvirtin/monokai.nvim'
+  use 'rose-pine/neovim'
   use 'fladson/vim-kitty'
 end)
 
@@ -128,7 +129,7 @@ require('kommentary.config').configure_language("dart", {
 })
 
 require "pears".setup()
-
+-- require('fzf-lua').files({ files = 'reverse-list' })
 local actions = require "fzf-lua.actions"
 require'fzf-lua'.setup {
   previewers = {
@@ -138,18 +139,40 @@ require'fzf-lua'.setup {
       theme           = 'gruvbox-dark', -- bat preview theme (bat --list-themes)
       config          = nil,            -- nil uses $BAT_CONFIG_PATH
     },
+     files = {
+    -- previewer         = "cat",       -- uncomment to override previewer
+    prompt            = 'Files❯ ',
+    cmd               = '',             -- "find . -type f -printf '%P\n'",
+    git_icons         = true,           -- show git icons?
+    file_icons        = true,           -- show file icons?
+    color_icons       = true,           -- colorize file|git icons
+    actions = {
+      ["default"]     = actions.file_edit,
+      ["ctrl-s"]      = actions.file_split,
+      ["ctrl-v"]      = actions.file_vsplit,
+      ["ctrl-t"]      = actions.file_tabedit,
+      -- ["ctrl-q"]      = actions.file_sel_to_qf,
+      ["ctrl-q"]      = nil,
+      ["ctrl-y"]      = function(selected) print(selected[2]) end,
+    }
   },
-  git = {
-    commits = {
-      prompt          = 'Commits❯ ',
-      cmd             = "git log --pretty=oneline --abbrev-commit --color",
-      preview         = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
-      actions = {
-        ["default"] = actions.git_checkout,
-        ["ctrl-v"] = actions.file_vsplit,
-      },
-    },
-  }
+  },
+  -- git = {
+  --   commits = {
+  --     prompt          = 'Commits❯ ',
+  --     cmd             = "git log --pretty=oneline --abbrev-commit --color",
+  --     preview         = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
+  --     actions = {
+  --       ["default"] = actions.git_checkout,
+  --       ["ctrl-v"] = actions.file_vsplit,
+  --     },
+  --   },
+    -- bcommits = {
+    --   actions = {
+    --     ["default"] = actions.git_open_file,
+    --   },
+    -- },
+  -- }
 }
 
 -- -- autopair with coq
@@ -184,7 +207,9 @@ require'fzf-lua'.setup {
 -- vim.g.gruvbox_italicize_comments = 0
 -- vim.g.gruvbox_contrast_light = "hard"
 vim.g.gruvbox_contrast_dark = "hard"
-vim.cmd('colorscheme gruvbox')
+-- vim.cmd('colorscheme gruvbox')
+
+vim.cmd('colorscheme monokai')
 
 -- vim.g.dracula_italic=0
 -- vim.cmd('colorscheme dracula')

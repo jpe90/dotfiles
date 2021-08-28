@@ -28,12 +28,14 @@ map('n', '<leader>reg', [[<cmd>lua require('fzf-lua').registers()<cr>]], { norem
 map('n', '<leader>ky', [[<cmd>lua require('fzf-lua').keymaps()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>col', [[<cmd>lua require('fzf-lua').colorschemes()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>ga', [[<cmd>lua require('fzf-lua').git_commits()<cr>]], { noremap = true, silent = true})
+map('n', '<leader>gb', [[<cmd>lua require('fzf-lua').git_bcommits()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>?', [[<cmd>lua require('fzf-lua').oldfiles()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>p', [[<cmd>lua require('fzf-lua').files()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>b', [[<cmd>lua require('fzf-lua').buffers()<cr>]], { noremap = true, silent = true})
 map('n', '<C-f>', [[<cmd>lua require('fzf-lua').grep_curbuf()<cr>]], { noremap = true, silent = true})
 map('n', '<C-p>', [[<cmd>lua require('fzf-lua').git_files()<cr>]], { noremap = true, silent = true})
 map('n', '<leader>f', [[<cmd>lua require('fzf-lua').live_grep()<cr>]], { noremap = true, silent = true})
+
 -- give C-c the same hook behavior as esc
 map('i', '<C-c>', '<Esc>', { noremap = true })
 
