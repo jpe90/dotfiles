@@ -1,30 +1,42 @@
-#!/usr/bin/env fish
-set fish_greeting
-
-#set -gx TERM xterm-256color
-set -gx MOZ_ENABLE_WAYLAND 1
-set -gx _JAVA_AWT_WM_NONREPARENTING 1
-set -gx EDITOR "kak"
-set -gx TERMINAL "/usr/bin/kitty"
-#set -gx JAVA_HOME "/usr/lib/jvm/default"
-
-fish_add_path /home/solaire/development/scripts/
-
-# need fisher and https://github.com/oh-my-fish/plugin-foreign-env
-#fenv source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh
-
-# aliases
-# alias em "TERM=xterm-256color emacs -nw -q --load ~/.emacs.d/custom_lisp/quick_init.el"
-# alias org "em ~/notes/orgmode/todo.org"
-# alias zth "zathura --fork"
-# alias vsc "code --enable-features=UseOzonePlatform --ozone-platform=wayland"
-
 # ghcup-env
 set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME
 test -f /home/solaire/.ghcup/env ; and set -gx PATH $HOME/.cabal/bin /home/solaire/.ghcup/bin $PATH
+set -gx PATH $HOME/.local/bin $PATH
+set -gx _JAVA_AWT_WM_NONREPARENTING 1
+set -gx MOZ_ENABLE_WAYLAND 1
+set -gx EDITOR /usr/bin/kak
+set -gx TERMINAL /usr/bin/alacritty
+set -gx IHP_EDITOR code --goto
+fish_add_path /opt/cuda/bin
 
-# dart
-set -gx PATH $HOME/.pub-cache/bin $PATH
+alias rgc="rg --column --line-number --hidden --ignore-case --no-heading --color=always"
 
-# stack
-test -f /home/solaire/.stack/config.yaml ; and set -gx PATH $HOME/.local/bin $PATH
+
+#venv
+
+if set -q VIRTUAL_ENV
+    echo -n -s (set_color -b blue white) "(" (basename "$VIRTUAL_ENV") ")" (set_color normal) " "
+end
+
+alias venv="source venv/bin/activate.fish"
+
+
+# start X at login
+#if status --is-login
+#    if test \(-z "$DISPLAY"\) -a \(-z "$SSH_CLIENT"\) -a \(-z "$SSH_TTY"\)
+#        exec startx
+#    end
+#end
+# if status is-login
+#     if not set -q SSH_TTY
+#       if test -z "$DISPLAY" -a "$XDG_VTNR" = 1
+#           exec startx -- -keeptty
+#       end
+#     end
+# end
+
+if set -q SSH_TTY
+  set -g fish_color_host brred
+end
+
+direnv hook fish | source
