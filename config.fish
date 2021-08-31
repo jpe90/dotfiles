@@ -2,11 +2,13 @@
 set fish_greeting
 
 #set -gx TERM xterm-256color
-#set -gx MOZ_ENABLE_WAYLAND 1
+set -gx MOZ_ENABLE_WAYLAND 1
 set -gx _JAVA_AWT_WM_NONREPARENTING 1
-set -gx EDITOR "nvim"
-set -gx TERMINAL "/usr/local/bin/st"
+set -gx EDITOR "kak"
+set -gx TERMINAL "/usr/bin/kitty"
 #set -gx JAVA_HOME "/usr/lib/jvm/default"
+
+fish_add_path /home/solaire/development/scripts/
 
 # need fisher and https://github.com/oh-my-fish/plugin-foreign-env
 #fenv source $HOME/.nix-profile/etc/profile.d/hm-session-vars.sh

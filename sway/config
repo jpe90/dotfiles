@@ -8,7 +8,8 @@
 #
 # Logo key. Use Mod1 for Alt.
 # font pango:Open Sans 11
-font pango:Deja Vu Sans 11
+# font pango:Jetbrains Mono 11
+font pango:monospace 11
 #font pango:Cantarell 11
 set $mod Mod4
 # Home row direction keys, like vim
@@ -17,8 +18,9 @@ set $down j
 set $up k
 set $right l
 # Your preferred terminal emulator
+set $term foot
 # set $term alacritty
-set $term kitty
+# set $term kitty
 set $ide code --enable-features=UseOzonePlatform --ozone-platform=wayland
 # Your preferred application launcher
 # Note: pass the final command to swaymsg so that the resulting window can be opened
@@ -182,6 +184,8 @@ exec gammastep &
 
     # Move focus to the parent container
     bindsym $mod+a focus parent
+
+    bindsym $mod+tab workspace back_and_forth
 #
 # Scratchpad:
 #

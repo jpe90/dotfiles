@@ -87,8 +87,8 @@ require('packer').startup(function()
   use 'hrsh7th/cmp-buffer'
   use 'saadparwaiz1/cmp_luasnip'
 
-  -- use { 'ibhagwan/fzf-lua',
-  use { '/home/solaire/git/fzf-lua',
+  use { 'ibhagwan/fzf-lua',
+  -- use { '/home/solaire/git/fzf-lua',
     -- local actions = require "fzf-lua.actions",
     requires = {
       'vijaymarupudi/nvim-fzf',
