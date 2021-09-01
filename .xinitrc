@@ -45,7 +45,7 @@ fi
 xrandr --output eDP-1 --mode 1920x1080
 exec blueberry-tray &
 feh --bg-fill ~/pictures/wallpaper.jpg
-# picom &
+picom &
 # exec xmonad
 dwmstatus 2>&1 >/dev/null &
 exec dwm
