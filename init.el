@@ -51,7 +51,7 @@
 ;; Set default font
 (set-face-attribute 'default nil
                     :family "Hasklig"
-                    :height 110
+                    :height 90
                     :weight 'normal
                     :width 'normal)
 
@@ -65,9 +65,37 @@
       'org-babel-load-languages
       '((js . t)))
 
-;;; goddamn comments
 
-(setq display-line-numbers-type 'relative)
+;;; scroll like vim
+(autoload 'View-scroll-half-page-forward "view")
+(autoload 'View-scroll-half-page-backward "view")
+(global-set-key (kbd "C-v") 'View-scroll-half-page-forward)
+(global-set-key (kbd "M-v") 'View-scroll-half-page-backward)
+
+;;; unbind page up and page down
+
+(define-key (current-global-map) (kbd "<next>") nil) 
+(global-unset-key (kbd "<prior>"))                   
+;;; toolbar visibility
+(tool-bar-mode -1)
+(toggle-scroll-bar -1)
+(menu-bar-mode -1)
+
+(setq-default tab-width 4)
+
+;;; cycle thru marks w/ c-space
+(setq set-mark-command-repeat-pop t)
+
+;;; turn off mouse acceleration
+(setq mouse-wheel-progressive-speed nil)
+
+;;; case insenstive autocompletion
+(setq read-file-name-completion-ignore-case t)
+
+
+;; ##################### EVIL CONFIG
+
+;; (setq display-line-numbers-type 'relative)
 ;; (global-display-line-numbers-mode)
 
 (use-package evil
@@ -131,38 +159,20 @@
   :ensure t
   :disabled ;; :hook (lsp-mode . lsp-ui-mode)
   :hook (lsp-mode . lsp-ui-mode)
+  :config
+  (setq lsp-headerline-breadcrumb-enable nil)
   )
-(setq lsp-headerline-breadcrumb-enable nil)
-;; doesn't work
-;;(define-key lsp-mode-map (kbd "C-z C-z") lsp-command-map)
 
-;; (defun user-haskell-save-hook ()
-;;   (when (eq major-mode 'haskell-mode)
-;;     (shell-command-to-string (format "brittany --write-mode inplace %s" buffer-file-name))
-;;     (revert-buffer :ignore-auto :noconfirm)
-;;     )
-;;   ) 
-;;(add-hook 'after-save-hook #'user-haskell-save-hook)
-;;(setq haskell-mode-stylish-haskell-path "ormolu") 
-
-;;;(require 'flycheck)
-;;;(add-hook 'haskell-mode-hook 'flycheck-mode)
-;;;;;(setq flycheck-display-errors-function nil)
-;;; '(flycheck-check-syntax-automatically (quote ( mode-enabled saved)))
-;;;;; '(flycheck-idle-change-delay 4) ;; Set delay based on what suits you the best
 (use-package flycheck
   :ensure t
+  :disabled t
   )
-(add-hook 'after-init-hook #'global-flycheck-mode)
+;; (add-hook 'after-init-hook #'global-flycheck-mode)
 
-;;; unbind page up and page down
-
-(define-key (current-global-map) (kbd "<next>") nil) 
-(global-unset-key (kbd "<prior>"))                   
+;;; get rid of blinking cursor
+(blink-cursor-mode 0)
 
 ;;; function args setup
-
-;(fa-config-default)
 
 ;;; flymake setup
 
@@ -181,7 +191,6 @@
 (add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
 
 ;;; initial buffer selection
-;;(setq initial-buffer-choice "/home/solaire/notes/orgmode/todo.org")
 
 ;;; lisp setup
 (use-package paredit
@@ -246,7 +255,6 @@
 (helm-mode 1)
 
 (add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
-;(setq lsp-signature-auto-activate t)
 
 ;;; stop indenting please
 (setq lsp-enable-indentation nil)
@@ -254,14 +262,7 @@
 ;;; WHY DO I KEEP QUITTING
 (setq confirm-kill-emacs 'yes-or-no-p)
 
-;;; get rid of blinking cursor
-(blink-cursor-mode 0)
 
-;;; scroll like vim
-(autoload 'View-scroll-half-page-forward "view")
-(autoload 'View-scroll-half-page-backward "view")
-(global-set-key (kbd "C-v") 'View-scroll-half-page-forward)
-(global-set-key (kbd "M-v") 'View-scroll-half-page-backward)
 
 ;;; jump to previous buffer
 (defun er-switch-to-previous-buffer ()
@@ -289,21 +290,6 @@ Repeated invocations toggle between the two most recently open buffers."
   (shell-command (format "%s -f TAGS -e -R %s" path-to-ctags (directory-file-name dir-name)))
   )
 
-;;; toolbar visibility
-(tool-bar-mode -1)
-(toggle-scroll-bar -1)
-(menu-bar-mode -1)
-
-(setq-default tab-width 4)
-
-;;; cycle thru marks w/ c-space
-(setq set-mark-command-repeat-pop t)
-
-;;; turn off mouse acceleration
-(setq mouse-wheel-progressive-speed nil)
-
-;;; case insenstive autocompletion
-(setq read-file-name-completion-ignore-case t)
 
 ;;; c indentation
 (setq c-default-style "stroustrup")
