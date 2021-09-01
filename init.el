@@ -1,4 +1,4 @@
-;;; configure melpa
+; configure melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq my-packages
@@ -62,7 +62,7 @@
 (setq-default indent-tabs-mode nil)
 (setq visible-cursor nil)
 
-(global-set-key [(control ?h)] 'delete-backward-char)
+;; (global-set-key [(control ?h)] 'delete-backward-char)
 ;; opacity
 
 ;; set transparency
