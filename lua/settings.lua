@@ -24,8 +24,8 @@ vim.o.breakindent = true
 
 -- Change preview window location
 vim.g.splitbelow = true
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
 
 --Make line numbers default
 vim.wo.number = true
@@ -43,7 +43,7 @@ vim.api.nvim_set_keymap('n', '<A-7>', '7gt', { noremap = true, silent=true})
 vim.api.nvim_set_keymap('n', '<A-8>', '8gt', { noremap = true, silent=true})
 
 --Remap space as leader key
-vim.api.nvim_set_keymap('', '<Space>', '<Nop>', { noremap = true, silent=true})
+vim.api.nvim_set_keymap('', ',', '<Nop>', { noremap = true, silent=true})
 
 --Remap for dealing with word wrap
 vim.api.nvim_set_keymap('n', 'k', "v:count == 0 ? 'gk' : 'k'", { noremap=true, expr = true, silent = true})

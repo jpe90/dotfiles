@@ -41,6 +41,10 @@ require('packer').startup(function()
   -- visuals
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use 'maksimr/vim-jsbeautify'
+  use 'Olical/conjure'
+  use 'tpope/vim-dispatch'
+  use 'radenling/vim-dispatch-neovim'
+  use 'clojure-vim/vim-jack-in'
 
   -- utilities
   use 'kyazdani42/nvim-web-devicons'
@@ -207,9 +211,9 @@ require'fzf-lua'.setup {
 -- vim.g.gruvbox_italicize_comments = 0
 -- vim.g.gruvbox_contrast_light = "hard"
 vim.g.gruvbox_contrast_dark = "hard"
--- vim.cmd('colorscheme gruvbox')
+vim.cmd('colorscheme gruvbox')
 
-vim.cmd('colorscheme monokai')
+-- vim.cmd('colorscheme monokai')
 
 -- vim.g.dracula_italic=0
 -- vim.cmd('colorscheme dracula')
@@ -221,7 +225,7 @@ vim.cmd('colorscheme monokai')
 -- vim.g.neon_transparent = true
 -- vim.cmd[[colorscheme neon]]
 
--- vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
+vim.cmd([[hi Normal guibg=NONE ctermbg=NONE]])
 
 -- require("github-theme").setup({
 --   hideInactiveStatusline = true,

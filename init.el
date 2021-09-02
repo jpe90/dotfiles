@@ -1,4 +1,4 @@
-;;; configure melpa
+; configure melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq my-packages
@@ -50,6 +50,8 @@
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
+(xterm-mouse-mode 1)
+
 ;; Set default font
 (set-face-attribute 'default nil
                     :family "Hasklig"
@@ -65,7 +67,7 @@
 (setq visible-cursor nil)
 (setq nrepl-use-ssh-fallback-for-remote-hosts t)
 
-(global-set-key [(control ?h)] 'delete-backward-char)
+;; (global-set-key [(control ?h)] 'delete-backward-char)
 ;; opacity
 
 ;; set transparency
