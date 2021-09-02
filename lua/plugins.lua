@@ -41,6 +41,10 @@ require('packer').startup(function()
   -- visuals
   use { 'lukas-reineke/indent-blankline.nvim', branch="master" }
   use 'maksimr/vim-jsbeautify'
+  use 'Olical/conjure'
+  use 'tpope/vim-dispatch'
+  use 'radenling/vim-dispatch-neovim'
+  use 'clojure-vim/vim-jack-in'
 
   -- utilities
   use 'kyazdani42/nvim-web-devicons'

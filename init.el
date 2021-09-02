@@ -48,6 +48,8 @@
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
+(xterm-mouse-mode 1)
+
 ;; Set default font
 (set-face-attribute 'default nil
                     :family "Hasklig"
