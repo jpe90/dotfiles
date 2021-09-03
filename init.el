@@ -383,7 +383,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(tool-bar-mode nil)
  '(vc-annotate-very-old-color nil)
  '(vc-follow-symlinks t)
- '(window-divider-mode nil)
+ '(window-divider-mode nil))
 
 ;;; needs to be after config
 
