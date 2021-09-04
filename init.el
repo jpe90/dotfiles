@@ -47,6 +47,11 @@
     (unless (package-installed-p package)
       (package-install package))))
 
+(when (featurep 'native-compile)
+  (setq native-comp-deferred-compilation t)
+  (setq native-comp-async-report-warnings-errors nil))
+
+
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
 (xterm-mouse-mode 1)
@@ -327,6 +332,7 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Terminus" :foundry "Xos4" :slant normal :weight normal :height 95 :width normal))))
  '(lsp-ui-doc-background ((t (:inherit tooltip))))
  '(lsp-ui-sideline-symbol-info ((t (:extend t)))))
 (custom-set-variables
