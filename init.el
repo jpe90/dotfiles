@@ -34,6 +34,7 @@
         helm-projectile
         tramp
         helm-tramp
+        helm-rg
         ; nix-mode
         )
       )
@@ -136,7 +137,7 @@
 
 (use-package projectile
   :ensure t
-  :disabled t
+  ;; :disabled t
   :init
   (setq projectile-keymap-prefix (kbd "C-c p"))
   :config
@@ -144,6 +145,13 @@
 ;; Recommended keymap prefix on macOS
 ;; Recommended keymap prefix on Windows/Linux
 ;;; haskell setup
+
+(use-package helm-projectile
+  :ensure t
+  :init
+  (global-set-key  (kbd "C-c p p") 'helm-projectile-switch-project)
+  (setq projectile-switch-project-action 'helm-projectile)
+  )
 
 (require 'haskell-interactive-mode)
 (require 'haskell-process)
@@ -205,7 +213,6 @@
 
 ;;; slime setup
 (setq inferior-lisp-program "sbcl")
-(add-hook 'slime-repl-mode-hook (lambda () (paredit-mode +1)))
 
 ;;; initial buffer selection
 
@@ -248,19 +255,19 @@
 (require 'helm)
 (require 'helm-config)
 (require 'helm-tramp)
-
-(global-set-key (kbd "C-x b") 'helm-mini)
-(global-set-key (kbd "M-x") 'helm-M-x)
-(global-set-key (kbd "C-s") 'helm-occur)
-(global-set-key (kbd "M-y") 'helm-show-kill-ring)
-(global-set-key (kbd "C-x C-f") 'helm-find-files)
-
-
-
-(helm-autoresize-mode t)
-(setq helm-autoresize-max-height 20)
-(setq helm-autoresize-min-height 20)
-(setq helm-split-window-in-side-p t)
+(use-package helm
+  :bind (("M-x" . helm-M-x)
+         ("M-y" . helm-show-kill-ring)
+         ("C-x C-f" . helm-find-files)
+         ("C-x b" . helm-mini)
+         ("C-c o" . helm-occur)
+         )
+  :config  
+  (helm-autoresize-mode t)
+  (setq helm-autoresize-max-height 20)
+  (setq helm-autoresize-min-height 20)
+  (setq helm-split-window-in-side-p t)
+  )
 
 ;;; helm-slime setup
 
@@ -377,7 +384,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(menu-bar-mode nil)
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(tramp helm-tramp color-theme-sanityinc-tomorrow nimbus-theme hasklig-mode ligature atom-one-dark-theme dracula-theme gruvbox-theme jetbrains-darcula-theme markdown-mode markdown-preview-mode elixir elixer-mode helm-projectile projectile company-ghci tree-sitter-indent fzf monokai-pro-theme vscode-dark-plus-theme evil nord-theme csv-mode mood-one-theme nothing-theme phoenix-dark-mono-theme punpun-theme quasi-monochrome-theme spacegray-theme pkgbuild-mode flutter almost-mono-themes sexy-monochrome-theme purp-theme prassee-theme plan9-theme naysayer-theme company lsp-ui spacemacs-theme cyberpunk-theme lsp-haskell rmsbolt peep-dired flycheck w3m exec-path-from-shell python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+   '(helm-rg tramp helm-tramp color-theme-sanityinc-tomorrow nimbus-theme hasklig-mode ligature atom-one-dark-theme dracula-theme gruvbox-theme jetbrains-darcula-theme markdown-mode markdown-preview-mode elixir elixer-mode helm-projectile projectile company-ghci tree-sitter-indent fzf monokai-pro-theme vscode-dark-plus-theme evil nord-theme csv-mode mood-one-theme nothing-theme phoenix-dark-mono-theme punpun-theme quasi-monochrome-theme spacegray-theme pkgbuild-mode flutter almost-mono-themes sexy-monochrome-theme purp-theme prassee-theme plan9-theme naysayer-theme company lsp-ui spacemacs-theme cyberpunk-theme lsp-haskell rmsbolt peep-dired flycheck w3m exec-path-from-shell python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
