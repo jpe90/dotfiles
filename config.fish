@@ -3,14 +3,10 @@ set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME
 test -f /home/solaire/.ghcup/env ; and set -gx PATH $HOME/.cabal/bin /home/solaire/.ghcup/bin $PATH
 set -gx PATH $HOME/.local/bin $PATH
 set -gx _JAVA_AWT_WM_NONREPARENTING 1
-set -gx MOZ_ENABLE_WAYLAND 1
-set -gx EDITOR /usr/bin/nvim
+set -gx EDITOR /usr/bin/kak
 set -gx TERMINAL /usr/bin/alacritty
-set -gx IHP_EDITOR code --goto
-fish_add_path /opt/cuda/bin
 
 alias rgc="rg --column --line-number --hidden --ignore-case --no-heading --color=always"
-
 
 #venv
 
