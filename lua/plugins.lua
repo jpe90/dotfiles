@@ -45,6 +45,8 @@ require('packer').startup(function()
   use 'tpope/vim-dispatch'
   use 'radenling/vim-dispatch-neovim'
   use 'clojure-vim/vim-jack-in'
+  use 'guns/vim-sexp'
+  use 'tpope/vim-sexp-mappings-for-regular-people'
 
   -- utilities
   use 'kyazdani42/nvim-web-devicons'
@@ -91,13 +93,11 @@ require('packer').startup(function()
   use 'hrsh7th/cmp-buffer'
   use 'saadparwaiz1/cmp_luasnip'
 
-  use { 'ibhagwan/fzf-lua',
-  -- use { '/home/solaire/git/fzf-lua',
-    -- local actions = require "fzf-lua.actions",
-    requires = {
-      'vijaymarupudi/nvim-fzf',
-      'kyazdani42/nvim-web-devicons' } -- optional for icons
-  }
+  -- use { 'ibhagwan/fzf-lua',
+  --   requires = {
+  --     'vijaymarupudi/nvim-fzf',
+  --     'kyazdani42/nvim-web-devicons' } -- optional for icons
+  -- }
   
 
 
@@ -133,51 +133,52 @@ require('kommentary.config').configure_language("dart", {
 })
 
 require "pears".setup()
--- require('fzf-lua').files({ files = 'reverse-list' })
-local actions = require "fzf-lua.actions"
-require'fzf-lua'.setup {
-  previewers = {
-    bat = {
-      cmd             = "bat",
-      args            = "--style=numbers,changes --color always",
-      theme           = 'gruvbox-dark', -- bat preview theme (bat --list-themes)
-      config          = nil,            -- nil uses $BAT_CONFIG_PATH
-    },
-     files = {
-    -- previewer         = "cat",       -- uncomment to override previewer
-    prompt            = 'Files❯ ',
-    cmd               = '',             -- "find . -type f -printf '%P\n'",
-    git_icons         = true,           -- show git icons?
-    file_icons        = true,           -- show file icons?
-    color_icons       = true,           -- colorize file|git icons
-    actions = {
-      ["default"]     = actions.file_edit,
-      ["ctrl-s"]      = actions.file_split,
-      ["ctrl-v"]      = actions.file_vsplit,
-      ["ctrl-t"]      = actions.file_tabedit,
-      -- ["ctrl-q"]      = actions.file_sel_to_qf,
-      ["ctrl-q"]      = nil,
-      ["ctrl-y"]      = function(selected) print(selected[2]) end,
-    }
-  },
-  },
-  -- git = {
-  --   commits = {
-  --     prompt          = 'Commits❯ ',
-  --     cmd             = "git log --pretty=oneline --abbrev-commit --color",
-  --     preview         = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
-  --     actions = {
-  --       ["default"] = actions.git_checkout,
-  --       ["ctrl-v"] = actions.file_vsplit,
-  --     },
-  --   },
-    -- bcommits = {
-    --   actions = {
-    --     ["default"] = actions.git_open_file,
-    --   },
-    -- },
-  -- }
-}
+
+-- -- require('fzf-lua').files({ files = 'reverse-list' })
+-- -- local actions = require "fzf-lua.actions"
+-- require'fzf-lua'.setup {
+--   previewers = {
+--     bat = {
+--       cmd             = "bat",
+--       args            = "--style=numbers,changes --color always",
+--       theme           = 'gruvbox-dark', -- bat preview theme (bat --list-themes)
+--       config          = nil,            -- nil uses $BAT_CONFIG_PATH
+--     },
+--      files = {
+--     -- previewer         = "cat",       -- uncomment to override previewer
+--     prompt            = 'Files❯ ',
+--     cmd               = '',             -- "find . -type f -printf '%P\n'",
+--     git_icons         = true,           -- show git icons?
+--     file_icons        = true,           -- show file icons?
+--     color_icons       = true,           -- colorize file|git icons
+--     actions = {
+--       ["default"]     = actions.file_edit,
+--       ["ctrl-s"]      = actions.file_split,
+--       ["ctrl-v"]      = actions.file_vsplit,
+--       ["ctrl-t"]      = actions.file_tabedit,
+--       -- ["ctrl-q"]      = actions.file_sel_to_qf,
+--       ["ctrl-q"]      = nil,
+--       ["ctrl-y"]      = function(selected) print(selected[2]) end,
+--     }
+--   },
+--   },
+--   -- git = {
+--   --   commits = {
+--   --     prompt          = 'Commits❯ ',
+--   --     cmd             = "git log --pretty=oneline --abbrev-commit --color",
+--   --     preview         = "git show --pretty='%Cred%H%n%Cblue%an%n%Cgreen%s' --color {1}",
+--   --     actions = {
+--   --       ["default"] = actions.git_checkout,
+--   --       ["ctrl-v"] = actions.file_vsplit,
+--   --     },
+--   --   },
+--     -- bcommits = {
+--     --   actions = {
+--     --     ["default"] = actions.git_open_file,
+--     --   },
+--     -- },
+--   -- }
+-- }
 
 -- -- autopair with coq
 -- require "pears".setup(function(conf)
