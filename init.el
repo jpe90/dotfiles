@@ -54,6 +54,7 @@
 
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+;; (setq lispy-compat '(edebug cider))
 
 (cua-mode t)
 (xterm-mouse-mode 1)
@@ -209,26 +210,27 @@
 
 ;;; initial buffer selection
 
-;;; lisp setup
-;; (use-package paredit
-;;   :defer t
-;;   :init
-;;   (progn
-;;     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-;;     (add-hook 'clojure-mode-hook 'paredit-mode)
-;;     (add-hook 'clojurescript-mode-hook 'paredit-mode)
-;;     (add-hook 'clojurec-mode-hook 'paredit-mode)
-;;     (add-hook 'cider-repl-mode-hook 'paredit-mode))
-;;     (add-hook 'racket-mode-hook 'paredit-mode)
-;;   )
-;; ;;; clojure
+;; lisp setup
 
-(use-package lispy
-  :ensure t
+(use-package paredit
+  :defer t
   :init
   (progn
-    (add-hook 'clojure-mode-hook 'lispy-mode)
-    ))
+    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+    (add-hook 'clojure-mode-hook 'paredit-mode)
+    (add-hook 'clojurescript-mode-hook 'paredit-mode)
+    (add-hook 'clojurec-mode-hook 'paredit-mode)
+    (add-hook 'cider-repl-mode-hook 'paredit-mode))
+    (add-hook 'racket-mode-hook 'paredit-mode)
+  )
+;;; clojure
+
+;; (use-package lispy
+;;   :ensure t
+;;   :init
+;;   (progn
+;;     (add-hook 'clojure-mode-hook 'lispy-mode)
+;;     ))
 
 (use-package cider
   :defer t
