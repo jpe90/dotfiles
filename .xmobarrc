@@ -1,4 +1,5 @@
 Config { 
+         font = "monospace"
        , additionalFonts = []
        , borderColor = "black"
        , border = TopB
@@ -25,10 +26,11 @@ Config {
                     , Run Memory ["-t","Mem: <usedratio>%"] 10
                     , Run Com "uname" ["-s","-r"] "" 36000
                     , Run Date "%a %b %_d %Y %H:%M" "date" 10
+                    , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%cpu% | %memory%  }\
+       , template = "%StdinReader% | %cpu% | %memory%  }\
                     \{ <fc=#ee9a00>%date%</fc>| %KGAI% | %uname%"
        }
 
