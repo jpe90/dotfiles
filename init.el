@@ -11,7 +11,7 @@
         elpher
         fish-mode
         cider
-        paredit
+        ;; paredit
         clojure-mode
         helm
         magit
@@ -33,6 +33,7 @@
         tramp
         helm-tramp
         helm-rg
+        lispy
         ; nix-mode
         )
       )
@@ -82,9 +83,9 @@
 ;; (global-set-key [(control ?h)] 'delete-backward-char)
 ;; opacity
 
-;; set transparency
-(set-frame-parameter (selected-frame) 'alpha '(85 85))
-(add-to-list 'default-frame-alist '(alpha 85 85))
+;; ;; set transparency
+;; (set-frame-parameter (selected-frame) 'alpha '(85 85))
+;; (add-to-list 'default-frame-alist '(alpha 85 85))
 
 ;;; js org mode
 (org-babel-do-load-languages
@@ -209,18 +210,25 @@
 ;;; initial buffer selection
 
 ;;; lisp setup
-(use-package paredit
-  :defer t
+;; (use-package paredit
+;;   :defer t
+;;   :init
+;;   (progn
+;;     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
+;;     (add-hook 'clojure-mode-hook 'paredit-mode)
+;;     (add-hook 'clojurescript-mode-hook 'paredit-mode)
+;;     (add-hook 'clojurec-mode-hook 'paredit-mode)
+;;     (add-hook 'cider-repl-mode-hook 'paredit-mode))
+;;     (add-hook 'racket-mode-hook 'paredit-mode)
+;;   )
+;; ;;; clojure
+
+(use-package lispy
+  :ensure t
   :init
   (progn
-    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-    (add-hook 'clojure-mode-hook 'paredit-mode)
-    (add-hook 'clojurescript-mode-hook 'paredit-mode)
-    (add-hook 'clojurec-mode-hook 'paredit-mode)
-    (add-hook 'cider-repl-mode-hook 'paredit-mode))
-    (add-hook 'racket-mode-hook 'paredit-mode)
-  )
-;;; clojure
+    (add-hook 'clojure-mode-hook 'lispy-mode)
+    ))
 
 (use-package cider
   :defer t
@@ -357,6 +365,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-mode t nil (cua-base))
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
@@ -412,7 +421,7 @@ Repeated invocations toggle between the two most recently open buffers."
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(sublime-themes project solarized-theme helm-rg tramp helm-tramp color-theme-sanityinc-tomorrow nimbus-theme hasklig-mode ligature atom-one-dark-theme dracula-theme gruvbox-theme jetbrains-darcula-theme markdown-mode markdown-preview-mode elixir elixer-mode company-ghci tree-sitter-indent fzf monokai-pro-theme vscode-dark-plus-theme evil nord-theme csv-mode mood-one-theme nothing-theme phoenix-dark-mono-theme punpun-theme quasi-monochrome-theme spacegray-theme pkgbuild-mode flutter almost-mono-themes sexy-monochrome-theme purp-theme prassee-theme plan9-theme naysayer-theme company lsp-ui spacemacs-theme cyberpunk-theme lsp-haskell rmsbolt peep-dired flycheck w3m exec-path-from-shell python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
+   '(lispy sublime-themes project solarized-theme helm-rg tramp helm-tramp color-theme-sanityinc-tomorrow nimbus-theme hasklig-mode ligature atom-one-dark-theme dracula-theme gruvbox-theme jetbrains-darcula-theme markdown-mode markdown-preview-mode elixir elixer-mode company-ghci tree-sitter-indent fzf monokai-pro-theme vscode-dark-plus-theme evil nord-theme csv-mode mood-one-theme nothing-theme phoenix-dark-mono-theme punpun-theme quasi-monochrome-theme spacegray-theme pkgbuild-mode flutter almost-mono-themes sexy-monochrome-theme purp-theme prassee-theme plan9-theme naysayer-theme company lsp-ui spacemacs-theme cyberpunk-theme lsp-haskell rmsbolt peep-dired flycheck w3m exec-path-from-shell python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(pdf-view-midnight-colors '("#282828" . "#fbf1c7"))
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
