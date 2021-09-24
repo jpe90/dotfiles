@@ -133,6 +133,10 @@
   :config
   (show-paren-mode +1))
 
+(use-package company
+  :ensure t
+  :hook (prog-mode . company-mode))
+
 
 ;; ##################### EVIL CONFIG
 
