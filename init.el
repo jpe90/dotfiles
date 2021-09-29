@@ -6,12 +6,12 @@
 	;;exec-path-from-shell
         flycheck
         haskell-mode
-        helm-slime
-        slime
+        ;; helm-slime
+        ;; slime
         elpher
         fish-mode
         cider
-        ;; paredit
+        ;;  paredit
         clojure-mode
         helm
         magit
@@ -88,8 +88,8 @@
 ;; opacity
 
 ;; ;; set transparency
-(set-frame-parameter (selected-frame) 'alpha '(85 85))
-(add-to-list 'default-frame-alist '(alpha 85 85))
+;; (set-frame-parameter (selected-frame) 'alpha '(85 85))
+;; (add-to-list 'default-frame-alist '(alpha 85 85))
 
 ;;; js org mode
 (org-babel-do-load-languages
@@ -176,10 +176,13 @@
 (require 'haskell-interactive-mode)
 (require 'haskell-process)
 
-
+(use-package dart-mode
+  :ensure t
+  :hook (dart-mode . lsp))
 
 (use-package haskell-mode
   :ensure t
+  :disabled t
   :config
   (define-key haskell-mode-map [f5] (lambda () (interactive) (compile "stack build --fast")))
   :hook (haskell-mode . lsp)
@@ -233,14 +236,17 @@
 ;;; racket setup
 
 ;;; slime setup
-(setq inferior-lisp-program "sbcl")
+;; (setq inferior-lisp-program "sbcl")
+
+(load (expand-file-name "~/.roswell/helper.el"))
+(setq inferior-lisp-program "ros -Q run")
 
 ;;; initial buffer selection
 
 ;; lisp setup
 
 (use-package paredit
-  :defer t
+  ;; :defer t
   :init
   (progn
     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
@@ -249,6 +255,7 @@
     (add-hook 'clojurec-mode-hook 'paredit-mode)
     (add-hook 'cider-repl-mode-hook 'paredit-mode)
     (add-hook 'racket-mode-hook 'paredit-mode)
+    (add-hook 'racket-repl-mode-hook 'paredit-mode)
     )
   )
 
@@ -262,7 +269,7 @@
 ;;     ))
 
 (use-package cider
-  :defer t
+  ;; :defer t
   :bind (("C-c =" . cider-format-buffer))
   :init
   (progn
@@ -305,11 +312,11 @@
 
 ;;; helm-slime setup
 
-(defun user-slime-repl-keybindings ()
-  (local-set-key (kbd "C-c h y") 'helm-slime-repl-history)
-)
+;; (defun user-slime-repl-keybindings ()
+;;   (local-set-key (kbd "C-c h y") 'helm-slime-repl-history)
+;; )
 
-(add-hook 'slime-repl-mode-hook		#'user-slime-repl-keybindings)
+;; (add-hook 'slime-repl-mode-hook		#'user-slime-repl-keybindings)
 
 ;;; helm-tramp setup
 
@@ -457,7 +464,8 @@ Repeated invocations toggle between the two most recently open buffers."
  '(cua-normal-cursor-color "#DCDCCC")
  '(cua-overwrite-cursor-color "#F0DFAF")
  '(cua-read-only-cursor-color "#7F9F7F")
- '(custom-enabled-themes '(doom-tomorrow-night))
+ '(custom-enabled-themes '(gruvbox-dark-hard))
+ '(exwm-floating-border-color "#0d0d0d")
  '(fci-rule-color "#010F1D")
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
  '(frame-background-mode 'dark)
@@ -479,6 +487,9 @@ Repeated invocations toggle between the two most recently open buffers."
  '(hl-fg-colors
    '("#3F3F3F" "#3F3F3F" "#3F3F3F" "#3F3F3F" "#3F3F3F" "#3F3F3F" "#3F3F3F" "#3F3F3F"))
  '(hl-paren-colors '("#93E0E3" "#F0DFAF" "#8CD0D3" "#bbb0cb" "#7F9F7F"))
+ '(jdee-db-active-breakpoint-face-colors (cons "#0d0d0d" "#81a2be"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#0d0d0d" "#b5bd68"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#0d0d0d" "#5a5b5a"))
  '(linum-format " %7i ")
  '(lsp-ui-doc-border "#93a1a1")
  '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
@@ -486,11 +497,14 @@ Repeated invocations toggle between the two most recently open buffers."
  '(menu-bar-mode nil)
  '(nrepl-message-colors
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#488249" "#95d291" "#57a2a4" "#93E0E3" "#DC8CC3" "#bbb0cb"))
+ '(objed-cursor-color "#cc6666")
  '(package-selected-packages
    '(lsp-mode rainbow-delimiters doom-themes nord-theme gotham-theme iceberg-theme nimbus-theme mood-one-theme nova-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes solarized-theme racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-slime helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci color-theme-sanityinc-tomorrow cider atom-one-dark-theme almost-mono-themes))
  '(pdf-view-midnight-colors '("#fdf4c1" . "#1d2021"))
  '(pos-tip-background-color "#FFF9DC")
  '(pos-tip-foreground-color "#011627")
+ '(rustic-ansi-faces
+   ["#1d1f21" "#cc6666" "#b5bd68" "#f0c674" "#81a2be" "#c9b4cf" "#8abeb7" "#c5c8c6"])
  '(smartrep-mode-line-active-bg (solarized-color-blend "#7F9F7F" "#4F4F4F" 0.2))
  '(term-default-bg-color "#3F3F3F")
  '(term-default-fg-color "#DCDCCC")
