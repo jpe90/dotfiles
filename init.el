@@ -1,4 +1,4 @@
-;colsp;; configure melpa
+;; configure melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (setq my-packages
@@ -41,7 +41,7 @@
 
 ;; (when (not package-archive-contents)
 ;;   (package-refresh-contents))
-(set-face-font 'default "Terminus")
+(set-face-font 'default "Inconsolata")
 (require 'cl-lib)
 (package-initialize)
 (unless (cl-every #'package-installed-p my-packages)
@@ -160,9 +160,9 @@
   :init (global-auto-composition-mode -1))
 
 ;; Colorizes delimiters so they can be told apart
-(use-package rainbow-delimiters
-             :ensure t
-             :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+;; (use-package rainbow-delimiters
+;;              :ensure t
+;;              :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 
 ;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
 ;; (add-hook 'prog-mode-hook 'evil-local-mode)
@@ -236,10 +236,10 @@
 ;;; racket setup
 
 ;;; slime setup
-;; (setq inferior-lisp-program "sbcl")
+(setq inferior-lisp-program "sbcl")
 
-(load (expand-file-name "~/.roswell/helper.el"))
-(setq inferior-lisp-program "ros -Q run")
+;; (load (expand-file-name "~/.roswell/helper.el"))
+;; (setq inferior-lisp-program "ros -Q run")
 
 ;;; initial buffer selection
 
@@ -464,7 +464,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(cua-normal-cursor-color "#DCDCCC")
  '(cua-overwrite-cursor-color "#F0DFAF")
  '(cua-read-only-cursor-color "#7F9F7F")
- '(custom-enabled-themes '(gruvbox-dark-hard))
+ '(custom-enabled-themes '(leuven))
  '(exwm-floating-border-color "#0d0d0d")
  '(fci-rule-color "#010F1D")
  '(flycheck-color-mode-line-face-to-color 'mode-line-buffer-id)
@@ -499,7 +499,7 @@ Repeated invocations toggle between the two most recently open buffers."
    '("#CC9393" "#DFAF8F" "#F0DFAF" "#488249" "#95d291" "#57a2a4" "#93E0E3" "#DC8CC3" "#bbb0cb"))
  '(objed-cursor-color "#cc6666")
  '(package-selected-packages
-   '(lsp-mode rainbow-delimiters doom-themes nord-theme gotham-theme iceberg-theme nimbus-theme mood-one-theme nova-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes solarized-theme racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-slime helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci color-theme-sanityinc-tomorrow cider atom-one-dark-theme almost-mono-themes))
+   '(tango-plus-theme lsp-mode rainbow-delimiters doom-themes nord-theme gotham-theme iceberg-theme nimbus-theme mood-one-theme nova-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes solarized-theme racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci color-theme-sanityinc-tomorrow cider atom-one-dark-theme almost-mono-themes))
  '(pdf-view-midnight-colors '("#fdf4c1" . "#1d2021"))
  '(pos-tip-background-color "#FFF9DC")
  '(pos-tip-foreground-color "#011627")
