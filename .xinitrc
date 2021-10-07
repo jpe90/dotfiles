@@ -44,9 +44,10 @@ fi
 
 xrandr --output eDP-1 --mode 1920x1080
 exec blueberry-tray &
-feh --bg-fill ~/pictures/wallpaper.jpg
+feh --bg-fill /home/solaire/pictures/1588334104580.jpg
 picom &
-exec xmonad
+# exec xmonad
 # dwmstatus 2>&1 >/dev/null &
 # exec dwm
-# exec stumpwm
+exec stumpwm
+# exec sbcl --load /home/solaire/.stumpwm.d/startstump
