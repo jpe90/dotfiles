@@ -1,49 +1,9 @@
 ;; configure melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(setq my-packages
-      '(
-	;;exec-path-from-shell
-        ;; flycheck
-        haskell-mode
-        sly
-        elpher
-        fish-mode
-        cider
-        paredit
-        clojure-mode
-        helm
-        magit
-        zig-mode
-        yaml-mode
-        meson-mode
-        use-package
-	lsp-mode
-	lsp-ui
-        dart-mode
-        lsp-dart
-        evil
-        evil-surround
-        lua-mode
-        lsp-haskell
-        company
-        company-ghci
-        tramp
-        racket-mode
-        helm-tramp
-        rainbow-delimiters
-        ; nix-mode
-        ))
 
-;; (when (not package-archive-contents)
-;;   (package-refresh-contents))
-;; (set-face-font 'default "Inconsolata")
-(require 'cl-lib)
-(package-initialize)
-(unless (cl-every #'package-installed-p my-packages)
-  (dolist (package my-packages)
-    (unless (package-installed-p package)
-      (package-install package))))
+(when (not package-archive-contents)
+  (package-refresh-contents))
 
 (when (featurep 'native-compile)
   (setq native-comp-deferred-compilation t)
@@ -61,36 +21,31 @@
 
 (setq custom-safe-themes t)
 ;; stop opening vertical splits
-;; (setq split-width-threshold nil)
 (setq split-height-threshold nil)
 
 ;; Set default font
-;; (when (file-exists-p "~/.emacs.d/usehask.el")
-;;   (set-face-attribute 'default nil
-;;                     :family "Hasklig"
-;;                     :height 90
-;;                     :weight 'normal
-;;                     :width 'normal))
-
-;; (set-face-bold-p 'bold nil)
-
-;;(exec-path-from-shell-initialize)
+;; (set-face-font 'default "Hack Nerd Font Mono:size=12")
+;; (set-face-font 'default "Inconsolata")
+;; (set-face-font 'default "Jetbrains Mono:size=12")
+(set-face-attribute 'default nil :font "Terminus-10:regular")
 
 (setq-default indent-tabs-mode nil)
 (setq visible-cursor nil)
 (setq nrepl-use-ssh-fallback-for-remote-hosts t)
 
-;; (global-set-key [(control ?h)] 'delete-backward-char)
 ;; opacity
 
 ;; ;; set transparency
 ;; (set-frame-parameter (selected-frame) 'alpha '(85 85))
 ;; (add-to-list 'default-frame-alist '(alpha 85 85))
 
-;;; js org mode
+;;; org mode code eval
 (org-babel-do-load-languages
       'org-babel-load-languages
-      '((js . t)))
+      '((js . t)
+        (lisp . t)))
+
+ (setq org-babel-lisp-eval-fn #'sly-eval)
 
 
 ;;; scroll like vim
@@ -99,10 +54,6 @@
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
 (global-set-key (kbd "<prior>") 'View-scroll-half-page-backward)
 
-;;; unbind page up and page down
-
-;; (define-key (current-global-map) (kbd "<next>") nil) 
-;; (global-unset-key (kbd "<prior>"))                   
 ;;; toolbar visibility
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
@@ -136,18 +87,10 @@
   (racket-repl-mode . company-mode)
   (sly-mode . company-mode))
 
-
-;; ##################### EVIL CONFIG
-
-;; (setq display-line-numbers-type 'relative)
-;; (global-display-line-numbers-mode)
-
 (use-package evil
   :ensure t
   :disabled t
   )
-;; (evil-mode 1)
-
 (use-package evil-surround
   :ensure t
   :disabled t
@@ -162,9 +105,6 @@
 ;; (use-package rainbow-delimiters
 ;;              :ensure t
 ;;              :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-
-;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
-;; (add-hook 'prog-mode-hook 'evil-local-mode)
 
 ;;; haskell setup
 
@@ -187,21 +127,19 @@
   :hook (haskell-mode . lsp)
   )
 
-;; (add-hook 'haskell-mode-hook 'evil-local-mode)
- 
+(use-package lsp-mode
+  :ensure t
+  :disabled t
+  :config
+  (setq lsp-enable-indentation nil))
+
 (use-package lsp-haskell
   :ensure t
+  :after lsp-mode
   :disabled t
   :config
   (setq lsp-log-io t)
 )
-
-;; lsp
-
-(use-package lsp-mode
-  :ensure t
-  :disabled t
-  )
 
 (use-package lsp-ui
   :ensure t
@@ -215,37 +153,10 @@
   :ensure t
   :disabled t
   )
-;; (add-hook 'after-init-hook #'global-flycheck-mode)
-
-;;; get rid of blinking cursor
-(blink-cursor-mode 1)
-
-;;; function args setup
-
-;;; flymake setup
-
-(defun user-flymake-keybindings ()
-  (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
-  (local-set-key (kbd "M-n") 'flymake-goto-next-error)
-)
-
-(add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
-
-
-;;; racket setup
-
-;;; slime setup
-(setq inferior-lisp-program "sbcl")
-
-;; (load (expand-file-name "~/.roswell/helper.el"))
-;; (setq inferior-lisp-program "ros -Q run")
-
-;;; initial buffer selection
-
-;; lisp setup
 
 (use-package paredit
   ;; :defer t
+  :ensure t
   :init
   (progn
     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
@@ -256,21 +167,14 @@
     (add-hook 'racket-mode-hook 'paredit-mode)
     (add-hook 'racket-repl-mode-hook 'paredit-mode)
     )
+  (bind-key "C-M-w" 'select-and-copy-between-parens)
   :hook
   (sly-mode . paredit-mode)
   )
 
-;;; clojure
-
-;; (use-package lispy
-;;   :ensure t
-;;   :init
-;;   (progn
-;;     (add-hook 'clojure-mode-hook 'lispy-mode)
-;;     ))
-
 (use-package cider
   ;; :defer t
+  :ensure t
   :bind (("C-c =" . cider-format-buffer))
   :init
   (progn
@@ -282,62 +186,69 @@
   (setq cider-repl-display-help-banner nil)
   (setq cider-auto-mode nil)
   (setq show-paren-mode t)
-    )
+  )
+
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns))
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+;;; get rid of blinking cursor
+(blink-cursor-mode 1)
+
+(defun user-flymake-keybindings ()
+  (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
+  (local-set-key (kbd "M-n") 'flymake-goto-next-error))
+(add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
+
+;; lisp setup
+(defun select-and-copy-between-parens ()
+  (interactive)
+  (mark-sexp)
+  (copy-region-as-kill (region-beginning) (region-end)))
 
 ;;; gdb setup
 (setq
  ;; use gdb-many-windows by default
  gdb-many-windows t
-
  ;; Non-nil means display source file containing the main routine at startup
- gdb-show-main t
- )
+ gdb-show-main t)
 
-;;; helm setup
-(require 'helm)
-(require 'helm-config)
-(require 'helm-tramp)
 (use-package helm
+  :ensure t
   :bind (("M-x" . helm-M-x)
          ("M-y" . helm-show-kill-ring)
          ("C-x C-f" . helm-find-files)
          ("C-x b" . helm-mini)
-         ("C-c o" . helm-occur)
-         )
+         ("C-c o" . helm-occur))
   :config  
   (helm-autoresize-mode t)
   (setq helm-autoresize-max-height 20)
   (setq helm-autoresize-min-height 20)
-  (setq helm-split-window-in-side-p t)
+  (setq helm-split-window-in-side-p t))
+(use-package helm-tramp
+  :ensure t
+  :after helm
+  :init
+  (setq helm-tramp-custom-connections '(/sshx:solaire@192.168.1.199:/home/solaire/development))
+  :bind
+  (:map global-map
+        ("C-c s" . helm-tramp)))
+
+
+(use-package sly
+  :ensure t
+  :init
+  (setq inferior-lisp-program "sbcl")
   )
-
-;;; helm-slime setup
-
-;; (defun user-slime-repl-keybindings ()
-;;   (local-set-key (kbd "C-c h y") 'helm-slime-repl-history)
-;; )
-
-;; (add-hook 'slime-repl-mode-hook		#'user-slime-repl-keybindings)
-
-;;; helm-tramp setup
-
-(define-key global-map (kbd "C-c s") 'helm-tramp)
-(setq helm-tramp-custom-connections '(/sshx:solaire@192.168.1.199:/home/solaire/development))
-
-
-(helm-mode 1)
-
-
 
 (add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
 
 ;;; stop indenting please
-(setq lsp-enable-indentation nil)
+
 
 ;;; WHY DO I KEEP QUITTING
 (setq confirm-kill-emacs 'yes-or-no-p)
-
-
 
 ;;; jump to previous buffer
 (defun er-switch-to-previous-buffer ()
@@ -358,12 +269,13 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; #EXTERNAL DEPENDENCY universal ctags
 ;;; create-tags function
-(setq path-to-ctags "/usr/bin/ctags")
-(defun create-tags (dir-name)
-  "Create tags file."
-  (interactive "DDirectory: ")
-  (shell-command (format "%s -f TAGS -e -R %s" path-to-ctags (directory-file-name dir-name)))
-  )
+;; (setq path-to-ctags "/usr/bin/ctags")
+
+;; (defun create-tags (dir-name)
+;;   "Create tags file."
+;;   (interactive "DDirectory: ")
+;;   (shell-command (format "%s -f TAGS -e -R %s" path-to-ctags (directory-file-name dir-name)))
+;;   )
 
 
 ;;; c indentation
@@ -377,9 +289,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq org-log-done t)
 
 ;;; jump to header in c file
-(add-hook 'c-mode-common-hook
-  (lambda() 
-    (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+;; (add-hook 'c-mode-common-hook
+;;   (lambda() 
+;;     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
 
 (setq column-number-mode t)
 ;; ########################## Custom
@@ -437,7 +349,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(vc-annotate-background-mode nil)
  '(vc-annotate-very-old-color nil)
  '(vc-follow-symlinks t)
- '(window-divider-mode nil))
+ '(window-divider-mode nil)) 
 
 ;;; needs to be after config
 
@@ -454,15 +366,46 @@ Repeated invocations toggle between the two most recently open buffers."
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
  '(column-number-mode t)
  '(compilation-message-face 'default)
+ '(custom-enabled-themes '(gruvbox-dark-hard))
+ '(exwm-floating-border-color "#383838")
+ '(fci-rule-color "#585659")
+ '(highlight-tail-colors ((("#2a342c") . 0) (("#273335") . 20)))
+ '(jdee-db-active-breakpoint-face-colors (cons "#131313" "#fce566"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#131313" "#7bd88f"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#131313" "#525053"))
  '(linum-format " %7i ")
  '(lsp-ui-doc-border "#93a1a1")
  '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
  '(menu-bar-mode nil)
+ '(objed-cursor-color "#fc618d")
  '(package-selected-packages
    '(doom-themes su sly tango-plus-theme lsp-mode rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+ '(rustic-ansi-faces
+   ["#222222" "#fc618d" "#7bd88f" "#fce566" "#5ad4e6" "#5ad4e6" "#5ad4e6" "#f7f1ff"])
+ '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
+ '(vc-annotate-color-map
+   (list
+    (cons 20 "#7bd88f")
+    (cons 40 "#a6dc81")
+    (cons 60 "#d1e073")
+    (cons 80 "#fce566")
+    (cons 100 "#fcc95f")
+    (cons 120 "#fcae59")
+    (cons 140 "#fd9353")
+    (cons 160 "#c6a884")
+    (cons 180 "#90beb5")
+    (cons 200 "#5ad4e6")
+    (cons 220 "#90adc8")
+    (cons 240 "#c687aa")
+    (cons 260 "#fc618d")
+    (cons 280 "#d15c7e")
+    (cons 300 "#a75870")
+    (cons 320 "#7c5461")
+    (cons 340 "#585659")
+    (cons 360 "#585659")))
  '(vc-annotate-very-old-color nil)
  '(window-divider-mode nil))
