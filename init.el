@@ -17,7 +17,7 @@
 ;; (setq lispy-compat '(edebug cider))
 
 (xterm-mouse-mode 1)
-(setq-default cursor-type 'box)
+(setq-default cursor-type 'bar)
 
 (setq custom-safe-themes t)
 ;; stop opening vertical splits
@@ -25,9 +25,10 @@
 
 ;; Set default font
 ;; (set-face-font 'default "Hack Nerd Font Mono:size=12")
-;; (set-face-font 'default "Inconsolata")
+(set-face-font 'default "Inconsolata")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
-(set-face-attribute 'default nil :font "Terminus-10:regular")
+;; (set-face-attribute 'default nil :font "Terminus-10:regular")
+;; (set-face-attribute 'default nil :font "Jetbrains Mono-10")
 
 (setq-default indent-tabs-mode nil)
 (setq visible-cursor nil)
@@ -72,6 +73,7 @@
 
 ;;; hide show
 (add-hook 'prog-mode-hook #'hs-minor-mode)
+(global-set-key (kbd "C-,") 'select-line)
 (global-set-key (kbd "C-c <right>") 'hs-show-block)
 (global-set-key (kbd "C-c <left>") 'hs-hide-block)
 (setq hs-hide-comments-when-hiding-all nil)
@@ -111,9 +113,6 @@
 (use-package racket-mode
   :ensure t
   :hook (racket-mode . racket-xp-mode))
-
-(require 'haskell-interactive-mode)
-(require 'haskell-process)
 
 (use-package dart-mode
   :ensure t
@@ -194,7 +193,7 @@
   :config
   (exec-path-from-shell-initialize))
 ;;; get rid of blinking cursor
-(blink-cursor-mode 1)
+;; (blink-cursor-mode 1)
 
 (defun user-flymake-keybindings ()
   (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
@@ -206,6 +205,12 @@
   (interactive)
   (mark-sexp)
   (copy-region-as-kill (region-beginning) (region-end)))
+
+(defun select-line ()
+  (interactive)
+  (back-to-indentation)
+  (mark-sexp)
+  (move-end-of-line))
 
 ;;; gdb setup
 (setq
@@ -287,6 +292,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (define-key global-map "\C-cl" 'org-store-link)
 (define-key global-map "\C-ca" 'org-agenda)
 (setq org-log-done t)
+(setq org-hide-block-startup t)
 
 ;;; jump to header in c file
 ;; (add-hook 'c-mode-common-hook
@@ -366,7 +372,7 @@ Repeated invocations toggle between the two most recently open buffers."
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(gruvbox-dark-hard))
+ '(custom-enabled-themes '(doom-1337))
  '(exwm-floating-border-color "#383838")
  '(fci-rule-color "#585659")
  '(highlight-tail-colors ((("#2a342c") . 0) (("#273335") . 20)))
