@@ -17,7 +17,7 @@
 ;; (setq lispy-compat '(edebug cider))
 
 (xterm-mouse-mode 1)
-(setq-default cursor-type 'bar)
+(setq-default cursor-type 'box)
 
 (setq custom-safe-themes t)
 ;; stop opening vertical splits
@@ -25,9 +25,9 @@
 
 ;; Set default font
 ;; (set-face-font 'default "Hack Nerd Font Mono:size=12")
-(set-face-font 'default "Inconsolata")
+;; (set-face-font 'default "Inconsolata")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
-;; (set-face-attribute 'default nil :font "Terminus-10:regular")
+(set-face-attribute 'default nil :font "Terminus-10:regular")
 ;; (set-face-attribute 'default nil :font "Jetbrains Mono-10")
 
 (setq-default indent-tabs-mode nil)
@@ -46,7 +46,7 @@
       '((js . t)
         (lisp . t)))
 
- (setq org-babel-lisp-eval-fn #'sly-eval)
+(setq org-babel-lisp-eval-fn #'sly-eval)
 
 
 ;;; scroll like vim
@@ -78,6 +78,10 @@
 (global-set-key (kbd "C-c <left>") 'hs-hide-block)
 (setq hs-hide-comments-when-hiding-all nil)
 
+(use-package undo-tree
+  :init
+  (global-undo-tree-mode))
+
 (use-package paren
   :config
   (show-paren-mode +1))
@@ -87,7 +91,8 @@
   :hook
   (prog-mode . company-mode)
   (racket-repl-mode . company-mode)
-  (sly-mode . company-mode))
+  (sly-mode . company-mode)
+  (cider-repl-mode . company-mode))
 
 (use-package evil
   :ensure t
@@ -156,6 +161,7 @@
 (use-package paredit
   ;; :defer t
   :ensure t
+  :bind (("M-[" . paredit-wrap-square))
   :init
   (progn
     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
@@ -193,7 +199,7 @@
   :config
   (exec-path-from-shell-initialize))
 ;;; get rid of blinking cursor
-;; (blink-cursor-mode 1)
+(blink-cursor-mode 0)
 
 (defun user-flymake-keybindings ()
   (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
@@ -209,7 +215,7 @@
 (defun select-line ()
   (interactive)
   (back-to-indentation)
-  (mark-sexp)
+  (set-mark-command)
   (move-end-of-line))
 
 ;;; gdb setup
@@ -221,6 +227,7 @@
 
 (use-package helm
   :ensure t
+  :demand
   :bind (("M-x" . helm-M-x)
          ("M-y" . helm-show-kill-ring)
          ("C-x C-f" . helm-find-files)
@@ -230,7 +237,10 @@
   (helm-autoresize-mode t)
   (setq helm-autoresize-max-height 20)
   (setq helm-autoresize-min-height 20)
-  (setq helm-split-window-in-side-p t))
+  (setq helm-split-window-in-side-p t)
+  :init
+  (helm-mode 1))
+
 (use-package helm-tramp
   :ensure t
   :after helm
@@ -372,7 +382,7 @@ Repeated invocations toggle between the two most recently open buffers."
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(doom-1337))
+ '(custom-enabled-themes '(danneskjold))
  '(exwm-floating-border-color "#383838")
  '(fci-rule-color "#585659")
  '(highlight-tail-colors ((("#2a342c") . 0) (("#273335") . 20)))
@@ -386,7 +396,8 @@ Repeated invocations toggle between the two most recently open buffers."
  '(menu-bar-mode nil)
  '(objed-cursor-color "#fc618d")
  '(package-selected-packages
-   '(doom-themes su sly tango-plus-theme lsp-mode rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree doom-themes su sly tango-plus-theme lsp-mode rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+ '(pdf-view-midnight-colors '("#fdf4c1" . "#1d2021"))
  '(rustic-ansi-faces
    ["#222222" "#fc618d" "#7bd88f" "#fce566" "#5ad4e6" "#5ad4e6" "#5ad4e6" "#f7f1ff"])
  '(show-paren-mode t)
