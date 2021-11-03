@@ -8,6 +8,7 @@ set -gx EDITOR /usr/bin/emacs
 set -gx TERMINAL /usr/bin/alacritty
 set -gx IHP_EDITOR code --goto
 set -gx WEBKIT_FORCE_SANDBOX 0
+set -gx GDK_CORE_DEVICE_EVENTS 1
 fish_add_path /opt/cuda/bin
 fish_add_path /home/solaire/.cargo/bin/
 

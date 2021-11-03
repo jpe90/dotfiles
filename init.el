@@ -24,10 +24,11 @@
 (setq split-height-threshold nil)
 
 ;; Set default font
-;; (set-face-font 'default "Hack Nerd Font Mono:size=12")
-;; (set-face-font 'default "Inconsolata")
-;; (set-face-font 'default "Jetbrains Mono:size=12")
-(set-face-attribute 'default nil :font "Terminus-10:regular")
+;; (set-face-font 'default "Hack Nerd Font Mono-9")
+;; (set-face-font 'default "Inconsolata-10")
+;; the russians make good fonts
+(set-face-font 'default "Jetbrains Mono:size=12")
+;; (set-face-attribute 'default nil :font "Terminus-10:regular")
 ;; (set-face-attribute 'default nil :font "Jetbrains Mono-10")
 
 (setq-default indent-tabs-mode nil)
@@ -272,7 +273,7 @@ Repeated invocations toggle between the two most recently open buffers."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
-(global-set-key (kbd "C-x x") #'er-switch-to-previous-buffer)
+(global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 
 
 ;;; backup/autosave
@@ -380,9 +381,10 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If there is more than one, they won't work right.
  '(ansi-color-names-vector
    ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
+ '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(danneskjold))
+ '(custom-enabled-themes '(leuven))
  '(exwm-floating-border-color "#383838")
  '(fci-rule-color "#585659")
  '(highlight-tail-colors ((("#2a342c") . 0) (("#273335") . 20)))

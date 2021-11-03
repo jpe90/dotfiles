@@ -66,11 +66,10 @@ map global normal '=' ': format<ret>'                         -docstring 'format
 map global normal <c-l> ': enter-user-mode lsp<ret>' -docstring "LSP mode"
 
 add-highlighter global/ number-lines -relative
-# colorscheme plain
+colorscheme plain
 # colorscheme tomorrow-night
 # colorscheme gruvbox
 # colorscheme plainplus
-colorscheme defaultprime
 
 
 # face global PrimaryCursor grey,white
