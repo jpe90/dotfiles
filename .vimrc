@@ -1,36 +1,8 @@
-call plug#begin('~/.vim/plugged')
-
-Plug 'ziglang/zig.vim'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-eunuch'
-Plug 'tpope/vim-surround'
-Plug 'tpope/vim-commentary'
-Plug 'tpope/vim-unimpaired'
-Plug 'tpope/vim-repeat'
-Plug 'dart-lang/dart-vim-plugin'
-Plug 'neovimhaskell/haskell-vim'
-Plug 'dag/vim-fish'
-Plug 'morhetz/gruvbox'
-Plug 'tbastos/vim-lua'
-Plug 'rust-lang/rust.vim'
-Plug 'rhysd/conflict-marker.vim'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-Plug 'justinmk/vim-sneak'
-Plug 'preservim/nerdtree'
-Plug 'LnL7/vim-nix'
-Plug 'jiangmiao/auto-pairs'
-
-call plug#end()
-
-"let g:gruvbox_contrast_dark = 'hard'
-
-colorscheme gruvbox
+" conflict-marker.vim  fzf.vim  nerdtree  swift.vim  vim-commentary  vim-easymotion  vim-surround  zig.vim
+" /Users/jon/.vim/pack/my-packages/start
 syntax on
 set undofile
 set background=dark
-set hidden
-set wildmenu
 set number
 set relativenumber
 set laststatus=2
@@ -54,6 +26,7 @@ set smartindent
 set ignorecase
 set modeline
 set clipboard=unnamedplus
+set foldmethod=marker
 hi Normal guibg=NONE ctermbg=NONE
 " filetype on
 filetype plugin indent on
@@ -77,20 +50,6 @@ nnoremap <leader>7 7gt
 nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
 
-" ################# VIM-FUGITIVE ##############
-
-nmap <leader>gh :diffget //2<CR>
-nmap <leader>gl :diffget //3<CR>
-nmap <leader>gs :G<CR>
-
-" ################ HASKELL ####################
-
-" let g:haskell_indent_disable = 1
-
-" ############## new term in current dir
-
-:command Nu :silent ! nu
-
 " ############### NERDTREE
 
 nnoremap <leader>n :NERDTreeFocus<CR>
@@ -112,13 +71,3 @@ endif
 " background color.
 let &t_ut=''
 
-nnoremap Y y$
-
-nnoremap n nzzzv
-nnoremap N Nzzzv
-nnoremap J mzJ`z
-
-inoremap , ,<c-g>u
-inoremap . .<c-g>u
-inoremap ? ?<c-g>u
-inoremap ! !<c-g>u

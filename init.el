@@ -1,33 +1,55 @@
-;; configure melpa
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(when (memq window-system '(mac ns))
+  (setenv "PATH" (concat "/opt/homebrew/bin/:" (getenv "PATH"))))
 
-(when (not package-archive-contents)
-  (package-refresh-contents))
+(condition-case nil
+    (require 'use-package)
+  (file-error
+   (require 'package)
+   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+   (package-initialize)
+   (package-refresh-contents)
+   (package-install 'use-package)
+   (setq use-package-always-ensure t)
+   (require 'use-package)))
+
+;; (add-to-list 'load-path "~/.emacs.d/lisp/")
+(load "~/.emacs.d/lisp/erc.el")
+(load "~/.emacs.d/lisp/funcs.el")
+(load "~/.emacs.d/lisp/platform.el")
+(global-unset-key (kbd "C-z"))
+
+(global-set-key (kbd "M-o") #'other-frame)
+(global-set-key (kbd "C-o") #'other-window)
+
+;; (when (not package-archive-contents)
+;;   (package-refresh-contents))
 
 (when (featurep 'native-compile)
   (setq native-comp-deferred-compilation t)
   (setq native-comp-async-report-warnings-errors nil))
 
-
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-;; (setq erc-nick "jpe")
-;; (erc-tls :server "irc.libera.chat" :port 6697 :nick "jpe")
-;; (setq erc-prompt-for-nickserv-password t)
-;; (setq lispy-compat '(edebug cider))
 
+;; use mouse if we're in the terminal
 (xterm-mouse-mode 1)
 (setq-default cursor-type 'box)
 
+;; bind command to control on mac
+(if (eq system-type 'darwin)
+ (setq mac-command-modifier 'control)
+)
+
+;; stop asking me if i want to trust a theme
 (setq custom-safe-themes t)
-;; stop opening vertical splits
+
+;; stop opening vertical splits (i don't think this works)
 (setq split-height-threshold nil)
 
 ;; Set default font
-;; (set-face-font 'default "Hack Nerd Font Mono-9")
+(set-face-font 'default "SF Mono-12")
 ;; (set-face-font 'default "Inconsolata-10")
 ;; the russians make good fonts
-(set-face-font 'default "Jetbrains Mono:size=12")
+;; (set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-attribute 'default nil :font "Terminus-10:regular")
 ;; (set-face-attribute 'default nil :font "Jetbrains Mono-10")
 
@@ -35,19 +57,17 @@
 (setq visible-cursor nil)
 (setq nrepl-use-ssh-fallback-for-remote-hosts t)
 
-;; opacity
-
-;; ;; set transparency
-;; (set-frame-parameter (selected-frame) 'alpha '(85 85))
-;; (add-to-list 'default-frame-alist '(alpha 85 85))
-
 ;;; org mode code eval
 (org-babel-do-load-languages
       'org-babel-load-languages
       '((js . t)
-        (lisp . t)))
+        (lisp . t)
+        (clojure . t)))
 
 (setq org-babel-lisp-eval-fn #'sly-eval)
+(setq org-babel-clojure-backend 'cider)
+
+;; (setq org-babel-lisp-eval-fn #'slime-eval)
 
 
 ;;; scroll like vim
@@ -59,7 +79,7 @@
 ;;; toolbar visibility
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
-(menu-bar-mode -1)
+
 
 (setq-default tab-width 4)
 
@@ -72,14 +92,20 @@
 ;;; case insenstive autocompletion
 (setq read-file-name-completion-ignore-case t)
 
-;;; hide show
+;;; quasi folding functionality
 (add-hook 'prog-mode-hook #'hs-minor-mode)
 (global-set-key (kbd "C-,") 'select-line)
 (global-set-key (kbd "C-c <right>") 'hs-show-block)
 (global-set-key (kbd "C-c <left>") 'hs-hide-block)
 (setq hs-hide-comments-when-hiding-all nil)
 
+(use-package magit
+  :ensure t
+  :bind (("C-x g" . magit-status)
+         ("C-x C-g" . magit-status)))
+
 (use-package undo-tree
+  :ensure t
   :init
   (global-undo-tree-mode))
 
@@ -93,12 +119,21 @@
   (prog-mode . company-mode)
   (racket-repl-mode . company-mode)
   (sly-mode . company-mode)
+  ;; (slime-mode . company-mode)
   (cider-repl-mode . company-mode))
 
 (use-package evil
   :ensure t
   :disabled t
+  (evil-set-undo-system 'undo-tree)
+  :config
   )
+
+;; (use-package evil-cleverparens
+;;   :ensure t
+;;   :disabled t
+;;   :hook (evil-cleverparens-mode . evil-mode))
+
 (use-package evil-surround
   :ensure t
   :disabled t
@@ -116,6 +151,17 @@
 
 ;;; haskell setup
 
+(use-package lsp-mode
+  :ensure t)
+
+(use-package lsp-java :ensure t
+  ;; :config (add-hook 'java-mode-hook 'lsp)
+  )
+
+(use-package dap-mode :after lsp-mode :config (dap-auto-configure-mode))
+(use-package dap-java :ensure nil)
+(use-package yasnippet :config (yas-global-mode))
+
 (use-package racket-mode
   :ensure t
   :hook (racket-mode . racket-xp-mode))
@@ -132,12 +178,6 @@
   :hook (haskell-mode . lsp)
   )
 
-(use-package lsp-mode
-  :ensure t
-  :disabled t
-  :config
-  (setq lsp-enable-indentation nil))
-
 (use-package lsp-haskell
   :ensure t
   :after lsp-mode
@@ -148,11 +188,10 @@
 
 (use-package lsp-ui
   :ensure t
-  :disabled ;; :hook (lsp-mode . lsp-ui-mode)
+  ;; :disabled ;; :hook (lsp-mode . lsp-ui-mode)
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-headerline-breadcrumb-enable nil)
-  )
+  (setq lsp-headerline-breadcrumb-enable nil))
 
 (use-package flycheck
   :ensure t
@@ -176,7 +215,72 @@
   (bind-key "C-M-w" 'select-and-copy-between-parens)
   :hook
   (sly-mode . paredit-mode)
+  ;; (slime-mode . paredit-mode)
   )
+
+(use-package flycheck-clj-kondo
+  :ensure t)
+
+(use-package clojure-mode
+  :ensure t
+  :config
+  (require 'flycheck-clj-kondo)
+  :hook (clojure-mode . flycheck-mode))
+
+(use-package clojure-essential-ref
+  :ensure t)
+
+(use-package clj-refactor
+  :ensure t)
+
+(use-package cljr-helm
+  :ensure t)
+
+(use-package clj-decompiler
+  :ensure t)
+
+;; (evil-define-key 'normal 'global (kbd "<leader>k") 'paredit-kill)
+;; (add-hook 'evil-mode-hook
+;;           (lambda ()
+;;             (evil-define-key 'normal 'global (kbd "<leader>k") 'paredit-kill)))
+
+(add-hook
+ 'cider-mode-hook
+ (lambda ()
+   (eval-after-load 'cider
+     '(progn
+        (require 'clj-decompiler)
+        (clj-decompiler-setup)))))
+
+;; Similar to C-x C-e, but sends to REBL
+(defun rebl-eval-last-sexp ()
+  (interactive)
+  (let* ((bounds (cider-last-sexp 'bounds))
+         (s (cider-last-sexp))
+         (reblized (concat "(cognitect.rebl/inspect " s ")")))
+    (cider-interactive-eval reblized nil bounds (cider--nrepl-print-request-map))))
+
+;; Similar to C-M-x, but sends to REBL
+(defun rebl-eval-defun-at-point ()
+  (interactive)
+  (let* ((bounds (cider-defun-at-point 'bounds))
+         (s (cider-defun-at-point))
+         (reblized (concat "(cognitect.rebl/inspect " s ")")))
+    (cider-interactive-eval reblized nil bounds (cider--nrepl-print-request-map))))
+
+;; C-S-x send defun to rebl
+;; C-x C-r send last sexp to rebl (Normally bound to "find-file-read-only"... Who actually uses that though?)
+(add-hook 'cider-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-S-x") #'rebl-eval-defun-at-point)
+            (local-set-key (kbd "C-x C-r") #'rebl-eval-last-sexp)))
+
+;; (use-package lispy
+;;   :ensure t
+;;   :hook
+;;   (emacs-lisp-mode-hook . lispy-mode)
+;;   (sly-mode . lispy-mode)
+;;   )
 
 (use-package cider
   ;; :defer t
@@ -201,6 +305,13 @@
   (exec-path-from-shell-initialize))
 ;;; get rid of blinking cursor
 (blink-cursor-mode 0)
+
+(defun replace-string-with (newval)
+  "https://stackoverflow.com/a/4925243/5067724"
+  (interactive)
+  (let ((my-quoted-string-regexp "\"\\(\\\\[\\\\\"]\\|[^\\\\\"]\\)*\""))
+    (replace-regexp my-quoted-string-regexp newval)))
+
 
 (defun user-flymake-keybindings ()
   (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
@@ -251,12 +362,79 @@
   (:map global-map
         ("C-c s" . helm-tramp)))
 
+(use-package sly-quicklisp
+  :after sly
+  :ensure t)
+
+(use-package sly-asdf
+  :after sly
+  :ensure t)
 
 (use-package sly
   :ensure t
   :init
-  (setq inferior-lisp-program "sbcl")
+  (setq sly-net-coding-system 'utf-8-unix)
+  (setq sly-lisp-implementations
+        '((sbcl ("sbcl") :coding-system utf-8-unix)
+          (ecl ("ecl") :coding-system utf-8-unix)))
+  ;; (setq sly-lisp-implementations "sbcl")
   )
+
+;; (use-package helm-slime
+;;   :after slime
+;;   :ensure t)
+;; (use-package slime-company
+;;   :after slime
+;;   :ensure t)
+;; (use-package slime
+;;   :ensure t
+;;   :init
+;;   (setq inferior-lisp-program "sbcl")
+;;   (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  ;; (setq sly-lisp-implementations "sbcl")
+  ;; )
+;; (defslime-repl-shortcut slime-repl-quicklisp ("ql" "quicklisp")
+;;     (:handler (lambda (system)
+;;                 (interactive "sSystem: ")
+;;                 (slime-eval-async `(ql:quickload ,system)
+;;                   (lambda (sys)
+;;                     (message "Quickloaded %s" (first sys))))))
+;;     (:one-liner "Quickload a system."))
+;;   (defslime-repl-shortcut slime-repl-load-system ("load")
+;;     (:handler (lambda (system)
+;;                 (interactive "sSystem: ")
+;;                 (setq system (downcase system))
+;;                 (slime-eval-async `(asdf:load-system ,system)
+;;                   (lambda (sys)
+;;                     (message "ASDF loaded %s" (first sys))))))
+;;     (:one-liner "ASDF loaded a system."))
+;;   (defslime-repl-shortcut slime-repl-test-system ("test")
+;;     (:handler (lambda (system)
+;;                 (interactive "sSystem: ")
+;;                 (setq system (downcase system))
+;;                 (slime-eval-async `(ql:quickload ,system)
+;;                   (lambda (sys)
+;;                     (message "ASDF loaded %s" sys)
+;;                     (slime-eval-async `(asdf:test-system ,@sys)
+;;                       (lambda (sys)
+;;                         (message "ASDF tested %s" (first sys))))))))
+;;     (:one-liner "ASDF tested a system."))
+;;   (defslime-repl-shortcut slime-repl-set-system ("system")
+;;     (:handler (lambda (system)
+;;                 (interactive "sSystem: ")
+;;                 (slime-eval-async `(ql:quickload ,system)
+;;                   (lambda (sys)
+;;                     (message "Quickloaded %s" sys)
+;;                     (let ((directory (slime-eval `(cl:namestring (asdf:system-source-directory ,@sys)))))
+;;                       (slime-set-default-directory directory))))))
+;;     (:one-liner "Quickload a system and move to the root directory."))
+;;   (defslime-repl-shortcut slime-repl-register-local-projects ("register")
+;;     (:handler (lambda ()
+;;                 (interactive)
+;;                 (slime-eval-async `(ql:register-local-projects)
+;;                   (lambda (sys)
+;;                     (message "Registered local projects.")))))
+;;     (:one-liner "Call ql:register-local-projects."))
 
 (add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
 
@@ -274,43 +452,33 @@ Repeated invocations toggle between the two most recently open buffers."
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
+(global-set-key (kbd "M-`") #'other-frame)
+(setq-default indent-tabs-mode nil)
+(setq visible-cursor nil)
+(setq nrepl-use-ssh-fallback-for-remote-hosts t)
+
+;; opacity
+
+;; ;; set transparency
+;; (set-frame-parameter (selected-frame) 'alpha '(85 85))
+;; (add-to-list 'default-frame-alist '(alpha 85 85))
 
 
-;;; backup/autosave
-(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
-(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
-(setq backup-directory-alist (list (cons ".*" backup-dir)))
-(setq auto-save-list-file-prefix autosave-dir)
-(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+(defun org-mode-<>-syntax-fix (start end)
+  (when (eq major-mode 'org-mode)
+    (save-excursion
+      (goto-char start)
+      (while (re-search-forward "<\\|>" end t)
+    (when (get-text-property (point) 'src-block)
+      ;; This is a < or > in an org-src block
+      (put-text-property (point) (1- (point))
+                 'syntax-table (string-to-syntax "_")))))))
 
-;;; #EXTERNAL DEPENDENCY universal ctags
-;;; create-tags function
-;; (setq path-to-ctags "/usr/bin/ctags")
+(add-hook 'org-mode-hook
+      (lambda ()
+        (setq syntax-propertize-function 'org-mode-<>-syntax-fix)
+        (syntax-propertize (point-max))))
 
-;; (defun create-tags (dir-name)
-;;   "Create tags file."
-;;   (interactive "DDirectory: ")
-;;   (shell-command (format "%s -f TAGS -e -R %s" path-to-ctags (directory-file-name dir-name)))
-;;   )
-
-
-;;; c indentation
-(setq c-default-style "stroustrup")
-(setq c-offsets-alist '((arglist-cont-nonempty . +)))
-
-;;; config org mode
-(require 'org)
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-(setq org-log-done t)
-(setq org-hide-block-startup t)
-
-;;; jump to header in c file
-;; (add-hook 'c-mode-common-hook
-;;   (lambda() 
-;;     (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
-
-(setq column-number-mode t)
 ;; ########################## Custom
 
 (custom-set-faces
@@ -318,9 +486,7 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil))))
- '(lsp-ui-doc-background ((t (:inherit tooltip))))
- '(lsp-ui-sideline-symbol-info ((t (:extend t)))))
+ )
 '(custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -355,7 +521,6 @@ Repeated invocations toggle between the two most recently open buffers."
  '(lsp-ui-doc-border "#586e75")
  '(lsp-ui-doc-enable t)
  '(lsp-ui-peek-enable t)
- '(menu-bar-mode nil)
  '(org-src-block-faces 'nil)
  '(package-selected-packages
    '(lispy sublime-themes project solarized-theme helm-rg tramp helm-tramp hasklig-mode ligature atom-one-dark-theme dracula-theme gruvbox-theme jetbrains-darcula-theme markdown-mode markdown-preview-mode elixir elixer-mode company-ghci tree-sitter-indent fzf monokai-pro-theme vscode-dark-plus-theme evil nord-theme csv-mode mood-one-theme nothing-theme phoenix-dark-mono-theme punpun-theme quasi-monochrome-theme spacegray-theme pkgbuild-mode flutter almost-mono-themes sexy-monochrome-theme purp-theme prassee-theme plan9-theme naysayer-theme company lsp-ui spacemacs-theme cyberpunk-theme lsp-haskell rmsbolt peep-dired flycheck w3m exec-path-from-shell python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
@@ -379,52 +544,18 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#212526" "#ff4b4b" "#b4fa70" "#fce94f" "#729fcf" "#e090d7" "#8cc4ff" "#eeeeec"])
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(leuven))
- '(exwm-floating-border-color "#383838")
- '(fci-rule-color "#585659")
- '(highlight-tail-colors ((("#2a342c") . 0) (("#273335") . 20)))
- '(jdee-db-active-breakpoint-face-colors (cons "#131313" "#fce566"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#131313" "#7bd88f"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#131313" "#525053"))
+ '(custom-enabled-themes nil)
  '(linum-format " %7i ")
  '(lsp-ui-doc-border "#93a1a1")
  '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
- '(menu-bar-mode nil)
- '(objed-cursor-color "#fc618d")
  '(package-selected-packages
-   '(espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree doom-themes su sly tango-plus-theme lsp-mode rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
- '(pdf-view-midnight-colors '("#fdf4c1" . "#1d2021"))
- '(rustic-ansi-faces
-   ["#222222" "#fc618d" "#7bd88f" "#fce566" "#5ad4e6" "#5ad4e6" "#5ad4e6" "#f7f1ff"])
+   '(lsp-java helm-cider-history helm-cider apropospriate-theme white-theme one-themes spacemacs-theme helm-clojuredocs cljr-helm clj-decompiler clj-refactor clojure-essential-ref flycheck-clj-kondo swift-mode sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(show-paren-mode t)
+ '(tao-theme-use-boxes t)
  '(tool-bar-mode nil)
- '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
- '(vc-annotate-color-map
-   (list
-    (cons 20 "#7bd88f")
-    (cons 40 "#a6dc81")
-    (cons 60 "#d1e073")
-    (cons 80 "#fce566")
-    (cons 100 "#fcc95f")
-    (cons 120 "#fcae59")
-    (cons 140 "#fd9353")
-    (cons 160 "#c6a884")
-    (cons 180 "#90beb5")
-    (cons 200 "#5ad4e6")
-    (cons 220 "#90adc8")
-    (cons 240 "#c687aa")
-    (cons 260 "#fc618d")
-    (cons 280 "#d15c7e")
-    (cons 300 "#a75870")
-    (cons 320 "#7c5461")
-    (cons 340 "#585659")
-    (cons 360 "#585659")))
- '(vc-annotate-very-old-color nil)
  '(window-divider-mode nil))
