@@ -1,25 +1,31 @@
-(when (memq window-system '(mac ns))
-  (setenv "PATH" (concat "/opt/homebrew/bin/:" (getenv "PATH"))))
-
-(condition-case nil
-    (require 'use-package)
-  (file-error
+(progn
    (require 'package)
    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
    (package-initialize)
    (package-refresh-contents)
    (package-install 'use-package)
    (setq use-package-always-ensure t)
-   (require 'use-package)))
+   (require 'use-package))
+
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns))
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize)
+  (when (memq window-system '(mac ns))
+  (setenv "PATH" (concat "/opt/homebrew/bin/:" (getenv "PATH")))))
+
 
 ;; (add-to-list 'load-path "~/.emacs.d/lisp/")
-(load "~/.emacs.d/lisp/erc.el")
+;; (load "~/.emacs.d/lisp/erc.el")
 (load "~/.emacs.d/lisp/funcs.el")
-(load "~/.emacs.d/lisp/platform.el")
+;; (load "~/.emacs.d/lisp/platform.el")
 (global-unset-key (kbd "C-z"))
 
 (global-set-key (kbd "M-o") #'other-frame)
 (global-set-key (kbd "C-o") #'other-window)
+(global-set-key [f2] nil)
+
 
 ;; (when (not package-archive-contents)
 ;;   (package-refresh-contents))
@@ -29,6 +35,13 @@
   (setq native-comp-async-report-warnings-errors nil))
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+
+;;; backup/autosave
+(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
+(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
+(setq backup-directory-alist (list (cons ".*" backup-dir)))
+(setq auto-save-list-file-prefix autosave-dir)
+(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
 
 ;; use mouse if we're in the terminal
 (xterm-mouse-mode 1)
@@ -46,10 +59,10 @@
 (setq split-height-threshold nil)
 
 ;; Set default font
-(set-face-font 'default "SF Mono-12")
+;; (set-face-font 'default "SF Mono-12:size=12")
 ;; (set-face-font 'default "Inconsolata-10")
 ;; the russians make good fonts
-;; (set-face-font 'default "Jetbrains Mono:size=12")
+(set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-attribute 'default nil :font "Terminus-10:regular")
 ;; (set-face-attribute 'default nil :font "Jetbrains Mono-10")
 
@@ -91,6 +104,10 @@
 
 ;;; case insenstive autocompletion
 (setq read-file-name-completion-ignore-case t)
+
+;; change paragraph navigation
+(global-set-key (kbd "C-M-{") 'backward-paragraph)
+(global-set-key (kbd "C-M-}") 'forward-paragraph)
 
 ;;; quasi folding functionality
 (add-hook 'prog-mode-hook #'hs-minor-mode)
@@ -140,9 +157,9 @@
   :config
   (global-evil-surround-mode 1))
 
-(use-package composite
-  :hook (prog-mode . auto-composition-mode)
-  :init (global-auto-composition-mode -1))
+;; (use-package composite
+;;   :hook (prog-mode . auto-composition-mode)
+;;   :init (global-auto-composition-mode -1))
 
 ;; Colorizes delimiters so they can be told apart
 ;; (use-package rainbow-delimiters
@@ -196,12 +213,15 @@
 (use-package flycheck
   :ensure t
   :disabled t
-  )
+  :bind (
+              ("<f2>" . flycheck-next-error)
+              ("S-<f2>" . flycheck-previous-error)))
 
 (use-package paredit
   ;; :defer t
   :ensure t
-  :bind (("M-[" . paredit-wrap-square))
+  :bind (("M-[" . paredit-wrap-square)
+         ("M-{" . paredit-wrap-curly))
   :init
   (progn
     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
@@ -224,33 +244,20 @@
 (use-package clojure-mode
   :ensure t
   :config
-  (require 'flycheck-clj-kondo)
+  ;; (require 'flycheck-clj-kondo)
   :hook (clojure-mode . flycheck-mode))
 
-(use-package clojure-essential-ref
-  :ensure t)
 
-(use-package clj-refactor
-  :ensure t)
-
-(use-package cljr-helm
-  :ensure t)
-
-(use-package clj-decompiler
-  :ensure t)
+;; (use-package clj-refactor
+;;   :disabled t
+;;   :ensure t)
 
 ;; (evil-define-key 'normal 'global (kbd "<leader>k") 'paredit-kill)
 ;; (add-hook 'evil-mode-hook
 ;;           (lambda ()
 ;;             (evil-define-key 'normal 'global (kbd "<leader>k") 'paredit-kill)))
 
-(add-hook
- 'cider-mode-hook
- (lambda ()
-   (eval-after-load 'cider
-     '(progn
-        (require 'clj-decompiler)
-        (clj-decompiler-setup)))))
+
 
 ;; Similar to C-x C-e, but sends to REBL
 (defun rebl-eval-last-sexp ()
@@ -270,6 +277,7 @@
 
 ;; C-S-x send defun to rebl
 ;; C-x C-r send last sexp to rebl (Normally bound to "find-file-read-only"... Who actually uses that though?)
+
 (add-hook 'cider-mode-hook
           (lambda ()
             (local-set-key (kbd "C-S-x") #'rebl-eval-defun-at-point)
@@ -285,7 +293,8 @@
 (use-package cider
   ;; :defer t
   :ensure t
-  :bind (("C-c =" . cider-format-buffer))
+  :bind (("C-c =" . cider-format-buffer)
+)
   :init
   (progn
     (add-hook 'clojure-mode-hook 'cider-mode)
@@ -296,13 +305,10 @@
   (setq cider-repl-display-help-banner nil)
   (setq cider-auto-mode nil)
   (setq show-paren-mode t)
+  (setq cider-repl-pop-to-buffer-on-connect nil)
+  ;; (setq cider-prompt-for-symbol nil)
   )
 
-(use-package exec-path-from-shell
-  :if (memq window-system '(mac ns))
-  :ensure t
-  :config
-  (exec-path-from-shell-initialize))
 ;;; get rid of blinking cursor
 (blink-cursor-mode 0)
 
@@ -312,6 +318,11 @@
   (let ((my-quoted-string-regexp "\"\\(\\\\[\\\\\"]\\|[^\\\\\"]\\)*\""))
     (replace-regexp my-quoted-string-regexp newval)))
 
+
+(defun user-flycheck-keybindings ()
+  (local-set-key (kbd "S-<f2>") 'flycheck-previous-error)
+  (local-set-key (kbd "<f2>") 'flycheck-next-error))
+(add-hook 'flycheck-mode-hook		#'user-flycheck-keybindings)
 
 (defun user-flymake-keybindings ()
   (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
@@ -344,7 +355,7 @@
          ("M-y" . helm-show-kill-ring)
          ("C-x C-f" . helm-find-files)
          ("C-x b" . helm-mini)
-         ("C-c o" . helm-occur))
+         ("C-s" . helm-occur))
   :config  
   (helm-autoresize-mode t)
   (setq helm-autoresize-max-height 20)
@@ -352,6 +363,11 @@
   (setq helm-split-window-in-side-p t)
   :init
   (helm-mode 1))
+
+(use-package helm-ag
+  :ensure t
+  :after helm
+  :bind (("C-x p g" . helm-do-grep-ag)))
 
 (use-package helm-tramp
   :ensure t
@@ -547,13 +563,13 @@ Repeated invocations toggle between the two most recently open buffers."
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes nil)
+ '(custom-enabled-themes '(leuven))
  '(linum-format " %7i ")
  '(lsp-ui-doc-border "#93a1a1")
  '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
-   '(lsp-java helm-cider-history helm-cider apropospriate-theme white-theme one-themes spacemacs-theme helm-clojuredocs cljr-helm clj-decompiler clj-refactor clojure-essential-ref flycheck-clj-kondo swift-mode sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(srefactor nano-theme doom-themes white-sand-theme intellij-theme leuven-theme helm-ag exec-path-from-shell lsp-java helm-cider-history helm-cider apropospriate-theme white-theme one-themes spacemacs-theme helm-clojuredocs clj-decompiler clojure-essential-ref flycheck-clj-kondo swift-mode sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(show-paren-mode t)
  '(tao-theme-use-boxes t)
  '(tool-bar-mode nil)
