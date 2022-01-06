@@ -1,11 +1,10 @@
-(progn
-   (require 'package)
-   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-   (package-initialize)
-   (package-refresh-contents)
-   (package-install 'use-package)
-   (setq use-package-always-ensure t)
-   (require 'use-package))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+;; (package-initialize)
+;; (package-refresh-contents)
+;; (package-install 'use-package)
+;; (setq use-package-always-ensure t)
+(require 'use-package)
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -13,28 +12,48 @@
   :config
   (exec-path-from-shell-initialize)
   (when (memq window-system '(mac ns))
-  (setenv "PATH" (concat "/opt/homebrew/bin/:" (getenv "PATH")))))
+    (setenv "PATH" (concat "/opt/homebrew/bin/:" (getenv "PATH")))))
 
+;; (cua-mode t)
+;; (global-set-key (kbd "C-<up>") #'scroll-down-command)
+;; (global-set-key (kbd "C-<down>") #'scroll-up-command)
+;; (global-set-key (kbd "C-<left>") #'beginning-of-line)
+;; (global-set-key (kbd "C-<right>") #'end-of-line)
 
 ;; (add-to-list 'load-path "~/.emacs.d/lisp/")
 ;; (load "~/.emacs.d/lisp/erc.el")
 (load "~/.emacs.d/lisp/funcs.el")
-;; (load "~/.emacs.d/lisp/platform.el")
+;; (load "~/.emacs.d/lisp/mariana/mariana-theme.el")
+;; (load "~/.emacs.d/lisp/uwu.el/uwu-theme.el")
+;; (load "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el")
+;; (load "~/.emacs.d/lisp/doom-alabaster-theme.el")
+(load "~/.emacs.d/lisp/platform.el")
 (global-unset-key (kbd "C-z"))
 
-(global-set-key (kbd "M-o") #'other-frame)
+(global-set-key (kbd "M-o") #'split-window-right)
+(global-set-key (kbd "M-O") #'delete-other-windows)
+(global-set-key (kbd "C-S-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
+(global-set-key (kbd "C-S-t") #'launch-kitty-in-vc-root)
+;; (define-key dired-mode-map (kbd "C-<return>") 'dired-display-file)
+;; (define-key dired-mode-map (kbd "C-o") 'other-window)
+
+(defun dc/dired-mode-keys ()
+   "User defined keys for dired mode."
+   (interactive)
+   (local-set-key (kbd "C-<return>") 'dired-display-file)
+   (local-set-key (kbd "C-o") 'other-window)
+ (add-hook 'dired-mode-hook 'dc/dired-mode-keys))
+
 (global-set-key [f2] nil)
 
-
-;; (when (not package-archive-contents)
-;;   (package-refresh-contents))
-
-(when (featurep 'native-compile)
-  (setq native-comp-deferred-compilation t)
-  (setq native-comp-async-report-warnings-errors nil))
+;; (when (featurep 'native-compile)
+;;   (setq native-comp-deferred-compilation t))
+;;   (setq native-comp-async-report-warnings-errors nil))
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+
+(require 'clj-deps-new)
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -42,15 +61,49 @@
 (setq backup-directory-alist (list (cons ".*" backup-dir)))
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+(setq recentf-max-saved-items 100)
+
+
+
+;; terminal stuff
+
+(add-hook 'term-mode-hook (lambda ()
+                            ;; Hack to set two escape chars.
+                            (let (term-escape-char)
+                              (term-set-escape-char ?\C-x))
+                            (let (term-escape-char)
+                              (term-set-escape-char ?\C-c))))
+
+
+;; swift
+
+(defun xcode-build()
+  (interactive)
+  (shell-command-to-string
+   "osascript -e 'tell application \"Xcode\"' -e 'set targetProject to active workspace document' -e 'build targetProject' -e 'end tell'"))
+
+(defun xcode-run()
+  (interactive)
+  (shell-command-to-string
+   "osascript -e 'tell application \"Xcode\"' -e 'set targetProject to active workspace document' -e 'stop targetProject' -e 'run targetProject' -e 'end tell'"))
+
+(defun xcode-test()
+  (interactive)
+  (shell-command-to-string
+    "osascript -e 'tell application \"Xcode\"' -e 'set targetProject to active workspace document' -e 'stop targetProject' -e 'test targetProject' -e 'end tell'"))
 
 ;; use mouse if we're in the terminal
-(xterm-mouse-mode 1)
+;; (xterm-mouse-mode 1)
 (setq-default cursor-type 'box)
 
 ;; bind command to control on mac
 (if (eq system-type 'darwin)
- (setq mac-command-modifier 'control)
-)
+    (progn
+      (setq mac-command-modifier 'control)
+      (setq mac-control-modifier 'hyper)
+      (global-set-key (kbd "H-s") #'save-some-buffers)
+      )
+  )
 
 ;; stop asking me if i want to trust a theme
 (setq custom-safe-themes t)
@@ -59,10 +112,11 @@
 (setq split-height-threshold nil)
 
 ;; Set default font
-;; (set-face-font 'default "SF Mono-12:size=12")
+;; (set-face-font 'default "SF Mono-12:size=11")
+;; (set-face-font 'default "Menlo:size=12")
 ;; (set-face-font 'default "Inconsolata-10")
 ;; the russians make good fonts
-(set-face-font 'default "Jetbrains Mono:size=12")
+;; (set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-attribute 'default nil :font "Terminus-10:regular")
 ;; (set-face-attribute 'default nil :font "Jetbrains Mono-10")
 
@@ -106,15 +160,84 @@
 (setq read-file-name-completion-ignore-case t)
 
 ;; change paragraph navigation
-(global-set-key (kbd "C-M-{") 'backward-paragraph)
-(global-set-key (kbd "C-M-}") 'forward-paragraph)
+
 
 ;;; quasi folding functionality
 (add-hook 'prog-mode-hook #'hs-minor-mode)
-(global-set-key (kbd "C-,") 'select-line)
+;; (global-set-key (kbd "C-,") 'select-line)
 (global-set-key (kbd "C-c <right>") 'hs-show-block)
 (global-set-key (kbd "C-c <left>") 'hs-hide-block)
 (setq hs-hide-comments-when-hiding-all nil)
+
+(global-set-key (kbd "C-,") 'project-find-file)
+;; (global-set-key (kbd "C-S-,") 'find-file)
+(global-set-key (kbd "C-.") 'counsel-at-point-rg)
+(global-set-key (kbd "C-\\") 'counsel-switch-buffer)
+(global-set-key (kbd "M-p") (lambda () (interactive) (exchange-point-and-mark) (keyboard-quit)))
+
+;; (global-set-key (kbd "M-p") 'project-find-file)
+
+(use-package ivy
+  :ensure t
+  :init (ivy-mode 1)
+  :config
+  (setq ivy-initial-inputs-alist nil)
+  (setq ivy-use-virtual-buffers t)
+  (setq ivy-re-builders-alist
+        '((counsel-git-grep . ivy--regex-plus)
+          (counsel-ag       . ivy--regex-plus)
+          (counsel-rg       . ivy--regex-plus)
+          (swiper           . ivy--regex-plus)
+          (t                . ivy--regex-fuzzy))))
+
+(defun ar/prefilled-swiper ()
+  "Pre-fill swiper input with region."
+  (interactive)
+  (if (region-active-p)
+      (let ((region-text (buffer-substring (region-beginning)
+                                           (region-end))))
+        (swiper region-text))
+    (swiper)))
+
+(defun change-theme (&rest args)
+  "Like `load-theme', but disables all themes before loading the new one."
+  ;; The `interactive' magic is for creating a future-proof passthrough (see <https://emacs.stackexchange.com/a/19242>).
+  (interactive (advice-eval-interactive-spec
+                (cadr (interactive-form #'load-theme))))
+  (mapcar #'disable-theme custom-enabled-themes)
+  (apply (if (called-interactively-p 'any) #'funcall-interactively #'funcall)
+         #'load-theme args))
+
+(global-set-key (kbd "C-s")
+                #'ar/prefilled-swiper)
+
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'"       . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
+
+
+(use-package ivy-clojuredocs
+  :ensure t
+  :bind (:map clojure-mode-map
+              (("C-c d" . ivy-clojuredocs-at-point))))
+
+(use-package counsel
+  :ensure t
+  :bind (("M-x"     . counsel-M-x)
+         ("C-s"     . swiper)
+         ("C-S-s"   . isearch-forward)
+         ("C-x C-f" . counsel-find-file)
+         ("C-x C-r" . counsel-recentf)  ; search for recently edited
+         ("C-c g"   . counsel-git)      ; search for files in git repo
+         ("C-c j"   . counsel-git-grep) ; search for regexp in git repo
+         ("C-c /"   . counsel-rg)      ; Use ag for regexp
+         ("M-y"     . counsel-yank-pop)))
+
+(use-package counsel-at-point)
 
 (use-package magit
   :ensure t
@@ -139,125 +262,46 @@
   ;; (slime-mode . company-mode)
   (cider-repl-mode . company-mode))
 
-(use-package evil
-  :ensure t
-  :disabled t
-  (evil-set-undo-system 'undo-tree)
-  :config
-  )
-
-;; (use-package evil-cleverparens
-;;   :ensure t
-;;   :disabled t
-;;   :hook (evil-cleverparens-mode . evil-mode))
-
-(use-package evil-surround
-  :ensure t
-  :disabled t
-  :config
-  (global-evil-surround-mode 1))
-
-;; (use-package composite
-;;   :hook (prog-mode . auto-composition-mode)
-;;   :init (global-auto-composition-mode -1))
-
-;; Colorizes delimiters so they can be told apart
-;; (use-package rainbow-delimiters
-;;              :ensure t
-;;              :config (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
-
-;;; haskell setup
-
-(use-package lsp-mode
-  :ensure t)
-
-(use-package lsp-java :ensure t
-  ;; :config (add-hook 'java-mode-hook 'lsp)
-  )
-
-(use-package dap-mode :after lsp-mode :config (dap-auto-configure-mode))
-(use-package dap-java :ensure nil)
-(use-package yasnippet :config (yas-global-mode))
-
 (use-package racket-mode
   :ensure t
   :hook (racket-mode . racket-xp-mode))
 
-(use-package dart-mode
-  :ensure t
-  :hook (dart-mode . lsp))
-
-(use-package haskell-mode
-  :ensure t
-  :disabled t
-  :config
-  (define-key haskell-mode-map [f5] (lambda () (interactive) (compile "stack build --fast")))
-  :hook (haskell-mode . lsp)
-  )
-
-(use-package lsp-haskell
-  :ensure t
-  :after lsp-mode
-  :disabled t
-  :config
-  (setq lsp-log-io t)
-)
-
-(use-package lsp-ui
-  :ensure t
-  ;; :disabled ;; :hook (lsp-mode . lsp-ui-mode)
-  :hook (lsp-mode . lsp-ui-mode)
-  :config
-  (setq lsp-headerline-breadcrumb-enable nil))
-
 (use-package flycheck
   :ensure t
   :disabled t
-  :bind (
-              ("<f2>" . flycheck-next-error)
-              ("S-<f2>" . flycheck-previous-error)))
+  :bind (("<f2>" . flycheck-next-error)
+         ("S-<f2>" . flycheck-previous-error)))
+
+(use-package flycheck-clj-kondo
+  :disabled t
+  :ensure t)
 
 (use-package paredit
   ;; :defer t
   :ensure t
   :bind (("M-[" . paredit-wrap-square)
-         ("M-{" . paredit-wrap-curly))
+         ("M-{" . paredit-wrap-curly)
+         ("C-M-{" . backward-paragraph)
+         ("C-M-}" . forward-paragraph))
   :init
   (progn
     (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
     (add-hook 'clojure-mode-hook 'paredit-mode)
     (add-hook 'clojurescript-mode-hook 'paredit-mode)
-    (add-hook 'clojurec-mode-hook 'paredit-mode)
+    ;; add-hook 'clojure
     (add-hook 'cider-repl-mode-hook 'paredit-mode)
     (add-hook 'racket-mode-hook 'paredit-mode)
     (add-hook 'racket-repl-mode-hook 'paredit-mode)
     )
   (bind-key "C-M-w" 'select-and-copy-between-parens)
   :hook
-  (sly-mode . paredit-mode)
-  ;; (slime-mode . paredit-mode)
-  )
-
-(use-package flycheck-clj-kondo
-  :ensure t)
+  (sly-mode . paredit-mode))
 
 (use-package clojure-mode
   :ensure t
   :config
   ;; (require 'flycheck-clj-kondo)
   :hook (clojure-mode . flycheck-mode))
-
-
-;; (use-package clj-refactor
-;;   :disabled t
-;;   :ensure t)
-
-;; (evil-define-key 'normal 'global (kbd "<leader>k") 'paredit-kill)
-;; (add-hook 'evil-mode-hook
-;;           (lambda ()
-;;             (evil-define-key 'normal 'global (kbd "<leader>k") 'paredit-kill)))
-
-
 
 ;; Similar to C-x C-e, but sends to REBL
 (defun rebl-eval-last-sexp ()
@@ -275,26 +319,10 @@
          (reblized (concat "(cognitect.rebl/inspect " s ")")))
     (cider-interactive-eval reblized nil bounds (cider--nrepl-print-request-map))))
 
-;; C-S-x send defun to rebl
-;; C-x C-r send last sexp to rebl (Normally bound to "find-file-read-only"... Who actually uses that though?)
-
-(add-hook 'cider-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-S-x") #'rebl-eval-defun-at-point)
-            (local-set-key (kbd "C-x C-r") #'rebl-eval-last-sexp)))
-
-;; (use-package lispy
-;;   :ensure t
-;;   :hook
-;;   (emacs-lisp-mode-hook . lispy-mode)
-;;   (sly-mode . lispy-mode)
-;;   )
-
 (use-package cider
   ;; :defer t
   :ensure t
-  :bind (("C-c =" . cider-format-buffer)
-)
+  :bind (("C-c =" . cider-format-buffer))
   :init
   (progn
     (add-hook 'clojure-mode-hook 'cider-mode)
@@ -303,12 +331,9 @@
     (add-hook 'cider-repl-mode-hook 'cider-mode))
   :config
   (setq cider-repl-display-help-banner nil)
-  (setq cider-auto-mode nil)
+  (setq cider-auto-mode t)
   (setq show-paren-mode t)
-  (setq cider-repl-pop-to-buffer-on-connect nil)
-  ;; (setq cider-prompt-for-symbol nil)
-  )
-
+  (setq cider-repl-pop-to-buffer-on-connect nil))
 ;;; get rid of blinking cursor
 (blink-cursor-mode 0)
 
@@ -348,36 +373,6 @@
  ;; Non-nil means display source file containing the main routine at startup
  gdb-show-main t)
 
-(use-package helm
-  :ensure t
-  :demand
-  :bind (("M-x" . helm-M-x)
-         ("M-y" . helm-show-kill-ring)
-         ("C-x C-f" . helm-find-files)
-         ("C-x b" . helm-mini)
-         ("C-s" . helm-occur))
-  :config  
-  (helm-autoresize-mode t)
-  (setq helm-autoresize-max-height 20)
-  (setq helm-autoresize-min-height 20)
-  (setq helm-split-window-in-side-p t)
-  :init
-  (helm-mode 1))
-
-(use-package helm-ag
-  :ensure t
-  :after helm
-  :bind (("C-x p g" . helm-do-grep-ag)))
-
-(use-package helm-tramp
-  :ensure t
-  :after helm
-  :init
-  (setq helm-tramp-custom-connections '(/sshx:solaire@192.168.1.199:/home/solaire/development))
-  :bind
-  (:map global-map
-        ("C-c s" . helm-tramp)))
-
 (use-package sly-quicklisp
   :after sly
   :ensure t)
@@ -392,70 +387,11 @@
   (setq sly-net-coding-system 'utf-8-unix)
   (setq sly-lisp-implementations
         '((sbcl ("sbcl") :coding-system utf-8-unix)
-          (ecl ("ecl") :coding-system utf-8-unix)))
-  ;; (setq sly-lisp-implementations "sbcl")
-  )
-
-;; (use-package helm-slime
-;;   :after slime
-;;   :ensure t)
-;; (use-package slime-company
-;;   :after slime
-;;   :ensure t)
-;; (use-package slime
-;;   :ensure t
-;;   :init
-;;   (setq inferior-lisp-program "sbcl")
-;;   (load (expand-file-name "~/quicklisp/slime-helper.el"))
-  ;; (setq sly-lisp-implementations "sbcl")
-  ;; )
-;; (defslime-repl-shortcut slime-repl-quicklisp ("ql" "quicklisp")
-;;     (:handler (lambda (system)
-;;                 (interactive "sSystem: ")
-;;                 (slime-eval-async `(ql:quickload ,system)
-;;                   (lambda (sys)
-;;                     (message "Quickloaded %s" (first sys))))))
-;;     (:one-liner "Quickload a system."))
-;;   (defslime-repl-shortcut slime-repl-load-system ("load")
-;;     (:handler (lambda (system)
-;;                 (interactive "sSystem: ")
-;;                 (setq system (downcase system))
-;;                 (slime-eval-async `(asdf:load-system ,system)
-;;                   (lambda (sys)
-;;                     (message "ASDF loaded %s" (first sys))))))
-;;     (:one-liner "ASDF loaded a system."))
-;;   (defslime-repl-shortcut slime-repl-test-system ("test")
-;;     (:handler (lambda (system)
-;;                 (interactive "sSystem: ")
-;;                 (setq system (downcase system))
-;;                 (slime-eval-async `(ql:quickload ,system)
-;;                   (lambda (sys)
-;;                     (message "ASDF loaded %s" sys)
-;;                     (slime-eval-async `(asdf:test-system ,@sys)
-;;                       (lambda (sys)
-;;                         (message "ASDF tested %s" (first sys))))))))
-;;     (:one-liner "ASDF tested a system."))
-;;   (defslime-repl-shortcut slime-repl-set-system ("system")
-;;     (:handler (lambda (system)
-;;                 (interactive "sSystem: ")
-;;                 (slime-eval-async `(ql:quickload ,system)
-;;                   (lambda (sys)
-;;                     (message "Quickloaded %s" sys)
-;;                     (let ((directory (slime-eval `(cl:namestring (asdf:system-source-directory ,@sys)))))
-;;                       (slime-set-default-directory directory))))))
-;;     (:one-liner "Quickload a system and move to the root directory."))
-;;   (defslime-repl-shortcut slime-repl-register-local-projects ("register")
-;;     (:handler (lambda ()
-;;                 (interactive)
-;;                 (slime-eval-async `(ql:register-local-projects)
-;;                   (lambda (sys)
-;;                     (message "Registered local projects.")))))
-;;     (:one-liner "Call ql:register-local-projects."))
-
+          (ecl ("ecl") :coding-system utf-8-unix))))
 (add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
 
-;;; stop indenting please
-
+(use-package fish-mode
+  :ensure t)
 
 ;;; WHY DO I KEEP QUITTING
 (setq confirm-kill-emacs 'yes-or-no-p)
@@ -521,7 +457,6 @@ Repeated invocations toggle between the two most recently open buffers."
  '(haskell-process-suggest-remove-import-lines t)
  '(haskell-stylish-on-save nil)
  '(haskell-w3m-haddock-dirs '("~/.ghcup/share/doc/"))
- '(helm-completion-style 'helm)
  '(inhibit-startup-screen t)
  '(line-number-mode t)
  '(linum-format " %5i ")
@@ -563,15 +498,17 @@ Repeated invocations toggle between the two most recently open buffers."
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(leuven))
+ '(custom-enabled-themes '(modus-operandi))
  '(linum-format " %7i ")
  '(lsp-ui-doc-border "#93a1a1")
  '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
-   '(srefactor nano-theme doom-themes white-sand-theme intellij-theme leuven-theme helm-ag exec-path-from-shell lsp-java helm-cider-history helm-cider apropospriate-theme white-theme one-themes spacemacs-theme helm-clojuredocs clj-decompiler clojure-essential-ref flycheck-clj-kondo swift-mode sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-ui lsp-haskell lsp-dart lispy jetbrains-darcula-theme helm-tramp helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(multiple-cursors flycheck-swift3 ob-swiftui counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point clj-deps-new markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme kaolin-themes ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo swift-mode sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+ '(safe-local-variable-values '((cider-clojure-cli-global-options . "-A:reveal")))
  '(show-paren-mode t)
  '(tao-theme-use-boxes t)
  '(tool-bar-mode nil)
  '(vc-annotate-background-mode nil)
+ '(warning-suppress-types '((comp) (comp)))
  '(window-divider-mode nil))
