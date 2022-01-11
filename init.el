@@ -6,17 +6,6 @@
 ;; (setq use-package-always-ensure t)
 (require 'use-package)
 
-(defun my-load-all-in-directory (dir)
-  "`load' all elisp libraries in directory DIR which are not already loaded."
-  (interactive "D")
-  (let ((libraries-loaded (mapcar #'file-name-sans-extension
-                                  (delq nil (mapcar #'car load-history)))))
-    (dolist (file (directory-files dir t ".+\\.elc?$"))
-      (let ((library (file-name-sans-extension file)))
-        (unless (member library libraries-loaded)
-          (load library nil t)
-          (push library libraries-loaded))))))
-
 ;; (cua-mode t)
 ;; (global-set-key (kbd "C-<up>") #'scroll-down-command)
 ;; (global-set-key (kbd "C-<down>") #'scroll-up-command)
@@ -25,19 +14,44 @@
 
 ;; (add-to-list 'load-path "~/.emacs.d/lisp/")
 ;; (load "~/.emacs.d/lisp/erc.el")
-(load "~/.emacs.d/lisp/funcs.el")
+
 ;; (load "~/.emacs.d/lisp/mariana/mariana-theme.el")
 ;; (load "~/.emacs.d/lisp/uwu.el/uwu-theme.el")
 ;; (load "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el")
 ;; (load "~/.emacs.d/lisp/doom-alabaster-theme.el")
-(load "~/.emacs.d/lisp/platform.el")
-(load "~/.emacs.d/lisp/swift/swift-mode.el")
-(load "~/.emacs.d/lisp/swift/inferior-swift-mode.el")
-(load "~/.emacs.d/lisp/swift/sil-mode.el")
-(load "~/.emacs.d/lisp/swift/swift-project-settings.el")
+
+(defun load-if-exists (file)
+  (if (file-exists-p file)
+      (load-file file)
+    (message (concat file " doesn't exist"))))
+
+(defvar my-customizations '("~/.emacs.d/lisp/platform.el"))
+
+(mapc #'load-if-exists my-customizations)
+
 (with-eval-after-load 'flycheck
   (add-hook 'flycheck-mode-hook #'flycheck-swift3-setup))
 
+(defun make-transparent ()
+  (set-frame-parameter (selected-frame) 'alpha '(85 85))
+  (add-to-list 'default-frame-alist '(alpha 85 85)))
+
+(defun insert-org-codeblock (language)
+  (interactive "sEnter language for code block: ")
+  (insert "#+BEGIN_SRC ")
+  (insert language)
+  (insert "\n\n#+END_SRC")
+  (previous-line))
+
+(defun launch-kitty-in-cwd ()
+  (let ((project-root (cdr (project-current))))
+   (interactive)
+   (call-process "kitty" nil 0 nil "-d" default-directory)))
+
+(defun launch-kitty-in-vc-root ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (call-process "kitty" nil 0 nil "-d" project-root)))
 
 (defun dc/dired-mode-keys ()
    "User defined keys for dired mode."
@@ -216,7 +230,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; (set-face-font 'default "Menlo:size=10")
 ;; (set-face-font 'default "Inconsolata-10")
 ;; the russians make good fonts
-(set-face-font 'default "Fira Code:size=11")
+;; (set-face-font 'default "Fira Code:size=11")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
 
 ;;; org mode code eval
@@ -250,7 +264,10 @@ Repeated invocations toggle between the two most recently open buffers."
           (counsel-ag       . ivy--regex-plus)
           (counsel-rg       . ivy--regex-plus)
           (swiper           . ivy--regex-plus)
-          (t                . ivy--regex-fuzzy))))
+          (t                . ivy--regex-fuzzy)))
+  (ivy-configure 'counsel-imenu
+  :update-fn 'auto)
+  (global-set-key (kbd "C-c i") 'counsel-imenu))
 
 (use-package markdown-mode
   :ensure t
@@ -364,11 +381,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;; get rid of blinking cursor
 (blink-cursor-mode 0)
 
-
-
 (add-hook 'swift-mode-hook #'flycheck-mode)
-
-
 
 ;;; gdb setup
 (setq
@@ -397,14 +410,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package fish-mode
   :ensure t)
 
-
 ;; opacity
 
 ;; ;; set transparency
-;; (set-frame-parameter (selected-frame) 'alpha '(85 85))
-;; (add-to-list 'default-frame-alist '(alpha 85 85))
-
-
 
 
 (add-hook 'org-mode-hook
