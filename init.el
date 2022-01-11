@@ -1,31 +1,27 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-;; (package-initialize)
-;; (package-refresh-contents)
-;; (package-install 'use-package)
+
 ;; (setq use-package-always-ensure t)
 (require 'use-package)
 
-;; (cua-mode t)
-;; (global-set-key (kbd "C-<up>") #'scroll-down-command)
-;; (global-set-key (kbd "C-<down>") #'scroll-up-command)
-;; (global-set-key (kbd "C-<left>") #'beginning-of-line)
-;; (global-set-key (kbd "C-<right>") #'end-of-line)
+(defun enable-cua ()
+  (cua-mode t)
+  (global-set-key (kbd "C-<up>") #'scroll-down-command)
+  (global-set-key (kbd "C-<down>") #'scroll-up-command)
+  (global-set-key (kbd "C-<left>") #'beginning-of-line)
+  (global-set-key (kbd "C-<right>") #'end-of-line))
 
-;; (add-to-list 'load-path "~/.emacs.d/lisp/")
-;; (load "~/.emacs.d/lisp/erc.el")
-
-;; (load "~/.emacs.d/lisp/mariana/mariana-theme.el")
-;; (load "~/.emacs.d/lisp/uwu.el/uwu-theme.el")
-;; (load "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el")
-;; (load "~/.emacs.d/lisp/doom-alabaster-theme.el")
+(defun first-time-load ()
+  (package-initialize)
+(package-refresh-contents)
+(package-install 'use-package))
 
 (defun load-if-exists (file)
   (if (file-exists-p file)
       (load-file file)
     (message (concat file " doesn't exist"))))
 
-(defvar my-customizations '("~/.emacs.d/lisp/platform.el"))
+(defvar my-customizations '("~/.emacs.d/lisp/platform.el" "~/.emacs.d/lisp/mariana/mariana-theme.el" "~/.emacs.d/lisp/uwu.el/uwu-theme.el" "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el" "~/.emacs.d/lisp/doom-alabaster-theme.el"))
 
 (mapc #'load-if-exists my-customizations)
 
@@ -171,8 +167,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-p") (lambda () (interactive) (exchange-point-and-mark) (keyboard-quit)))
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "M-`") #'other-frame)
-(global-set-key (kbd "C-s")
-                #'ar/prefilled-swiper)
+(global-set-key (kbd "C-s") #'ar/prefilled-swiper)
 
 ;;; scroll like vim
 (autoload 'View-scroll-half-page-forward "view")
@@ -285,7 +280,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package counsel
   :ensure t
   :bind (("M-x"     . counsel-M-x)
-         ("C-s"     . swiper)
+         ;; ("C-s"     . swiper)
          ("C-S-s"   . isearch-forward)
          ("C-x C-f" . counsel-find-file)
          ("C-x C-r" . counsel-recentf)  ; search for recently edited
@@ -409,11 +404,6 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (use-package fish-mode
   :ensure t)
-
-;; opacity
-
-;; ;; set transparency
-
 
 (add-hook 'org-mode-hook
       (lambda ()
