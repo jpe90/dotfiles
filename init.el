@@ -21,12 +21,17 @@
       (load-file file)
     (message (concat file " doesn't exist"))))
 
-(defvar my-customizations '("~/.emacs.d/lisp/platform.el" "~/.emacs.d/lisp/mariana/mariana-theme.el" "~/.emacs.d/lisp/uwu.el/uwu-theme.el" "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el" "~/.emacs.d/lisp/doom-alabaster-theme.el"))
+
+(defvar my-customizations '("~/.emacs.d/lisp/platform.el"
+                            ;; "~/.emacs.d/lisp/mariana/mariana-theme.el"
+                            ;; "~/.emacs.d/lisp/uwu.el/uwu-theme.el"
+                            ;; "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el"
+                            ;; "~/.emacs.d/lisp/doom-alabaster-theme.el"
+                            ))
 
 (mapc #'load-if-exists my-customizations)
 
-(with-eval-after-load 'flycheck
-  (add-hook 'flycheck-mode-hook #'flycheck-swift3-setup))
+
 
 (defun make-transparent ()
   (set-frame-parameter (selected-frame) 'alpha '(85 85))
@@ -169,6 +174,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-`") #'other-frame)
 (global-set-key (kbd "C-s") #'ar/prefilled-swiper)
 
+
+
+
 ;;; scroll like vim
 (autoload 'View-scroll-half-page-forward "view")
 (autoload 'View-scroll-half-page-backward "view")
@@ -201,8 +209,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq mouse-wheel-progressive-speed nil) ;;; turn off mouse acceleration
 (setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
 
-;; terminal stuff
-
+;; Escape C-x and C-c in terminal mode
 (add-hook 'term-mode-hook (lambda ()
                             ;; Hack to set two escape chars.
                             (let (term-escape-char)
@@ -210,15 +217,22 @@ Repeated invocations toggle between the two most recently open buffers."
                             (let (term-escape-char)
                               (term-set-escape-char ?\C-c))))
 
+(define-key emacs-lisp-mode-map (kbd "<f5>") 'eval-buffer)
+
+(add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
+
+(add-hook 'org-mode-hook
+      (lambda ()
+        (setq syntax-propertize-function 'org-mode-<>-syntax-fix)
+        (syntax-propertize (point-max))))
+
 
 ;; bind command to control on mac
 (if (eq system-type 'darwin)
     (progn
       (setq mac-command-modifier 'control)
       (setq mac-control-modifier 'hyper)
-      (global-set-key (kbd "H-s") #'save-some-buffers)
-      )
-  )
+      (global-set-key (kbd "H-s") #'save-some-buffers)))
 
 ;; Set default font
 ;; (set-face-font 'default "SF Mono:size=11")
@@ -287,6 +301,7 @@ Repeated invocations toggle between the two most recently open buffers."
          ("C-c g"   . counsel-git)      ; search for files in git repo
          ("C-c j"   . counsel-git-grep) ; search for regexp in git repo
          ("C-c /"   . counsel-rg)      ; Use ag for regexp
+         ("C-c C-/"   . counsel-at-point-rg)
          ("M-y"     . counsel-yank-pop)))
 
 (use-package counsel-at-point)
@@ -343,8 +358,7 @@ Repeated invocations toggle between the two most recently open buffers."
     ;; add-hook 'clojure
     (add-hook 'cider-repl-mode-hook 'paredit-mode)
     (add-hook 'racket-mode-hook 'paredit-mode)
-    (add-hook 'racket-repl-mode-hook 'paredit-mode)
-    )
+    (add-hook 'racket-repl-mode-hook 'paredit-mode))
   (bind-key "C-M-w" 'select-and-copy-between-parens)
   :hook
   (sly-mode . paredit-mode))
@@ -400,15 +414,11 @@ Repeated invocations toggle between the two most recently open buffers."
   (setq sly-lisp-implementations
         '((sbcl ("sbcl") :coding-system utf-8-unix)
           (ecl ("ecl") :coding-system utf-8-unix))))
-(add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
 
 (use-package fish-mode
   :ensure t)
 
-(add-hook 'org-mode-hook
-      (lambda ()
-        (setq syntax-propertize-function 'org-mode-<>-syntax-fix)
-        (syntax-propertize (point-max))))
+
 
 ;; ########################## Custom
 
