@@ -1,8 +1,9 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
-;; (setq use-package-always-ensure t)
 (require 'use-package)
+
+(setq mac-option-modifier 'meta)
 
 (defun enable-cua ()
   (cua-mode t)
@@ -15,6 +16,8 @@
   (package-initialize)
 (package-refresh-contents)
 (package-install 'use-package))
+
+;; (first-time-load)
 
 (defun load-if-exists (file)
   (if (file-exists-p file)
@@ -31,8 +34,6 @@
 
 (mapc #'load-if-exists my-customizations)
 
-
-
 (defun make-transparent ()
   (set-frame-parameter (selected-frame) 'alpha '(85 85))
   (add-to-list 'default-frame-alist '(alpha 85 85)))
@@ -45,9 +46,9 @@
   (previous-line))
 
 (defun launch-kitty-in-cwd ()
+  (interactive)
   (let ((project-root (cdr (project-current))))
-   (interactive)
-   (call-process "kitty" nil 0 nil "-d" default-directory)))
+    (call-process "kitty" nil 0 nil "-d" default-directory)))
 
 (defun launch-kitty-in-vc-root ()
   (interactive)
@@ -58,8 +59,9 @@
    "User defined keys for dired mode."
    (interactive)
    (local-set-key (kbd "C-<return>") 'dired-display-file)
-   (local-set-key (kbd "C-o") 'other-window)
-   (add-hook 'dired-mode-hook 'dc/dired-mode-keys))
+   (local-set-key (kbd "C-o") 'other-window))
+
+(add-hook 'dired-mode-hook 'dc/dired-mode-keys)
 
 (defun er-switch-to-previous-buffer ()
   "Switch to previously open buffer.
@@ -85,21 +87,6 @@ Repeated invocations toggle between the two most recently open buffers."
   (apply (if (called-interactively-p 'any) #'funcall-interactively #'funcall)
          #'load-theme args))
 
-(defun xcode-build()
-  (interactive)
-  (shell-command-to-string
-   "osascript -e 'tell application \"Xcode\"' -e 'set targetProject to active workspace document' -e 'build targetProject' -e 'end tell'"))
-
-(defun xcode-run()
-  (interactive)
-  (shell-command-to-string
-   "osascript -e 'tell application \"Xcode\"' -e 'set targetProject to active workspace document' -e 'stop targetProject' -e 'run targetProject' -e 'end tell'"))
-
-(defun xcode-test()
-  (interactive)
-  (shell-command-to-string
-   "osascript -e 'tell application \"Xcode\"' -e 'set targetProject to active workspace document' -e 'stop targetProject' -e 'test targetProject' -e 'end tell'"))
-
 (defun replace-string-with (newval)
   "https://stackoverflow.com/a/4925243/5067724"
   (interactive)
@@ -113,8 +100,8 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-hook 'flycheck-mode-hook		#'user-flycheck-keybindings)
 
 (defun user-flymake-keybindings ()
-  (local-set-key (kbd "M-p") 'flymake-goto-prev-error)
-  (local-set-key (kbd "M-n") 'flymake-goto-next-error))
+  (local-set-key (kbd "S-<f2>") 'flymake-goto-prev-error)
+  (local-set-key (kbd "<f2>") 'flymake-goto-next-error))
 (add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
 
 (defun rebl-eval-last-sexp ()
@@ -173,9 +160,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "M-`") #'other-frame)
 (global-set-key (kbd "C-s") #'ar/prefilled-swiper)
-
-
-
+(global-set-key (kbd "C-1") #'set-mark-command)
 
 ;;; scroll like vim
 (autoload 'View-scroll-half-page-forward "view")
@@ -183,7 +168,8 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
-(require 'clj-deps-new)
+(use-package clj-deps-new
+  :ensure t)
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -227,7 +213,7 @@ Repeated invocations toggle between the two most recently open buffers."
         (syntax-propertize (point-max))))
 
 
-;; bind command to control on mac
+;; ;; bind command to control on mac
 (if (eq system-type 'darwin)
     (progn
       (setq mac-command-modifier 'control)
@@ -241,6 +227,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; the russians make good fonts
 ;; (set-face-font 'default "Fira Code:size=11")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
+;; (set-face-font 'default "Terminus")
 
 ;;; org mode code eval
 (org-babel-do-load-languages
@@ -248,6 +235,8 @@ Repeated invocations toggle between the two most recently open buffers."
       '((js . t)
         (lisp . t)
         (clojure . t)))
+
+(setq org-startup-with-inline-images t)
 
 ;;; toolbar visibility
 (tool-bar-mode -1)
@@ -272,11 +261,15 @@ Repeated invocations toggle between the two most recently open buffers."
         '((counsel-git-grep . ivy--regex-plus)
           (counsel-ag       . ivy--regex-plus)
           (counsel-rg       . ivy--regex-plus)
+          ;; (counsel-find-file . ivy--regex-plus)
           (swiper           . ivy--regex-plus)
           (t                . ivy--regex-fuzzy)))
   (ivy-configure 'counsel-imenu
   :update-fn 'auto)
   (global-set-key (kbd "C-c i") 'counsel-imenu))
+
+(use-package flx
+  :ensure t)
 
 (use-package markdown-mode
   :ensure t
@@ -304,7 +297,8 @@ Repeated invocations toggle between the two most recently open buffers."
          ("C-c C-/"   . counsel-at-point-rg)
          ("M-y"     . counsel-yank-pop)))
 
-(use-package counsel-at-point)
+(use-package counsel-at-point
+  :ensure t)
 
 (use-package magit
   :ensure t
@@ -390,7 +384,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;; get rid of blinking cursor
 (blink-cursor-mode 0)
 
-(add-hook 'swift-mode-hook #'flycheck-mode)
+;; (add-hook 'swift-mode-hook #'flycheck-mode)
 
 ;;; gdb setup
 (setq
@@ -418,6 +412,42 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package fish-mode
   :ensure t)
 
+(use-package dart-mode
+  :ensure t
+  :init
+  (setq dart-format-on-save t))
+
+(use-package yaml-mode
+  :ensure t)
+
+;; (add-hook 'dart-mode-hook 'lsp)
+;; (add-hook 'dart-mode-hook (lambda () (lsp-mode +1)))
+
+(setq gc-cons-threshold (* 100 1024 1024)
+      read-process-output-max (* 1024 1024)
+      company-minimum-prefix-length 1
+      lsp-lens-enable t
+      lsp-signature-auto-activate nil)
+;;; lsp
+
+(use-package eglot
+  :ensure t
+  :disabled t)
+
+(use-package lsp-mode
+  :ensure t
+  :disabled t
+  ;; :hook (dart-mode . lsp-mode)
+  )
+
+(use-package lsp-ui
+  ;; :init (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+  :ensure t
+  :disabled t
+  :hook (lsp-mode . lsp-ui-mode))
+
+(use-package org-download
+  :ensure t)
 
 
 ;; ########################## Custom
@@ -427,8 +457,7 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(font-lock-comment-face ((t (:inherit modus-themes-slant :foreground "#505050"))))
- '(region ((t (:extend nil :background "#bcbcbc" :foreground "#000000")))))
+ '(default ((t (:background nil)))))
 '(custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -486,20 +515,108 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(ansi-color-faces-vector
+   [default bold shadow italic underline success warning error])
+ '(ansi-color-names-vector
+   ["gray35" "#a60000" "#005e00" "#813e00" "#0031a9" "#721045" "#00538b" "gray65"])
+ '(awesome-tray-mode-line-active-color "#0031a9")
+ '(awesome-tray-mode-line-inactive-color "#d7d7d7")
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(custom-enabled-themes '(modus-operandi))
+ '(exwm-floating-border-color "#888888")
+ '(fci-rule-color "#2f2f2e")
+ '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
+ '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
+ '(flymake-warning-bitmap '(exclamation-mark modus-themes-fringe-yellow))
+ '(highlight-changes-colors '("#e5786d" "#834c98"))
+ '(highlight-symbol-colors
+   '("#55204c0039fc" "#3f0a4e4240dc" "#5a2849c746fd" "#3fd2334a42f4" "#426a4d5455d9" "#537247613a13" "#46c549b0535c"))
+ '(highlight-symbol-foreground-color "#999891")
+ '(highlight-tail-colors
+   '(("#2f2f2e" . 0)
+     ("#3d464c" . 20)
+     ("#3b473c" . 30)
+     ("#41434a" . 50)
+     ("#4c4536" . 60)
+     ("#4b4136" . 70)
+     ("#4d3936" . 85)
+     ("#2f2f2e" . 100)))
+ '(hl-bg-colors
+   '("#4c4536" "#4b4136" "#504341" "#4d3936" "#3b313d" "#41434a" "#3b473c" "#3d464c"))
+ '(hl-fg-colors
+   '("#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29"))
+ '(hl-paren-colors '("#7ec98f" "#e5c06d" "#a4b5e6" "#834c98" "#8ac6f2"))
+ '(hl-todo-keyword-faces
+   '(("HOLD" . "#70480f")
+     ("TODO" . "#721045")
+     ("NEXT" . "#5317ac")
+     ("THEM" . "#8f0075")
+     ("PROG" . "#00538b")
+     ("OKAY" . "#30517f")
+     ("DONT" . "#315b00")
+     ("FAIL" . "#a60000")
+     ("BUG" . "#a60000")
+     ("DONE" . "#005e00")
+     ("NOTE" . "#863927")
+     ("KLUDGE" . "#813e00")
+     ("HACK" . "#813e00")
+     ("TEMP" . "#5f0000")
+     ("FIXME" . "#a0132f")
+     ("XXX+" . "#972500")
+     ("REVIEW" . "#005a5f")
+     ("DEPRECATED" . "#201f55")))
+ '(ibuffer-deletion-face 'modus-themes-mark-del)
+ '(ibuffer-filter-group-name-face 'modus-themes-pseudo-header)
+ '(ibuffer-marked-face 'modus-themes-mark-sel)
+ '(ibuffer-title-face 'default)
  '(linum-format " %7i ")
  '(lsp-ui-doc-border "#93a1a1")
  '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
+ '(nrepl-message-colors
+   '("#ffb4ac" "#ddaa6f" "#e5c06d" "#3d464c" "#e3eaea" "#41434a" "#7ec98f" "#e5786d" "#834c98"))
+ '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point clj-deps-new markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme kaolin-themes ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download clj-deps-new modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+ '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
+ '(pos-tip-background-color "#2f2f2e")
+ '(pos-tip-foreground-color "#999891")
  '(safe-local-variable-values '((cider-clojure-cli-global-options . "-A:reveal")))
  '(show-paren-mode t)
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#8ac6f2" "#2f2f2e" 0.2))
  '(tao-theme-use-boxes t)
+ '(term-default-bg-color "#2a2a29")
+ '(term-default-fg-color "#8d8b86")
  '(tool-bar-mode nil)
+ '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
+ '(vc-annotate-color-map
+   '((20 . "#a60000")
+     (40 . "#721045")
+     (60 . "#8f0075")
+     (80 . "#972500")
+     (100 . "#813e00")
+     (120 . "#70480f")
+     (140 . "#5d3026")
+     (160 . "#184034")
+     (180 . "#005e00")
+     (200 . "#315b00")
+     (220 . "#005a5f")
+     (240 . "#30517f")
+     (260 . "#00538b")
+     (280 . "#093060")
+     (300 . "#0031a9")
+     (320 . "#2544bb")
+     (340 . "#0000c0")
+     (360 . "#5317ac")))
+ '(vc-annotate-very-old-color nil)
  '(warning-suppress-types '((comp) (comp)))
- '(window-divider-mode nil))
+ '(weechat-color-list
+   '(unspecified "#2a2a29" "#2f2f2e" "#504341" "#ffb4ac" "#3d464c" "#8ac6f2" "#4c4536" "#e5c06d" "#41434a" "#a4b5e6" "#4d3936" "#e5786d" "#3b473c" "#7ec98f" "#8d8b86" "#74736f"))
+ '(window-divider-mode nil)
+ '(xterm-color-names
+   ["black" "#a60000" "#005e00" "#813e00" "#0031a9" "#721045" "#00538b" "gray65"])
+ '(xterm-color-names-bright
+   ["gray35" "#972500" "#315b00" "#70480f" "#2544bb" "#8f0075" "#30517f" "white"]))
