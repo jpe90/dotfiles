@@ -97,12 +97,22 @@ Repeated invocations toggle between the two most recently open buffers."
 (defun user-flycheck-keybindings ()
   (local-set-key (kbd "S-<f2>") 'flycheck-previous-error)
   (local-set-key (kbd "<f2>") 'flycheck-next-error))
+
 (add-hook 'flycheck-mode-hook		#'user-flycheck-keybindings)
+
+(defun user-progmode-keybindings ()
+  (local-set-key (kbd "C-c C-l") 'org-store-link))
+
+(add-hook 'prog-mode-hook		#'user-progmode-keybindings)
 
 (defun user-flymake-keybindings ()
   (local-set-key (kbd "S-<f2>") 'flymake-goto-prev-error)
   (local-set-key (kbd "<f2>") 'flymake-goto-next-error))
 (add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
+
+(defun user-eglot-keybindings ()
+  (global-set-key (kbd "H-a f") 'eglot-code-action-quickfix))
+(add-hook 'eglot-mode-hook #'user-eglot-keybindings)
 
 (defun rebl-eval-last-sexp ()
   (interactive)
@@ -139,7 +149,11 @@ Repeated invocations toggle between the two most recently open buffers."
     (when (get-text-property (point) 'src-block)
       ;; This is a < or > in an org-src block
       (put-text-property (point) (1- (point))
-                 'syntax-table (string-to-syntax "_")))))))
+                         'syntax-table (string-to-syntax "_")))))))
+
+(defun copy-parent-dir-as-kill ()
+  (interactive)
+  (kill-new (expand-file-name default-directory)))
 
 (global-unset-key (kbd "C-z"))
 
@@ -161,6 +175,13 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-`") #'other-frame)
 (global-set-key (kbd "C-s") #'ar/prefilled-swiper)
 (global-set-key (kbd "C-1") #'set-mark-command)
+
+(global-set-key (kbd "H-w")
+   (lambda ()
+      (interactive)
+      (kill-new (thing-at-point 'symbol))))
+
+
 
 ;;; scroll like vim
 (autoload 'View-scroll-half-page-forward "view")
@@ -194,6 +215,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq set-mark-command-repeat-pop t) ;;; cycle thru marks w/ c-space
 (setq mouse-wheel-progressive-speed nil) ;;; turn off mouse acceleration
 (setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
+(setq lsp-headerline-breadcrumb-enable nil)
 
 ;; Escape C-x and C-c in terminal mode
 (add-hook 'term-mode-hook (lambda ()
@@ -269,6 +291,9 @@ Repeated invocations toggle between the two most recently open buffers."
   (global-set-key (kbd "C-c i") 'counsel-imenu))
 
 (use-package flx
+  :ensure t)
+
+(use-package wgrep
   :ensure t)
 
 (use-package markdown-mode
@@ -434,6 +459,8 @@ Repeated invocations toggle between the two most recently open buffers."
   :ensure t
   :disabled t)
 
+
+
 (use-package lsp-mode
   :ensure t
   :disabled t
@@ -447,6 +474,12 @@ Repeated invocations toggle between the two most recently open buffers."
   :hook (lsp-mode . lsp-ui-mode))
 
 (use-package org-download
+  :ensure t)
+
+(use-package cargo
+  :ensure t)
+
+(use-package rust-mode
   :ensure t)
 
 
@@ -524,7 +557,11 @@ Repeated invocations toggle between the two most recently open buffers."
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(modus-operandi))
+ '(cua-global-mark-cursor-color "#93E0E3")
+ '(cua-normal-cursor-color "#DCDCCC")
+ '(cua-overwrite-cursor-color "#F0DFAF")
+ '(cua-read-only-cursor-color "#7F9F7F")
+ '(custom-enabled-themes '(doom-monokai-classic))
  '(exwm-floating-border-color "#888888")
  '(fci-rule-color "#2f2f2e")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
@@ -579,7 +616,7 @@ Repeated invocations toggle between the two most recently open buffers."
    '("#ffb4ac" "#ddaa6f" "#e5c06d" "#3d464c" "#e3eaea" "#41434a" "#7ec98f" "#e5786d" "#834c98"))
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download clj-deps-new modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(doom-themes nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download clj-deps-new modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#2f2f2e")
  '(pos-tip-foreground-color "#999891")
