@@ -34,6 +34,9 @@
 
 (mapc #'load-if-exists my-customizations)
 
+;; TODO:
+;; - fn that highlights current line or, if mark is active, expands to next line
+
 (defun make-transparent ()
   (set-frame-parameter (selected-frame) 'alpha '(85 85))
   (add-to-list 'default-frame-alist '(alpha 85 85)))
@@ -77,6 +80,15 @@ Repeated invocations toggle between the two most recently open buffers."
                                            (region-end))))
         (swiper region-text))
     (swiper)))
+
+(defun ar/prefilled-swiper-backward ()
+  "Pre-fill swiper input with region."
+  (interactive)
+  (if (region-active-p)
+      (let ((region-text (buffer-substring (region-beginning)
+                                           (region-end))))
+        (swiper-backward region-text))
+    (swiper-backward)))
 
 (defun change-theme (&rest args)
   "Like `load-theme', but disables all themes before loading the new one."
@@ -162,7 +174,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-S-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
 (global-set-key (kbd "C-S-t") #'launch-kitty-in-vc-root)
-(global-set-key (kbd "C-x SPC") #'cua-rectangle-mark-mode)
 (global-set-key (kbd "C-;") #'comment-region)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
@@ -174,7 +185,12 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "M-`") #'other-frame)
 (global-set-key (kbd "C-s") #'ar/prefilled-swiper)
+(global-set-key (kbd "C-r") #'ar/prefilled-swiper-backward)
 (global-set-key (kbd "C-1") #'set-mark-command)
+(global-set-key (kbd "H-n") #'cua-rectangle-mark-mode)
+(global-set-key (kbd "H-a") #'back-to-indentation)
+(global-set-key (kbd "<C-left>") #'back-to-indentation)
+(global-set-key (kbd "<C-right>") #'move-end-of-line)
 
 (global-set-key (kbd "H-w")
    (lambda ()
@@ -234,6 +250,8 @@ Repeated invocations toggle between the two most recently open buffers."
         (setq syntax-propertize-function 'org-mode-<>-syntax-fix)
         (syntax-propertize (point-max))))
 
+(add-hook 'rust-mode-hook 'electric-pair-mode)
+
 
 ;; ;; bind command to control on mac
 (if (eq system-type 'darwin)
@@ -245,7 +263,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; Set default font
 ;; (set-face-font 'default "SF Mono:size=11")
 ;; (set-face-font 'default "Menlo:size=10")
-;; (set-face-font 'default "Inconsolata-10")
+;; (set-face-font 'default "Inconsolata:size=13")
 ;; the russians make good fonts
 ;; (set-face-font 'default "Fira Code:size=11")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
@@ -286,9 +304,10 @@ Repeated invocations toggle between the two most recently open buffers."
           ;; (counsel-find-file . ivy--regex-plus)
           (swiper           . ivy--regex-plus)
           (t                . ivy--regex-fuzzy)))
-  (ivy-configure 'counsel-imenu
+    (global-set-key (kbd "C-c i") 'counsel-imenu))
+
+(ivy-configure 'counsel-imenu
   :update-fn 'auto)
-  (global-set-key (kbd "C-c i") 'counsel-imenu))
 
 (use-package flx
   :ensure t)
@@ -313,7 +332,6 @@ Repeated invocations toggle between the two most recently open buffers."
   :ensure t
   :bind (("M-x"     . counsel-M-x)
          ;; ("C-s"     . swiper)
-         ("C-S-s"   . isearch-forward)
          ("C-x C-f" . counsel-find-file)
          ("C-x C-r" . counsel-recentf)  ; search for recently edited
          ("C-c g"   . counsel-git)      ; search for files in git repo
@@ -461,17 +479,38 @@ Repeated invocations toggle between the two most recently open buffers."
 
 
 
+;; (use-package lsp-mode
+;;   :ensure t
+;;   :disabled t
+;;   ;; :hook (dart-mode . lsp-mode)
+;;   )
+
 (use-package lsp-mode
-  :ensure t
-  :disabled t
-  ;; :hook (dart-mode . lsp-mode)
-  )
+  :ensure
+  :commands lsp
+  :custom
+  ;; what to use when checking on-save. "check" is default, I prefer clippy
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-idle-delay 0.6)
+  (lsp-rust-analyzer-server-display-inlay-hints t)
+  ;; :config  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+      )
 
 (use-package lsp-ui
-  ;; :init (add-hook 'lsp-mode-hook 'lsp-ui-mode)
   :ensure t
   :disabled t
-  :hook (lsp-mode . lsp-ui-mode))
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable t)
+  )
+
+;; (use-package lsp-ui
+;;   ;; :init (add-hook 'lsp-mode-hook 'lsp-ui-mode)
+;;   :ensure t
+;;   :disabled t
+;;   :hook (lsp-mode . lsp-ui-mode))
 
 (use-package org-download
   :ensure t)
@@ -479,8 +518,53 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package cargo
   :ensure t)
 
-(use-package rust-mode
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status)
+              ("C-c C-c d" . lsp-describe-thing-at-point))
+  :config
+  ;; uncomment for less flashiness
+  (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  (setq lsp-signature-auto-activate nil)
+ 
+  ;; comment to disable rustfmt on save
+  (setq rustic-format-on-save t)
+  (add-hook 'rustic-mode-hook 'er/rustic-mode-hook))
+
+(use-package yasnippet
+  :ensure
+  :config
+  (yas-reload-all)
+  (add-hook 'prog-mode-hook 'yas-minor-mode)
+  (add-hook 'text-mode-hook 'yas-minor-mode))
+
+(use-package expand-region
+  :bind ("C-=" . er/expand-region))
+
+(use-package license-templates
   :ensure t)
+
+;; (require 'license-templates)
+
+(use-package vterm
+    :ensure t)
+
+(defun er/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm, but don't try to
+  ;; save rust buffers that are not file visiting. Once
+  ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
+  ;; no longer be necessary.
+  (when buffer-file-name
+    (setq-local buffer-save-without-query t)))
 
 
 ;; ########################## Custom
@@ -490,7 +574,8 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
+ '(default ((t (:background nil))))
+ '(lsp-lsp-flycheck-warning-unnecessary-face ((t (:inherit modus-themes-lang-warning :foreground "dim gray"))) t))
 '(custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -515,17 +600,17 @@ Repeated invocations toggle between the two most recently open buffers."
  '(linum-format " %5i ")
  '(lsp-auto-guess-root t)
  '(lsp-dart-flutter-widget-guides nil)
- '(lsp-eldoc-enable-hover t)
- '(lsp-eldoc-render-all nil)
- '(lsp-enable-file-watchers nil)
- '(lsp-enable-indentation t t)
- '(lsp-haskell-format-on-import-on t)
- '(lsp-haskell-formatting-provider "ormolu")
- '(lsp-haskell-hlint-on nil)
- '(lsp-ui-doc-border "#586e75")
- '(lsp-ui-doc-enable t)
- '(lsp-ui-peek-enable t)
- '(org-src-block-faces 'nil)
+ ;; '(lsp-eldoc-enable-hover t)
+ ;; '(lsp-eldoc-render-all nil)
+ ;; '(lsp-enable-file-watchers nil)
+ ;; '(lsp-enable-indentation t t)
+ ;; '(lsp-haskell-format-on-import-on t)
+ ;; '(lsp-haskell-formatting-provider "ormolu")
+ ;; '(lsp-haskell-hlint-on nil)
+ ;; '(lsp-ui-doc-border "#586e75")
+ ;; '(lsp-ui-doc-enable t)
+ ;; '(lsp-ui-peek-enable t)
+ ;; '(org-src-block-faces 'nil)
  '(package-selected-packages
    '(lispy sublime-themes project solarized-theme helm-rg tramp helm-tramp hasklig-mode ligature atom-one-dark-theme dracula-theme gruvbox-theme jetbrains-darcula-theme markdown-mode markdown-preview-mode elixir elixer-mode company-ghci tree-sitter-indent fzf monokai-pro-theme vscode-dark-plus-theme evil nord-theme csv-mode mood-one-theme nothing-theme phoenix-dark-mono-theme punpun-theme quasi-monochrome-theme spacegray-theme pkgbuild-mode flutter almost-mono-themes sexy-monochrome-theme purp-theme prassee-theme plan9-theme naysayer-theme company lsp-ui spacemacs-theme cyberpunk-theme lsp-haskell rmsbolt peep-dired flycheck w3m exec-path-from-shell python-mode nix-mode racket-mode function-args haskell-mode helm-slime slime elpher fish-mode cider paredit clojure-mode helm lsp-mode magit zig-mode yaml-mode meson-mode))
  '(show-paren-mode t)
@@ -550,41 +635,18 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If there is more than one, they won't work right.
  '(ansi-color-faces-vector
    [default bold shadow italic underline success warning error])
- '(ansi-color-names-vector
-   ["gray35" "#a60000" "#005e00" "#813e00" "#0031a9" "#721045" "#00538b" "gray65"])
  '(awesome-tray-mode-line-active-color "#0031a9")
  '(awesome-tray-mode-line-inactive-color "#d7d7d7")
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(cua-global-mark-cursor-color "#93E0E3")
- '(cua-normal-cursor-color "#DCDCCC")
- '(cua-overwrite-cursor-color "#F0DFAF")
- '(cua-read-only-cursor-color "#7F9F7F")
- '(custom-enabled-themes '(doom-monokai-classic))
+ '(custom-enabled-themes '(modus-operandi))
  '(exwm-floating-border-color "#888888")
- '(fci-rule-color "#2f2f2e")
+ '(fci-rule-color "#555556")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
  '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
  '(flymake-warning-bitmap '(exclamation-mark modus-themes-fringe-yellow))
- '(highlight-changes-colors '("#e5786d" "#834c98"))
- '(highlight-symbol-colors
-   '("#55204c0039fc" "#3f0a4e4240dc" "#5a2849c746fd" "#3fd2334a42f4" "#426a4d5455d9" "#537247613a13" "#46c549b0535c"))
- '(highlight-symbol-foreground-color "#999891")
- '(highlight-tail-colors
-   '(("#2f2f2e" . 0)
-     ("#3d464c" . 20)
-     ("#3b473c" . 30)
-     ("#41434a" . 50)
-     ("#4c4536" . 60)
-     ("#4b4136" . 70)
-     ("#4d3936" . 85)
-     ("#2f2f2e" . 100)))
- '(hl-bg-colors
-   '("#4c4536" "#4b4136" "#504341" "#4d3936" "#3b313d" "#41434a" "#3b473c" "#3d464c"))
- '(hl-fg-colors
-   '("#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29" "#2a2a29"))
- '(hl-paren-colors '("#7ec98f" "#e5c06d" "#a4b5e6" "#834c98" "#8ac6f2"))
+ '(highlight-tail-colors ((("#333a23") . 0) (("#2d3936") . 20)))
  '(hl-todo-keyword-faces
    '(("HOLD" . "#70480f")
      ("TODO" . "#721045")
@@ -608,18 +670,22 @@ Repeated invocations toggle between the two most recently open buffers."
  '(ibuffer-filter-group-name-face 'modus-themes-pseudo-header)
  '(ibuffer-marked-face 'modus-themes-mark-sel)
  '(ibuffer-title-face 'default)
+ '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#FD971F"))
+ '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#A6E22E"))
+ '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#525254"))
  '(linum-format " %7i ")
- '(lsp-ui-doc-border "#93a1a1")
- '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
  '(nrepl-message-colors
    '("#ffb4ac" "#ddaa6f" "#e5c06d" "#3d464c" "#e3eaea" "#41434a" "#7ec98f" "#e5786d" "#834c98"))
+ '(objed-cursor-color "#E74C3C")
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(doom-themes nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download clj-deps-new modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download clj-deps-new modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#2f2f2e")
  '(pos-tip-foreground-color "#999891")
+ '(rustic-ansi-faces
+   ["#272822" "#E74C3C" "#A6E22E" "#E6DB74" "#268bd2" "#F92660" "#66D9EF" "#F8F8F2"])
  '(safe-local-variable-values '((cider-clojure-cli-global-options . "-A:reveal")))
  '(show-paren-mode t)
  '(smartrep-mode-line-active-bg (solarized-color-blend "#8ac6f2" "#2f2f2e" 0.2))
