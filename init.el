@@ -17,7 +17,7 @@
 (package-refresh-contents)
 (package-install 'use-package))
 
-;; (first-time-load)
+(first-time-load)
 
 (defun load-if-exists (file)
   (if (file-exists-p file)
@@ -32,10 +32,16 @@
                             ;; "~/.emacs.d/lisp/doom-alabaster-theme.el"
                             ))
 
-(mapc #'load-if-exists my-customizations)
+;; (mapc #'load-if-exists my-customizations)
 
 ;; TODO:
 ;; - fn that highlights current line or, if mark is active, expands to next line
+
+(defun my-reload-dir-locals-for-current-buffer ()
+  "reload dir locals for the current buffer"
+  (interactive)
+  (let ((enable-local-variables :all))
+    (hack-dir-local-variables-non-file-buffer)))
 
 (defun make-transparent ()
   (set-frame-parameter (selected-frame) 'alpha '(85 85))
@@ -57,6 +63,11 @@
   (interactive)
   (let ((project-root (cdr (project-current))))
     (call-process "kitty" nil 0 nil "-d" project-root)))
+
+(defun launch-iterm-in-vc-root ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (shell-command (concat "open -a iTerm " project-root) nil nil)))
 
 (defun dc/dired-mode-keys ()
    "User defined keys for dired mode."
@@ -167,20 +178,38 @@ Repeated invocations toggle between the two most recently open buffers."
   (interactive)
   (kill-new (expand-file-name default-directory)))
 
+(defun java-eval-nofocus ()
+  "run current program (that requires no input)"
+  (interactive)
+  (let* ((source (file-name-nondirectory buffer-file-name))
+     (out    (file-name-sans-extension source))
+     (class  (concat out ".class")))
+    (save-buffer)
+    (shell-command (format "rm -f %s && javac %s" class source))
+    (if (file-exists-p class)
+    (shell-command (format "java %s" out) "*scratch*")
+      (progn
+    (set (make-local-variable 'compile-command)
+         (format "javac %s" source))
+    (command-execute 'compile)))))
+
 (global-unset-key (kbd "C-z"))
+(global-unset-key (kbd "C-x C-l"))
 
 (global-set-key (kbd "M-o") #'split-window-right)
 (global-set-key (kbd "M-O") #'delete-other-windows)
 (global-set-key (kbd "C-S-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
-(global-set-key (kbd "C-S-t") #'launch-kitty-in-vc-root)
+(global-set-key (kbd "C-S-t") #'launch-iterm-in-vc-root)
 (global-set-key (kbd "C-;") #'comment-region)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
 (global-set-key (kbd "<prior>") 'View-scroll-half-page-backward)
 (global-set-key (kbd "C-,") 'project-find-file)
 (global-set-key (kbd "C-.") 'project-find-regexp)
-(global-set-key (kbd "C-\\") 'counsel-switch-buffer)
+(global-set-key (kbd "C-\\") 'project-switch-to-buffer)
+(global-set-key (kbd "C-x b") 'counsel-switch-buffer)
+(global-set-key (kbd "C-x B") 'counsel-switch-buffer-other-window)
 (global-set-key (kbd "M-p") (lambda () (interactive) (exchange-point-and-mark) (keyboard-quit)))
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "M-`") #'other-frame)
@@ -191,6 +220,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "H-a") #'back-to-indentation)
 (global-set-key (kbd "<C-left>") #'back-to-indentation)
 (global-set-key (kbd "<C-right>") #'move-end-of-line)
+
 
 (global-set-key (kbd "H-w")
    (lambda ()
@@ -232,6 +262,10 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq mouse-wheel-progressive-speed nil) ;;; turn off mouse acceleration
 (setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
 (setq lsp-headerline-breadcrumb-enable nil)
+(setq org-startup-folded t)
+
+;;; get rid of blinking cursor
+(blink-cursor-mode 0)
 
 ;; Escape C-x and C-c in terminal mode
 (add-hook 'term-mode-hook (lambda ()
@@ -251,6 +285,9 @@ Repeated invocations toggle between the two most recently open buffers."
         (syntax-propertize (point-max))))
 
 (add-hook 'rust-mode-hook 'electric-pair-mode)
+(add-hook 'zig-mode-hook 'electric-pair-mode)
+(add-hook 'c++-mode-hook 'electric-pair-mode)
+
 
 
 ;; ;; bind command to control on mac
@@ -260,12 +297,12 @@ Repeated invocations toggle between the two most recently open buffers."
       (setq mac-control-modifier 'hyper)
       (global-set-key (kbd "H-s") #'save-some-buffers)))
 
-;; Set default font
-;; (set-face-font 'default "SF Mono:size=11")
-;; (set-face-font 'default "Menlo:size=10")
-;; (set-face-font 'default "Inconsolata:size=13")
-;; the russians make good fonts
-;; (set-face-font 'default "Fira Code:size=11")
+;; ;; Set default font
+;; ;; (set-face-font 'default "SF Mono:size=12")
+;; ;; (set-face-font 'default "Menlo:size=10")
+;; ;; (set-face-font 'default "Inconsolata:size=13")
+;; ;; the russians make good fonts
+(set-face-font 'default "Fira Mono:size=12")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-font 'default "Terminus")
 
@@ -372,12 +409,12 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (use-package flycheck
   :ensure t
-  :disabled t
+  ;; :disabled t
   :bind (("<f2>" . flycheck-next-error)
          ("S-<f2>" . flycheck-previous-error)))
 
 (use-package flycheck-clj-kondo
-  :disabled t
+  ;; :disabled t
   :ensure t)
 
 (use-package paredit
@@ -404,7 +441,9 @@ Repeated invocations toggle between the two most recently open buffers."
   :ensure t
   :config
   ;; (require 'flycheck-clj-kondo)
-  :hook (clojure-mode . flycheck-mode))
+  :hook (clojure-mode . flycheck-mode)
+  :hook (clojure-mode . inf-clojure-minor-mode)
+  )
 
 ;; Similar to C-x C-e, but sends to REBL
 
@@ -412,10 +451,11 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package cider
   ;; :defer t
   :ensure t
-  :bind (("C-c =" . cider-format-buffer))
+  :bind (("C-c =" . cider-format-buffer)
+         ("C-." . cider-find-dwim))
   :init
   (progn
-    (add-hook 'clojure-mode-hook 'cider-mode)
+    ;; (add-hook 'clojure-mode-hook 'cider-mode)
     (add-hook 'clojurescript-mode-hook 'cider-mode)
     (add-hook 'clojurec-mode-hook 'cider-mode)
     (add-hook 'cider-repl-mode-hook 'cider-mode))
@@ -424,8 +464,7 @@ Repeated invocations toggle between the two most recently open buffers."
   (setq cider-auto-mode t)
   (setq show-paren-mode t)
   (setq cider-repl-pop-to-buffer-on-connect nil))
-;;; get rid of blinking cursor
-(blink-cursor-mode 0)
+
 
 ;; (add-hook 'swift-mode-hook #'flycheck-mode)
 
@@ -463,6 +502,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package yaml-mode
   :ensure t)
 
+(use-package web-mode
+  :ensure t)
+
 ;; (add-hook 'dart-mode-hook 'lsp)
 ;; (add-hook 'dart-mode-hook (lambda () (lsp-mode +1)))
 
@@ -491,19 +533,28 @@ Repeated invocations toggle between the two most recently open buffers."
   :custom
   ;; what to use when checking on-save. "check" is default, I prefer clippy
   (lsp-rust-analyzer-cargo-watch-command "clippy")
-  (lsp-idle-delay 0.6)
+  ;; (lsp-idle-delay 0.6)
   (lsp-rust-analyzer-server-display-inlay-hints t)
   ;; :config  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
       )
 
 (use-package lsp-ui
   :ensure t
-  :disabled t
   :commands lsp-ui-mode
   :custom
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-sideline-show-hover t)
-  (lsp-ui-doc-enable t)
+  (lsp-ui-peek-always-show nil)
+  (lsp-ui-sideline-show-hover nil)
+  (lsp-ui-sideline-show-code-actions t)
+  ;; (lsp-ui-doc-show-with-mouse nil)
+  ;; (lsp-ui-doc-enable nil)
+  ;; (lsp-enable-symbol-highlighting t)
+  ;; (lsp-lens-enable nil)
+  ;; (lsp-eldoc-enable-hover nil)
+  ;; (lsp-signature-auto-activate nil)
+  ;; (lsp-signature-render-documentation nil)
+  ;; (lsp-headerline-breadcrumb-enable nil)
+  :config
+  (setq lsp-ui-sideline-actions-kind-regex ".*")
   )
 
 ;; (use-package lsp-ui
@@ -524,6 +575,7 @@ Repeated invocations toggle between the two most recently open buffers."
               ("M-j" . lsp-ui-imenu)
               ("M-?" . lsp-find-references)
               ("C-c C-c l" . flycheck-list-errors)
+              ("C-!" . flycheck-explain-error-at-point)
               ("C-c C-c a" . lsp-execute-code-action)
               ("C-c C-c r" . lsp-rename)
               ("C-c C-c q" . lsp-workspace-restart)
@@ -538,7 +590,7 @@ Repeated invocations toggle between the two most recently open buffers."
  
   ;; comment to disable rustfmt on save
   (setq rustic-format-on-save t)
-  (add-hook 'rustic-mode-hook 'er/rustic-mode-hook))
+  (add-hook 'rustic-mode-hook 'je/rustic-mode-hook))
 
 (use-package yasnippet
   :ensure
@@ -555,10 +607,13 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;; (require 'license-templates)
 
-(use-package vterm
-    :ensure t)
+(use-package expand-region
+  :ensure t)
 
-(defun er/rustic-mode-hook ()
+(use-package zig-mode
+  :ensure t)
+
+(defun je/rustic-mode-hook ()
   ;; so that run C-c C-c C-r works without having to confirm, but don't try to
   ;; save rust buffers that are not file visiting. Once
   ;; https://github.com/brotzeit/rustic/issues/253 has been resolved this should
@@ -581,7 +636,6 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(custom-safe-themes
@@ -637,10 +691,11 @@ Repeated invocations toggle between the two most recently open buffers."
    [default bold shadow italic underline success warning error])
  '(awesome-tray-mode-line-active-color "#0031a9")
  '(awesome-tray-mode-line-inactive-color "#d7d7d7")
- '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(custom-enabled-themes '(modus-operandi))
+ '(custom-safe-themes
+   '("8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" default))
  '(exwm-floating-border-color "#888888")
  '(fci-rule-color "#555556")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
@@ -680,13 +735,19 @@ Repeated invocations toggle between the two most recently open buffers."
  '(objed-cursor-color "#E74C3C")
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download clj-deps-new modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(inf-clojure color-theme-sanityinc-solarized web-mode zig vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#2f2f2e")
  '(pos-tip-foreground-color "#999891")
  '(rustic-ansi-faces
    ["#272822" "#E74C3C" "#A6E22E" "#E6DB74" "#268bd2" "#F92660" "#66D9EF" "#F8F8F2"])
- '(safe-local-variable-values '((cider-clojure-cli-global-options . "-A:reveal")))
+ '(safe-local-variable-values
+   '((cider-clojure-cli-global-options . "-A:dev")
+     (inf-clojure-custom-repl-type . clojure)
+     (inf-clojure-custom-startup "localhost" . 50505)
+     (cider-ns-refresh-after-fn . "integrant.repl/resume")
+     (cider-ns-refresh-before-fn . "integrant.repl/suspend")
+     (cider-clojure-cli-global-options . "-A:reveal")))
  '(show-paren-mode t)
  '(smartrep-mode-line-active-bg (solarized-color-blend "#8ac6f2" "#2f2f2e" 0.2))
  '(tao-theme-use-boxes t)
