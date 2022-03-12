@@ -17,7 +17,7 @@
 (package-refresh-contents)
 (package-install 'use-package))
 
-(first-time-load)
+;;(first-time-load)
 
 (defun load-if-exists (file)
   (if (file-exists-p file)
@@ -68,6 +68,11 @@
   (interactive)
   (let ((project-root (cdr (project-current))))
     (shell-command (concat "open -a iTerm " project-root) nil nil)))
+
+(defun init-tailwind-in-vc-root ()
+  (interactive)
+  (let ((default-directory (cdr (project-current))))
+    (shell-command "curl -sLO https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-macos-arm64 && chmod +x tailwindcss-macos-arm64 && mv tailwindcss-macos-arm64 tailwindcss" nil nil)))
 
 (defun dc/dired-mode-keys ()
    "User defined keys for dired mode."
@@ -298,11 +303,11 @@ Repeated invocations toggle between the two most recently open buffers."
       (global-set-key (kbd "H-s") #'save-some-buffers)))
 
 ;; ;; Set default font
-;; ;; (set-face-font 'default "SF Mono:size=12")
+(set-face-font 'default "SF Mono:size=12")
 ;; ;; (set-face-font 'default "Menlo:size=10")
 ;; ;; (set-face-font 'default "Inconsolata:size=13")
 ;; ;; the russians make good fonts
-(set-face-font 'default "Fira Mono:size=12")
+;; (set-face-font 'default "Fira Mono:size=12")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-font 'default "Terminus")
 
@@ -420,7 +425,8 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package paredit
   ;; :defer t
   :ensure t
-  :bind (("M-[" . paredit-wrap-square)
+  :bind (("M-(" . paredit-wrap-round)
+         ("M-[" . paredit-wrap-square)
          ("M-{" . paredit-wrap-curly)
          ("C-M-{" . backward-paragraph)
          ("C-M-}" . forward-paragraph))
@@ -432,7 +438,8 @@ Repeated invocations toggle between the two most recently open buffers."
     ;; add-hook 'clojure
     (add-hook 'cider-repl-mode-hook 'paredit-mode)
     (add-hook 'racket-mode-hook 'paredit-mode)
-    (add-hook 'racket-repl-mode-hook 'paredit-mode))
+    (add-hook 'racket-repl-mode-hook 'paredit-mode)
+    (add-hook 'inferior-clojure-mode-hook 'paredit-mode))
   (bind-key "C-M-w" 'select-and-copy-between-parens)
   :hook
   (sly-mode . paredit-mode))
@@ -442,7 +449,7 @@ Repeated invocations toggle between the two most recently open buffers."
   :config
   ;; (require 'flycheck-clj-kondo)
   :hook (clojure-mode . flycheck-mode)
-  :hook (clojure-mode . inf-clojure-minor-mode)
+  ;; :hook (clojure-mode . inf-clojure-minor-mode)
   )
 
 ;; Similar to C-x C-e, but sends to REBL
@@ -457,7 +464,7 @@ Repeated invocations toggle between the two most recently open buffers."
   (progn
     ;; (add-hook 'clojure-mode-hook 'cider-mode)
     (add-hook 'clojurescript-mode-hook 'cider-mode)
-    (add-hook 'clojurec-mode-hook 'cider-mode)
+    ;; (add-hook 'clojurec-mode-hook 'cider-mode)
     (add-hook 'cider-repl-mode-hook 'cider-mode))
   :config
   (setq cider-repl-display-help-banner nil)
@@ -475,13 +482,9 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; Non-nil means display source file containing the main routine at startup
  gdb-show-main t)
 
-(use-package sly-quicklisp
-  :after sly
-  :ensure t)
-
-(use-package sly-asdf
-  :after sly
-  :ensure t)
+;; (use-package sly-quicklisp
+;;   :after sly
+;;   :ensure t)
 
 (use-package sly
   :ensure t
@@ -613,6 +616,14 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package zig-mode
   :ensure t)
 
+(use-package multiple-cursors
+  :ensure t)
+
+(use-package lsp-tailwindcss
+  :ensure t)
+
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+
 (defun je/rustic-mode-hook ()
   ;; so that run C-c C-c C-r works without having to confirm, but don't try to
   ;; save rust buffers that are not file visiting. Once
@@ -695,7 +706,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(compilation-message-face 'default)
  '(custom-enabled-themes '(modus-operandi))
  '(custom-safe-themes
-   '("8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" default))
+   '("a005dcaad2a779d5a772b4ee2248d2c0daff40da7d9a12d41c0afb661a2b3a5f" "8feca8afd3492985094597385f6a36d1f62298d289827aaa0d8a62fe6889b33c" "1d78d6d05d98ad5b95205670fe6022d15dabf8d131fe087752cc55df03d88595" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "d0fd069415ef23ccc21ccb0e54d93bdbb996a6cce48ffce7f810826bb243502c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" default))
  '(exwm-floating-border-color "#888888")
  '(fci-rule-color "#555556")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
@@ -735,14 +746,15 @@ Repeated invocations toggle between the two most recently open buffers."
  '(objed-cursor-color "#E74C3C")
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(inf-clojure color-theme-sanityinc-solarized web-mode zig vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(github-dark-vscode-theme github-modern-theme github-theme clojars clj-refactor a lsp-tailwindcss haskell-mode clj-deps-new inf-clojure color-theme-sanityinc-solarized web-mode zig vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#2f2f2e")
  '(pos-tip-foreground-color "#999891")
  '(rustic-ansi-faces
    ["#272822" "#E74C3C" "#A6E22E" "#E6DB74" "#268bd2" "#F92660" "#66D9EF" "#F8F8F2"])
  '(safe-local-variable-values
-   '((cider-clojure-cli-global-options . "-A:dev")
+   '((inf-clojure-custom-startup "localhost" . 7200)
+     (cider-clojure-cli-global-options . "-A:dev")
      (inf-clojure-custom-repl-type . clojure)
      (inf-clojure-custom-startup "localhost" . 50505)
      (cider-ns-refresh-after-fn . "integrant.repl/resume")
