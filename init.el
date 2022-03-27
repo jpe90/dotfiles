@@ -3,7 +3,33 @@
 
 (require 'use-package)
 
+;;; backup/autosave
+(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
+(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
+
 (setq mac-option-modifier 'meta)
+(setq-default cursor-type 'box)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
+(setq backup-directory-alist (list (cons ".*" backup-dir)))
+(setq auto-save-list-file-prefix autosave-dir)
+(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
+(setq recentf-max-saved-items 100)
+(setq confirm-kill-emacs 'yes-or-no-p)
+(setq visible-cursor nil)
+(setq nrepl-use-ssh-fallback-for-remote-hosts t)
+(setq custom-safe-themes t)
+(setq split-height-threshold nil) ;; only open horizontal splits (theoretically)
+(setq visible-cursor nil)
+(setq nrepl-use-ssh-fallback-for-remote-hosts t)
+;; (setq org-babel-lisp-eval-fn #'sly-eval)
+(setq org-babel-clojure-backend 'cider)
+(setq set-mark-command-repeat-pop t) ;;; cycle thru marks w/ c-space
+(setq mouse-wheel-progressive-speed nil) ;;; turn off mouse acceleration
+(setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
+(setq lsp-headerline-breadcrumb-enable nil)
+(setq org-startup-folded t)
 
 (defun enable-cua ()
   (cua-mode t)
@@ -36,6 +62,8 @@
                             ))
 
 (mapc #'load-if-exists my-customizations)
+
+(setq tags-add-tables nil)
 
 (defvar gerbil-program-name
   (expand-file-name "/opt/homebrew/bin/gxi"))
@@ -347,32 +375,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package clj-deps-new
   :ensure t)
 
-;;; backup/autosave
-(defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
-(defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
-(setq-default cursor-type 'box)
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
-(setq backup-directory-alist (list (cons ".*" backup-dir)))
-(setq auto-save-list-file-prefix autosave-dir)
-(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
-(setq recentf-max-saved-items 100)
-(setq confirm-kill-emacs 'yes-or-no-p)
-(setq visible-cursor nil)
-(setq nrepl-use-ssh-fallback-for-remote-hosts t)
-(setq custom-safe-themes t)
-(setq split-height-threshold nil) ;; only open horizontal splits (theoretically)
-(setq visible-cursor nil)
-(setq nrepl-use-ssh-fallback-for-remote-hosts t)
-;; (setq org-babel-lisp-eval-fn #'sly-eval)
-(setq org-babel-clojure-backend 'cider)
-(setq set-mark-command-repeat-pop t) ;;; cycle thru marks w/ c-space
-(setq mouse-wheel-progressive-speed nil) ;;; turn off mouse acceleration
-(setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
-(setq lsp-headerline-breadcrumb-enable nil)
-(setq org-startup-folded t)
-(setq tags-add-tables nil)
+
+
+
 
 ;;; get rid of blinking cursor
 (blink-cursor-mode 0)
