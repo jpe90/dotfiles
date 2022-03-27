@@ -26,13 +26,106 @@
 
 
 (defvar my-customizations '("~/.emacs.d/lisp/platform.el"
+                            "~/.emacs.d/lisp/gerbil-mode.el"
+                            "~/.emacs.d/lisp/gambit.el"
+                            ;; "~/Development/gerbil/inf-gerbil/inf-gerbil.el"
                             ;; "~/.emacs.d/lisp/mariana/mariana-theme.el"
                             ;; "~/.emacs.d/lisp/uwu.el/uwu-theme.el"
                             ;; "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el"
                             ;; "~/.emacs.d/lisp/doom-alabaster-theme.el"
                             ))
 
-;; (mapc #'load-if-exists my-customizations)
+(mapc #'load-if-exists my-customizations)
+
+(defvar gerbil-program-name
+  (expand-file-name "/opt/homebrew/bin/gxi"))
+(defvar gerbil-tags-location "/Users/jon/Development/gerbil/gerbil/src/TAGS")
+(defvar gerbil-package-tags-location "/Users/jon/.gerbil/pkg/TAGS")
+(defvar gambit-home "/Users/jon/Development/gambit/gambit")
+(defvar gerbil-home "/Users/jon/Development/gerbil/gerbil")
+
+(use-package gerbil-mode
+  :when (getenv "GERBIL_HOME")
+  :ensure nil
+  :defer t
+  :mode (("\\.ss\\'"  . gerbil-mode)
+         ("\\.pkg\\'" . gerbil-mode)
+         ("\\.scm\\'" . gerbil-mode)
+         )
+  :bind (:map comint-mode-map
+              (("C-S-n" . comint-next-input)
+               ("C-S-p" . comint-previous-input)
+               ("C-S-l" . clear-comint-buffer))
+              :map gerbil-mode-map
+              (("C-S-l" . clear-comint-buffer)))
+  :init
+  (setf gambit "/Users/jon/Development/gambit/gambit")
+  (setf gerbil "/Users/jon/Development/gerbil/gerbil")
+  (autoload 'gerbil-mode
+    (concat gerbil "~/.emacs.d/lisp/gerbil-mode.el") "Gerbil editing mode." t)
+  :hook
+  ((gerbil-mode . linum-mode)
+   (inferior-scheme-mode-hook . gambit-inferior-mode))
+  :config
+  (require 'gambit)
+  (setf scheme-program-name (concat gerbil "/bin/gxi"))
+
+  (let ((tags (locate-dominating-file default-directory "TAGS")))
+    (when tags (visit-tags-table tags)))
+  (visit-tags-table (concat gerbil "/src/TAGS"))
+
+  (defun clear-comint-buffer ()
+    (interactive)
+    (with-current-buffer "*scheme*"
+      (let ((comint-buffer-maximum-size 0))
+        (comint-truncate-buffer)))))
+
+(defun gerbil-setup-buffers ()
+  "Change current buffer mode to gerbil-mode and start a REPL"
+  (interactive)
+  (gerbil-mode)
+  (split-window-right)
+  (shrink-window-horizontally 2)
+  (let ((buf (buffer-name)))
+    (other-window 1)
+    (run-scheme "gxi")
+    (switch-to-buffer-other-window "*scheme*" nil)
+    (switch-to-buffer buf)))
+
+(defun gerbil-setup-buffers ()
+  "Change current buffer mode to gerbil-mode and start a REPL"
+  (interactive)
+  (gerbil-mode)
+  (split-window-right)
+  (shrink-window-horizontally 2)
+  (let ((buf (buffer-name)))
+    (other-window 1)
+    (run-scheme "gxi")
+    (switch-to-buffer-other-window "*scheme*" nil)
+    (switch-to-buffer buf)))
+
+(defun gerbil-setup-swank ()
+  "Change current buffer mode to gerbil-mode and start a REPL"
+  (interactive)
+  (gerbil-mode)
+  (run-scheme "gxi -e \"(import :drewc/gerbil-swank :gerbil/gambit/threads)\" -e \"(spawn start-swank 4205)\" -"))
+
+(defun slime-gerbil-connect ()
+  (interactive)
+  (slime-mode)
+  (slime-connect "localhost" 4205))
+
+(global-set-key (kbd "C-c C-g") 'gerbil-setup-buffers)
+
+
+
+;; (require 'gambit)
+;; (add-hook 'inferior-scheme-mode-hook 'gambit-inferior-mode)
+ ; Set this for your GERBIL_HOME
+;; (setq scheme-program-name gerbil-program-name)
+(visit-tags-table gerbil-tags-location)
+(visit-tags-table gerbil-package-tags-location)
+
 
 ;; TODO:
 ;; - fn that highlights current line or, if mark is active, expands to next line
@@ -121,6 +214,16 @@ Repeated invocations toggle between the two most recently open buffers."
   (let ((my-quoted-string-regexp "\"\\(\\\\[\\\\\"]\\|[^\\\\\"]\\)*\""))
     (replace-regexp my-quoted-string-regexp newval)))
 
+(defun user-clojure-keybindings ()
+  (if (not (bound-and-true-p cider-mode))
+      (local-set-key (kbd "C-c C-c") 'inf-clojure)))
+
+(add-hook 'clojure-mode-hook #'user-clojure-keybindings)
+
+(defun user-racket-keybindings ()
+  (local-set-key (kbd "C-c C-c") 'racket-run))
+
+(add-hook 'racket-mode-hook #'user-racket-keybindings)
 
 (defun user-flycheck-keybindings ()
   (local-set-key (kbd "S-<f2>") 'flycheck-previous-error)
@@ -206,6 +309,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-S-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
 (global-set-key (kbd "C-S-t") #'launch-iterm-in-vc-root)
+;; (global-set-key (kbd "C-S-s") #'swiper-thing-at-point)
 (global-set-key (kbd "C-;") #'comment-region)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
@@ -261,13 +365,14 @@ Repeated invocations toggle between the two most recently open buffers."
 (setq split-height-threshold nil) ;; only open horizontal splits (theoretically)
 (setq visible-cursor nil)
 (setq nrepl-use-ssh-fallback-for-remote-hosts t)
-(setq org-babel-lisp-eval-fn #'sly-eval)
+;; (setq org-babel-lisp-eval-fn #'sly-eval)
 (setq org-babel-clojure-backend 'cider)
 (setq set-mark-command-repeat-pop t) ;;; cycle thru marks w/ c-space
 (setq mouse-wheel-progressive-speed nil) ;;; turn off mouse acceleration
 (setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
 (setq lsp-headerline-breadcrumb-enable nil)
 (setq org-startup-folded t)
+(setq tags-add-tables nil)
 
 ;;; get rid of blinking cursor
 (blink-cursor-mode 0)
@@ -292,6 +397,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (add-hook 'rust-mode-hook 'electric-pair-mode)
 (add-hook 'zig-mode-hook 'electric-pair-mode)
 (add-hook 'c++-mode-hook 'electric-pair-mode)
+;; (add-hook 'gerbil-mode-hook 'inf-gerbil-minor-mode)
 
 
 
@@ -383,6 +489,7 @@ Repeated invocations toggle between the two most recently open buffers."
          ("M-y"     . counsel-yank-pop)))
 
 (use-package counsel-at-point
+  :bind (("C-S-s" . swiper-thing-at-point))
   :ensure t)
 
 (use-package magit
@@ -404,8 +511,8 @@ Repeated invocations toggle between the two most recently open buffers."
   :hook
   (prog-mode . company-mode)
   (racket-repl-mode . company-mode)
-  (sly-mode . company-mode)
-  ;; (slime-mode . company-mode)
+  ;; (sly-mode . company-mode)
+  (slime-mode . company-mode)
   (cider-repl-mode . company-mode))
 
 (use-package racket-mode
@@ -486,13 +593,14 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;   :after sly
 ;;   :ensure t)
 
-(use-package sly
-  :ensure t
-  :init
-  (setq sly-net-coding-system 'utf-8-unix)
-  (setq sly-lisp-implementations
-        '((sbcl ("sbcl") :coding-system utf-8-unix)
-          (ecl ("ecl") :coding-system utf-8-unix))))
+;; (use-package sly
+;;   :ensure t
+;;   :init
+;;   (setq sly-net-coding-system 'utf-8-unix)
+;;   (setq sly-lisp-implementations
+;;         '((sbcl ("sbcl") :coding-system utf-8-unix)
+;;           (ecl ("ecl") :coding-system utf-8-unix)
+;;           (gerbil-scheme ("gxi")))))
 
 (use-package fish-mode
   :ensure t)
@@ -624,6 +732,59 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 
+(use-package slime
+  :ensure t
+  :config
+  (setq inferior-lisp-program "sbcl")
+  (load (expand-file-name "~/quicklisp/slime-helper.el"))
+  ;; (setq sly-lisp-implementations "sbcl")
+  )
+
+
+;; (defslime-repl-shortcut slime-repl-quicklisp ("ql" "quicklisp")
+;;     (:handler (lambda (system)
+;;                 (interactive "sSystem: ")
+;;                 (slime-eval-async `(ql:quickload ,system)
+;;                   (lambda (sys)
+;;                     (message "Quickloaded %s" (first sys))))))
+;;     (:one-liner "Quickload a system."))
+  ;; (defslime-repl-shortcut slime-repl-load-system ("load")
+  ;;   (:handler (lambda (system)
+  ;;               (interactive "sSystem: ")
+  ;;               (setq system (downcase system))
+  ;;               (slime-eval-async `(asdf:load-system ,system)
+  ;;                 (lambda (sys)
+  ;;                   (message "ASDF loaded %s" (first sys))))))
+  ;;   (:one-liner "ASDF loaded a system."))
+  ;; (defslime-repl-shortcut slime-repl-test-system ("test")
+  ;;   (:handler (lambda (system)
+  ;;               (interactive "sSystem: ")
+  ;;               (setq system (downcase system))
+  ;;               (slime-eval-async `(ql:quickload ,system)
+  ;;                 (lambda (sys)
+  ;;                   (message "ASDF loaded %s" sys)
+  ;;                   (slime-eval-async `(asdf:test-system ,@sys)
+  ;;                     (lambda (sys)
+  ;;                       (message "ASDF tested %s" (first sys))))))))
+  ;;   (:one-liner "ASDF tested a system."))
+  ;; (defslime-repl-shortcut slime-repl-set-system ("system")
+  ;;   (:handler (lambda (system)
+  ;;               (interactive "sSystem: ")
+  ;;               (slime-eval-async `(ql:quickload ,system)
+  ;;                 (lambda (sys)
+  ;;                   (message "Quickloaded %s" sys)
+  ;;                   (let ((directory (slime-eval `(cl:namestring (asdf:system-source-directory ,@sys)))))
+  ;;                     (slime-set-default-directory directory))))))
+  ;;   (:one-liner "Quickload a system and move to the root directory."))
+  ;; (defslime-repl-shortcut slime-repl-register-local-projects ("register")
+  ;;   (:handler (lambda ()
+  ;;               (interactive)
+  ;;               (slime-eval-async `(ql:register-local-projects)
+  ;;                 (lambda (sys)
+  ;;                   (message "Registered local projects.")))))
+  ;;   (:one-liner "Call ql:register-local-projects."))
+
+
 (defun je/rustic-mode-hook ()
   ;; so that run C-c C-c C-r works without having to confirm, but don't try to
   ;; save rust buffers that are not file visiting. Once
@@ -704,9 +865,8 @@ Repeated invocations toggle between the two most recently open buffers."
  '(awesome-tray-mode-line-inactive-color "#d7d7d7")
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(modus-operandi))
  '(custom-safe-themes
-   '("a005dcaad2a779d5a772b4ee2248d2c0daff40da7d9a12d41c0afb661a2b3a5f" "8feca8afd3492985094597385f6a36d1f62298d289827aaa0d8a62fe6889b33c" "1d78d6d05d98ad5b95205670fe6022d15dabf8d131fe087752cc55df03d88595" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "d0fd069415ef23ccc21ccb0e54d93bdbb996a6cce48ffce7f810826bb243502c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" default))
+   '("b6269b0356ed8d9ed55b0dcea10b4e13227b89fd2af4452eee19ac88297b0f99" "b02eae4d22362a941751f690032ea30c7c78d8ca8a1212fdae9eecad28a3587f" "c8b83e7692e77f3e2e46c08177b673da6e41b307805cd1982da9e2ea2e90e6d7" "4eb6fa2ee436e943b168a0cd8eab11afc0752aebb5d974bba2b2ddc8910fca8f" "e3a1b1fb50e3908e80514de38acbac74be2eb2777fc896e44b54ce44308e5330" "fb83a50c80de36f23aea5919e50e1bccd565ca5bb646af95729dc8c5f926cbf3" "4c35b2323b96197ac9e78763217020f5fd4e9723bb729315582366d2ff040190" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" "24168c7e083ca0bbc87c68d3139ef39f072488703dcdd82343b8cab71c0f62a7" "6bdcff29f32f85a2d99f48377d6bfa362768e86189656f63adbf715ac5c1340b" "fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "78c4238956c3000f977300c8a079a3a8a8d4d9fee2e68bad91123b58a4aa8588" "a005dcaad2a779d5a772b4ee2248d2c0daff40da7d9a12d41c0afb661a2b3a5f" "8feca8afd3492985094597385f6a36d1f62298d289827aaa0d8a62fe6889b33c" "1d78d6d05d98ad5b95205670fe6022d15dabf8d131fe087752cc55df03d88595" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "d0fd069415ef23ccc21ccb0e54d93bdbb996a6cce48ffce7f810826bb243502c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" default))
  '(exwm-floating-border-color "#888888")
  '(fci-rule-color "#555556")
  '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
@@ -736,6 +896,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(ibuffer-filter-group-name-face 'modus-themes-pseudo-header)
  '(ibuffer-marked-face 'modus-themes-mark-sel)
  '(ibuffer-title-face 'default)
+ '(inf-clojure-enable-eldoc nil)
  '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#FD971F"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#A6E22E"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#525254"))
@@ -746,14 +907,16 @@ Repeated invocations toggle between the two most recently open buffers."
  '(objed-cursor-color "#E74C3C")
  '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(github-dark-vscode-theme github-modern-theme github-theme clojars clj-refactor a lsp-tailwindcss haskell-mode clj-deps-new inf-clojure color-theme-sanityinc-solarized web-mode zig vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(slime treadmill-history github-dark-vscode-theme github-modern-theme github-theme clojars clj-refactor a lsp-tailwindcss haskell-mode clj-deps-new inf-clojure color-theme-sanityinc-solarized web-mode zig vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
  '(pos-tip-background-color "#2f2f2e")
  '(pos-tip-foreground-color "#999891")
  '(rustic-ansi-faces
    ["#272822" "#E74C3C" "#A6E22E" "#E6DB74" "#268bd2" "#F92660" "#66D9EF" "#F8F8F2"])
  '(safe-local-variable-values
-   '((inf-clojure-custom-startup "localhost" . 7200)
+   '((inf-gerbil-custom-startup "localhost" . 5555)
+     (inf-gerbil-custom-startup "127.0.0.1" . 7000)
+     (inf-clojure-custom-startup "localhost" . 7200)
      (cider-clojure-cli-global-options . "-A:dev")
      (inf-clojure-custom-repl-type . clojure)
      (inf-clojure-custom-startup "localhost" . 50505)
@@ -788,7 +951,8 @@ Repeated invocations toggle between the two most recently open buffers."
      (340 . "#0000c0")
      (360 . "#5317ac")))
  '(vc-annotate-very-old-color nil)
- '(warning-suppress-types '((comp) (comp)))
+ '(warning-suppress-log-types '((emacs) (emacs) (comp) (comp)))
+ '(warning-suppress-types '((emacs) (emacs) (comp) (comp)))
  '(weechat-color-list
    '(unspecified "#2a2a29" "#2f2f2e" "#504341" "#ffb4ac" "#3d464c" "#8ac6f2" "#4c4536" "#e5c06d" "#41434a" "#a4b5e6" "#4d3936" "#e5786d" "#3b473c" "#7ec98f" "#8d8b86" "#74736f"))
  '(window-divider-mode nil)
@@ -796,3 +960,7 @@ Repeated invocations toggle between the two most recently open buffers."
    ["black" "#a60000" "#005e00" "#813e00" "#0031a9" "#721045" "#00538b" "gray65"])
  '(xterm-color-names-bright
    ["gray35" "#972500" "#315b00" "#70480f" "#2544bb" "#8f0075" "#30517f" "white"]))
+
+
+;; (mapc #'disable-theme custom-enabled-themes)
+
