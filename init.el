@@ -68,7 +68,7 @@
 (defun launch-alacritty-in-vc-root ()
   (interactive)
   (let ((project-root (cdr (project-current))))
-    (call-process "fish" nil 0 nil (concat "-c \"alacritty --working-directory " project-root "\""))))
+    (async-shell-command (concat "fish -c \"alacritty --working-directory " project-root "\""))))
 
 (defun launch-iterm-in-vc-root ()
   (interactive)
