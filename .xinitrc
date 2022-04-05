@@ -5,8 +5,7 @@ usermodmap=$HOME/.Xmodmap
 sysresources=/etc/X11/xinit/.Xresources
 sysmodmap=/etc/X11/xinit/.Xmodmap
 
-# merge in defaults and keymaps
-
+# merge in defaults a
 if [ -f $sysresources ]; then
 
     xrdb -merge $sysresources
@@ -46,8 +45,11 @@ xrandr --output eDP-1 --mode 1920x1080
 exec blueberry-tray &
 feh --bg-fill /home/solaire/pictures/1588334104580.jpg
 picom &
+xset r rate 200 60
 # exec xmonad
 # dwmstatus 2>&1 >/dev/null &
 # exec dwm
+# exec guile -s /home/solaire/development/scheme/guile-xcb/xcb/xml/sample/tinywm.scm
+export SBCL_HOME=/usr/lib/sbcl
 exec stumpwm
 # exec sbcl --load /home/solaire/.stumpwm.d/startstump

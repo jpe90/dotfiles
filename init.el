@@ -25,7 +25,8 @@
     (message (concat file " doesn't exist"))))
 
 
-(defvar my-customizations '("~/.emacs.d/lisp/platform.el"
+(defvar my-customizations '("~/.emacs.d/lisp/gambit.el"
+                            "~/.emacs.d/lisp/gerbil-mode.el"
                             ;; "~/.emacs.d/lisp/mariana/mariana-theme.el"
                             ;; "~/.emacs.d/lisp/uwu.el/uwu-theme.el"
                             ;; "~/.emacs.d/lisp/jetbrains-darcula-emacs-theme/jetbrains-darcula-theme.el"
@@ -63,6 +64,11 @@
   (interactive)
   (let ((project-root (cdr (project-current))))
     (call-process "kitty" nil 0 nil "-d" project-root)))
+
+(defun launch-alacritty-in-vc-root ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (call-process "fish" nil 0 nil (concat "-c \"alacritty --working-directory " project-root "\""))))
 
 (defun launch-iterm-in-vc-root ()
   (interactive)
@@ -205,7 +211,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-O") #'delete-other-windows)
 (global-set-key (kbd "C-S-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
-(global-set-key (kbd "C-S-t") #'launch-iterm-in-vc-root)
+(global-set-key (kbd "C-S-t") #'launch-alacritty-in-vc-root)
 (global-set-key (kbd "C-;") #'comment-region)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
@@ -219,6 +225,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "M-`") #'other-frame)
 (global-set-key (kbd "C-s") #'ar/prefilled-swiper)
+(global-set-key (kbd "C-S-s") #'swiper-thing-at-point)
 (global-set-key (kbd "C-r") #'ar/prefilled-swiper-backward)
 (global-set-key (kbd "C-1") #'set-mark-command)
 (global-set-key (kbd "H-n") #'cua-rectangle-mark-mode)
@@ -239,6 +246,74 @@ Repeated invocations toggle between the two most recently open buffers."
 (autoload 'View-scroll-half-page-backward "view")
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
+
+(defvar gerbil-tags-location "/home/solaire/development/scheme/gerbil/src/TAGS")
+(defvar gerbil-package-tags-location "/home/solaire/.gerbil/pkg/TAGS")
+(defvar gerbil-home "/home/solaire/development/scheme/gerbil")
+(defvar gambit-home "/home/solaire/development/scheme/gambit")
+
+;; (visit-tags-table gerbil-tags-location)
+;; (visit-tags-table gerbil-package-tags-location)
+
+;; (require 'treadmill)
+
+
+;; (use-package gerbil-mode
+;;   :when (getenv "GERBIL_HOME")
+;;   :ensure nil
+;;   :defer t
+;;   :mode (("\\.ss\\'"  . gerbil-mode)
+;;          ("\\.pkg\\'" . gerbil-mode))
+;;   :bind (:map comint-mode-map
+;;               (("C-S-n" . comint-next-input)
+;;                ("C-S-p" . comint-previous-input)
+;;                ("C-S-l" . clear-comint-buffer))
+;;               :map gerbil-mode-map
+;;               (("C-S-l" . clear-comint-buffer)))
+;;   :init
+;;   (setf gambit (getenv "GAMBIT_HOME"))
+;;   (setf gerbil (getenv "GERBIL_HOME"))
+;;   (autoload 'gerbil-mode
+;;     (concat gerbil "/etc/gerbil-mode.el") "Gerbil editing mode." t)
+;;   :hook
+;;   ((gerbil-mode . linum-mode)
+;;    (inferior-scheme-mode-hook . gambit-inferior-mode))
+;;   :config
+;;   (require 'gambit
+;;            (concat gambit
+;;                    (if (equal "nixos" (system-name))
+;;                      "/share/emacs/site-lisp/gambit.el"
+;;                      "/misc/gambit.el")))
+;;   (setf scheme-program-name (concat gerbil "/bin/gxi"))
+
+;;   (let ((tags (locate-dominating-file default-directory "TAGS")))
+;;     (when tags (visit-tags-table tags)))
+;;   (visit-tags-table (concat gerbil "/src/TAGS"))
+
+;;   (when (package-installed-p 'smartparens)
+;;     (sp-pair "'" nil :actions :rem)
+;;     (sp-pair "`" nil :actions :rem))
+
+;;   (defun clear-comint-buffer ()
+;;     (interactive)
+;;     (with-current-buffer "*scheme*"
+;;       (let ((comint-buffer-maximum-size 0))
+;;         (comint-truncate-buffer)))))
+
+;; (defun gerbil-setup-buffers ()
+;;   "Change current buffer mode to gerbil-mode and start a REPL"
+;;   (interactive)
+;;   (gerbil-mode)
+;;   (split-window-right)
+;;   (shrink-window-horizontally 2)
+;;   (let ((buf (buffer-name)))
+;;     (other-window 1)
+;;     (run-scheme "gxi")
+;;     (switch-to-buffer-other-window "*scheme*" nil)
+;;     (switch-to-buffer buf)))
+
+;; (global-set-key (kbd "C-c C-g") 'gerbil-setup-buffers)
+
 
 (use-package clj-deps-new
   :ensure t)
@@ -303,13 +378,14 @@ Repeated invocations toggle between the two most recently open buffers."
       (global-set-key (kbd "H-s") #'save-some-buffers)))
 
 ;; ;; Set default font
-(set-face-font 'default "SF Mono:size=12")
+;; (set-face-font 'default "SF Mono:size=12")
 ;; ;; (set-face-font 'default "Menlo:size=10")
-;; ;; (set-face-font 'default "Inconsolata:size=13")
-;; ;; the russians make good fonts
-;; (set-face-font 'default "Fira Mono:size=12")
+(set-face-font 'default "Inconsolata:size=12")
+;; the russians make good fonts
+;; (set-face-font 'default "Fira Code:size=12")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-font 'default "Terminus")
+;; (set-face-font 'default "Hack Nerd Font Mono")
 
 ;;; org mode code eval
 (org-babel-do-load-languages
@@ -323,6 +399,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;; toolbar visibility
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
+(menu-bar-mode -1)
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -641,7 +718,8 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:background nil))))
- '(lsp-lsp-flycheck-warning-unnecessary-face ((t (:inherit modus-themes-lang-warning :foreground "dim gray"))) t))
+ '(font-lock-comment-face ((t (:inherit modus-themes-slant :foreground "#505050"))))
+ '(region ((t (:extend nil :background "#bcbcbc" :foreground "#000000")))))
 '(custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -698,101 +776,21 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-faces-vector
-   [default bold shadow italic underline success warning error])
- '(awesome-tray-mode-line-active-color "#0031a9")
- '(awesome-tray-mode-line-inactive-color "#d7d7d7")
+ '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(modus-operandi))
- '(custom-safe-themes
-   '("a005dcaad2a779d5a772b4ee2248d2c0daff40da7d9a12d41c0afb661a2b3a5f" "8feca8afd3492985094597385f6a36d1f62298d289827aaa0d8a62fe6889b33c" "1d78d6d05d98ad5b95205670fe6022d15dabf8d131fe087752cc55df03d88595" "6b5c518d1c250a8ce17463b7e435e9e20faa84f3f7defba8b579d4f5925f60c1" "d0fd069415ef23ccc21ccb0e54d93bdbb996a6cce48ffce7f810826bb243502c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" default))
- '(exwm-floating-border-color "#888888")
- '(fci-rule-color "#555556")
- '(flymake-error-bitmap '(flymake-double-exclamation-mark modus-themes-fringe-red))
- '(flymake-note-bitmap '(exclamation-mark modus-themes-fringe-cyan))
- '(flymake-warning-bitmap '(exclamation-mark modus-themes-fringe-yellow))
- '(highlight-tail-colors ((("#333a23") . 0) (("#2d3936") . 20)))
- '(hl-todo-keyword-faces
-   '(("HOLD" . "#70480f")
-     ("TODO" . "#721045")
-     ("NEXT" . "#5317ac")
-     ("THEM" . "#8f0075")
-     ("PROG" . "#00538b")
-     ("OKAY" . "#30517f")
-     ("DONT" . "#315b00")
-     ("FAIL" . "#a60000")
-     ("BUG" . "#a60000")
-     ("DONE" . "#005e00")
-     ("NOTE" . "#863927")
-     ("KLUDGE" . "#813e00")
-     ("HACK" . "#813e00")
-     ("TEMP" . "#5f0000")
-     ("FIXME" . "#a0132f")
-     ("XXX+" . "#972500")
-     ("REVIEW" . "#005a5f")
-     ("DEPRECATED" . "#201f55")))
- '(ibuffer-deletion-face 'modus-themes-mark-del)
- '(ibuffer-filter-group-name-face 'modus-themes-pseudo-header)
- '(ibuffer-marked-face 'modus-themes-mark-sel)
- '(ibuffer-title-face 'default)
- '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#FD971F"))
- '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#A6E22E"))
- '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#525254"))
+ '(custom-enabled-themes '(wilson))
+ '(geiser-guile-binary "guile3")
  '(linum-format " %7i ")
+ '(lsp-ui-doc-border "#93a1a1")
+ '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
- '(nrepl-message-colors
-   '("#ffb4ac" "#ddaa6f" "#e5c06d" "#3d464c" "#e3eaea" "#41434a" "#7ec98f" "#e5786d" "#834c98"))
- '(objed-cursor-color "#E74C3C")
- '(org-src-block-faces 'nil)
  '(package-selected-packages
-   '(github-dark-vscode-theme github-modern-theme github-theme clojars clj-refactor a lsp-tailwindcss haskell-mode clj-deps-new inf-clojure color-theme-sanityinc-solarized web-mode zig vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
- '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
- '(pos-tip-background-color "#2f2f2e")
- '(pos-tip-foreground-color "#999891")
- '(rustic-ansi-faces
-   ["#272822" "#E74C3C" "#A6E22E" "#E6DB74" "#268bd2" "#F92660" "#66D9EF" "#F8F8F2"])
- '(safe-local-variable-values
-   '((inf-clojure-custom-startup "localhost" . 7200)
-     (cider-clojure-cli-global-options . "-A:dev")
-     (inf-clojure-custom-repl-type . clojure)
-     (inf-clojure-custom-startup "localhost" . 50505)
-     (cider-ns-refresh-after-fn . "integrant.repl/resume")
-     (cider-ns-refresh-before-fn . "integrant.repl/suspend")
-     (cider-clojure-cli-global-options . "-A:reveal")))
+   '(treadmill vterm geiser-guile auto-sudoedit evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point clj-deps-new markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme kaolin-themes ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+ '(safe-local-variable-values '((cider-clojure-cli-global-options . "-A:reveal")))
  '(show-paren-mode t)
- '(smartrep-mode-line-active-bg (solarized-color-blend "#8ac6f2" "#2f2f2e" 0.2))
  '(tao-theme-use-boxes t)
- '(term-default-bg-color "#2a2a29")
- '(term-default-fg-color "#8d8b86")
  '(tool-bar-mode nil)
- '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
- '(vc-annotate-color-map
-   '((20 . "#a60000")
-     (40 . "#721045")
-     (60 . "#8f0075")
-     (80 . "#972500")
-     (100 . "#813e00")
-     (120 . "#70480f")
-     (140 . "#5d3026")
-     (160 . "#184034")
-     (180 . "#005e00")
-     (200 . "#315b00")
-     (220 . "#005a5f")
-     (240 . "#30517f")
-     (260 . "#00538b")
-     (280 . "#093060")
-     (300 . "#0031a9")
-     (320 . "#2544bb")
-     (340 . "#0000c0")
-     (360 . "#5317ac")))
- '(vc-annotate-very-old-color nil)
  '(warning-suppress-types '((comp) (comp)))
- '(weechat-color-list
-   '(unspecified "#2a2a29" "#2f2f2e" "#504341" "#ffb4ac" "#3d464c" "#8ac6f2" "#4c4536" "#e5c06d" "#41434a" "#a4b5e6" "#4d3936" "#e5786d" "#3b473c" "#7ec98f" "#8d8b86" "#74736f"))
- '(window-divider-mode nil)
- '(xterm-color-names
-   ["black" "#a60000" "#005e00" "#813e00" "#0031a9" "#721045" "#00538b" "gray65"])
- '(xterm-color-names-bright
-   ["gray35" "#972500" "#315b00" "#70480f" "#2544bb" "#8f0075" "#30517f" "white"]))
+ '(window-divider-mode nil))
