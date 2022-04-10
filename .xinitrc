@@ -45,11 +45,13 @@ xrandr --output eDP-1 --mode 1920x1080
 exec blueberry-tray &
 feh --bg-fill /home/solaire/pictures/1588334104580.jpg
 picom &
-xset r rate 200 60
+xset r rate 200 45
 # exec xmonad
 # dwmstatus 2>&1 >/dev/null &
 # exec dwm
+exec i3
+# exec guile-wm
 # exec guile -s /home/solaire/development/scheme/guile-xcb/xcb/xml/sample/tinywm.scm
-export SBCL_HOME=/usr/lib/sbcl
-exec stumpwm
+# export SBCL_HOME=/usr/lib/sbcl
+# exec stumpwm
 # exec sbcl --load /home/solaire/.stumpwm.d/startstump
