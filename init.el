@@ -5,6 +5,11 @@
 
 (setq mac-option-modifier 'meta)
 
+(unless (display-graphic-p)
+  (require 'terminal-focus-reporting)
+  (global-set-key (kbd "C-c ;") #'comment-line)
+  (terminal-focus-reporting-mode))
+
 (defun enable-cua ()
   (cua-mode t)
   (global-set-key (kbd "C-<up>") #'scroll-down-command)
@@ -17,7 +22,7 @@
 (package-refresh-contents)
 (package-install 'use-package))
 
-;;(first-time-load)
+(first-time-load)
 
 (defun load-if-exists (file)
   (if (file-exists-p file)
@@ -315,8 +320,8 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; (global-set-key (kbd "C-c C-g") 'gerbil-setup-buffers)
 
 
-(use-package clj-deps-new
-  :ensure t)
+;; (use-package clj-deps-new
+;;   :ensure t)
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -380,11 +385,12 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; ;; Set default font
 ;; (set-face-font 'default "SF Mono:size=12")
 ;; ;; (set-face-font 'default "Menlo:size=10")
-(set-face-font 'default "Inconsolata:size=12")
+;; (set-face-font 'default "Inconsolata:size=12")
 ;; the russians make good fonts
 ;; (set-face-font 'default "Fira Code:size=12")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-font 'default "Terminus")
+;; (set-frame-font "Terminus" nil t)
 ;; (set-face-font 'default "Hack Nerd Font Mono")
 
 ;;; org mode code eval
@@ -467,10 +473,10 @@ Repeated invocations toggle between the two most recently open buffers."
   :bind (("C-x g" . magit-status)
          ("C-x C-g" . magit-status)))
 
-(use-package undo-tree
-  :ensure t
-  :init
-  (global-undo-tree-mode))
+;; (use-package undo-tree
+;;   :ensure t
+;;   :init
+;;   (global-undo-tree-mode))
 
 (use-package paren
   :config
@@ -718,7 +724,7 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:background nil))))
- '(font-lock-comment-face ((t (:inherit modus-themes-slant :foreground "#505050"))))
+ '(font-lock-comment-face ((t (:inherit modus-themes-slant :foreground "#808080"))))
  '(region ((t (:extend nil :background "#bcbcbc" :foreground "#000000")))))
 '(custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -779,14 +785,14 @@ Repeated invocations toggle between the two most recently open buffers."
  '(blink-cursor-mode nil)
  '(column-number-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(wilson))
+ '(custom-enabled-themes '(simplicity))
  '(geiser-guile-binary "guile3")
  '(linum-format " %7i ")
  '(lsp-ui-doc-border "#93a1a1")
  '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
  '(package-selected-packages
-   '(treadmill vterm geiser-guile auto-sudoedit evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point clj-deps-new markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme kaolin-themes ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+   '(simplicity-theme github-dark-vscode-theme terminal-focus-reporting treadmill vterm geiser-guile auto-sudoedit evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point clj-deps-new markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme kaolin-themes ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(safe-local-variable-values '((cider-clojure-cli-global-options . "-A:reveal")))
  '(show-paren-mode t)
  '(tao-theme-use-boxes t)
