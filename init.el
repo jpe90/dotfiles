@@ -45,6 +45,11 @@
 
 (visit-tags-table "~/Development/scheme/guile/TAGS")
 
+(unless (display-graphic-p)
+  (require 'terminal-focus-reporting)
+  (global-set-key (kbd "C-c ;") #'comment-line)
+  (terminal-focus-reporting-mode))
+
 (defun enable-cua ()
   (cua-mode t)
   (global-set-key (kbd "C-<up>") #'scroll-down-command)
@@ -57,7 +62,7 @@
 (package-refresh-contents)
 (package-install 'use-package))
 
-;;(first-time-load)
+(first-time-load)
 
 (defun load-if-exists (file)
   (if (file-exists-p file)
@@ -198,6 +203,11 @@
   (interactive)
   (let ((project-root (cdr (project-current))))
     (call-process "kitty" nil 0 nil "-d" project-root)))
+
+(defun launch-alacritty-in-vc-root ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (async-shell-command (concat "fish -c \"alacritty --working-directory " project-root "\""))))
 
 (defun launch-iterm-in-vc-root ()
   (interactive)
@@ -350,8 +360,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-O") #'delete-other-windows)
 (global-set-key (kbd "C-S-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
-(global-set-key (kbd "C-S-t") #'launch-iterm-in-vc-root)
+;; (global-set-key (kbd "C-S-t") #'launch-iterm-in-vc-root)
 ;; (global-set-key (kbd "C-S-s") #'swiper-thing-at-point)
+(global-set-key (kbd "C-S-t") #'launch-alacritty-in-vc-root)
 (global-set-key (kbd "C-;") #'comment-region)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
@@ -365,6 +376,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "M-`") #'other-frame)
 (global-set-key (kbd "C-s") #'ar/prefilled-swiper)
+(global-set-key (kbd "C-S-s") #'swiper-thing-at-point)
 (global-set-key (kbd "C-r") #'ar/prefilled-swiper-backward)
 (global-set-key (kbd "C-1") #'set-mark-command)
 (global-set-key (kbd "H-n") #'cua-rectangle-mark-mode)
@@ -386,8 +398,76 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
-(use-package clj-deps-new
-  :ensure t)
+(defvar gerbil-tags-location "/home/solaire/development/scheme/gerbil/src/TAGS")
+(defvar gerbil-package-tags-location "/home/solaire/.gerbil/pkg/TAGS")
+(defvar gerbil-home "/home/solaire/development/scheme/gerbil")
+(defvar gambit-home "/home/solaire/development/scheme/gambit")
+
+;; (visit-tags-table gerbil-tags-location)
+;; (visit-tags-table gerbil-package-tags-location)
+
+;; (require 'treadmill)
+
+
+;; (use-package gerbil-mode
+;;   :when (getenv "GERBIL_HOME")
+;;   :ensure nil
+;;   :defer t
+;;   :mode (("\\.ss\\'"  . gerbil-mode)
+;;          ("\\.pkg\\'" . gerbil-mode))
+;;   :bind (:map comint-mode-map
+;;               (("C-S-n" . comint-next-input)
+;;                ("C-S-p" . comint-previous-input)
+;;                ("C-S-l" . clear-comint-buffer))
+;;               :map gerbil-mode-map
+;;               (("C-S-l" . clear-comint-buffer)))
+;;   :init
+;;   (setf gambit (getenv "GAMBIT_HOME"))
+;;   (setf gerbil (getenv "GERBIL_HOME"))
+;;   (autoload 'gerbil-mode
+;;     (concat gerbil "/etc/gerbil-mode.el") "Gerbil editing mode." t)
+;;   :hook
+;;   ((gerbil-mode . linum-mode)
+;;    (inferior-scheme-mode-hook . gambit-inferior-mode))
+;;   :config
+;;   (require 'gambit
+;;            (concat gambit
+;;                    (if (equal "nixos" (system-name))
+;;                      "/share/emacs/site-lisp/gambit.el"
+;;                      "/misc/gambit.el")))
+;;   (setf scheme-program-name (concat gerbil "/bin/gxi"))
+
+;;   (let ((tags (locate-dominating-file default-directory "TAGS")))
+;;     (when tags (visit-tags-table tags)))
+;;   (visit-tags-table (concat gerbil "/src/TAGS"))
+
+;;   (when (package-installed-p 'smartparens)
+;;     (sp-pair "'" nil :actions :rem)
+;;     (sp-pair "`" nil :actions :rem))
+
+;;   (defun clear-comint-buffer ()
+;;     (interactive)
+;;     (with-current-buffer "*scheme*"
+;;       (let ((comint-buffer-maximum-size 0))
+;;         (comint-truncate-buffer)))))
+
+;; (defun gerbil-setup-buffers ()
+;;   "Change current buffer mode to gerbil-mode and start a REPL"
+;;   (interactive)
+;;   (gerbil-mode)
+;;   (split-window-right)
+;;   (shrink-window-horizontally 2)
+;;   (let ((buf (buffer-name)))
+;;     (other-window 1)
+;;     (run-scheme "gxi")
+;;     (switch-to-buffer-other-window "*scheme*" nil)
+;;     (switch-to-buffer buf)))
+
+;; (global-set-key (kbd "C-c C-g") 'gerbil-setup-buffers)
+
+
+;; (use-package clj-deps-new
+;;   :ensure t)
 
 
 
@@ -430,10 +510,11 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; (set-face-font 'default "Menlo:size=12")
 ;; ;; (set-face-font 'default "Inconsolata:size=14")
 ;; ;; the russians make good fonts
-
 ;; (set-face-font 'default "Fira Code:size=12")
 ;; (set-face-font 'default "Jetbrains Mono:size=12")
 ;; (set-face-font 'default "Terminus")
+;; (set-frame-font "Terminus" nil t)
+;; (set-face-font 'default "Hack Nerd Font Mono")
 
 ;;; org mode code eval
 (org-babel-do-load-languages
@@ -450,6 +531,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;;; toolbar visibility
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
+(menu-bar-mode -1)
 
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
@@ -525,6 +607,10 @@ Repeated invocations toggle between the two most recently open buffers."
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/backup/undo-tree")))
   :init
   (global-undo-tree-mode))
+;; (use-package undo-tree
+;;   :ensure t
+;;   :init
+;;   (global-undo-tree-mode))
 
 (use-package paren
   :config
@@ -855,7 +941,8 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:background nil))))
- '(lsp-lsp-flycheck-warning-unnecessary-face ((t (:inherit modus-themes-lang-warning :foreground "dim gray"))) t))
+ '(font-lock-comment-face ((t (:inherit modus-themes-slant :foreground "#808080"))))
+ '(region ((t (:extend nil :background "#bcbcbc" :foreground "#000000")))))
 '(custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -955,12 +1042,15 @@ Repeated invocations toggle between the two most recently open buffers."
  '(jdee-db-active-breakpoint-face-colors (cons "#1B2229" "#FD971F"))
  '(jdee-db-requested-breakpoint-face-colors (cons "#1B2229" "#A6E22E"))
  '(jdee-db-spec-breakpoint-face-colors (cons "#1B2229" "#525254"))
+ '(blink-cursor-mode nil)
+ '(column-number-mode t)
+ '(compilation-message-face 'default)
+ '(custom-enabled-themes '(simplicity))
+ '(geiser-guile-binary "guile3")
  '(linum-format " %7i ")
+ '(lsp-ui-doc-border "#93a1a1")
+ '(lsp-ui-imenu-colors '("#7FC1CA" "#A8CE93"))
  '(magit-diff-use-overlays nil)
- '(nrepl-message-colors
-   '("#ffb4ac" "#ddaa6f" "#e5c06d" "#3d464c" "#e3eaea" "#41434a" "#7ec98f" "#e5786d" "#834c98"))
- '(objed-cursor-color "#E74C3C")
- '(org-src-block-faces 'nil)
  '(package-selected-packages
    '(counsel-dash go-mode lsp-pyright ox-haunt highlight-numbers fennel-mode rainbow-mode simplicity-theme twilight-theme twilight-bright-theme slime-company sly-quicklisp treadmill-history github-dark-vscode-theme github-modern-theme github-theme clojars clj-refactor a lsp-tailwindcss haskell-mode clj-deps-new inf-clojure color-theme-sanityinc-solarized web-mode zig vterm license-templates lsp-ui expand-region yasnippet rustic autopair counsel-at-point nim-mode rust-mode cargo carge eglot flutter-l10n-flycheck flutter kaolin-themes solarized-theme org-download modus-themes dart-mode devdocs kotlin-mode flycheck-swift swift-mode evil multiple-cursors flycheck-swift3 counsel-fd eziam-theme tao-theme minimal-theme wgrep goto-last-point markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo espresso-theme chocolate-theme helm-company helm-sly danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
  '(pdf-view-midnight-colors '("#000000" . "#f8f8f8"))
@@ -999,11 +1089,11 @@ Repeated invocations toggle between the two most recently open buffers."
      (cider-ns-refresh-before-fn . "integrant.repl/suspend")
      (cider-clojure-cli-global-options . "-A:reveal")))
  '(smartrep-mode-line-active-bg (solarized-color-blend "#8ac6f2" "#2f2f2e" 0.2))
+   '(simplicity-theme github-dark-vscode-theme terminal-focus-reporting treadmill vterm geiser-guile auto-sudoedit evil multiple-cursors flycheck-swift3 counsel-fd counsel-at-point eziam-theme tao-theme minimal-theme wgrep lsp-ui goto-last-point clj-deps-new markdown-mode package-lint hydra hackernews company-shell company dash-docs ivy-lobsters dash-at-point simple-httpd counsel-ag-popup counsel-tramp smex timu-spacegrey-theme kaolin-themes ivy-clojuredocs flx counsel srefactor nano-theme white-sand-theme leuven-theme exec-path-from-shell white-theme one-themes spacemacs-theme flycheck-clj-kondo sly-quicklisp sly-asdf sly espresso-theme chocolate-theme helm-company helm-sly hc-zenburn-theme danneskjold-theme undo-tree su tango-plus-theme rainbow-delimiters gotham-theme nimbus-theme mood-one-theme night-owl-theme zig-mode yaml-mode use-package sublime-themes racket-mode project paredit naysayer-theme monokai-pro-theme meson-mode markdown-preview-mode magit lua-mode lsp-haskell lsp-dart lispy helm-rg hasklig-mode gruvbox-theme flycheck fish-mode evil-surround elpher dracula-theme company-ghci cider almost-mono-themes))
+ '(safe-local-variable-values '((cider-clojure-cli-global-options . "-A:reveal")))
+ '(show-paren-mode t)
  '(tao-theme-use-boxes t)
- '(term-default-bg-color "#2a2a29")
- '(term-default-fg-color "#8d8b86")
  '(tool-bar-mode nil)
- '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
    '((20 . "#a60000")
@@ -1039,3 +1129,5 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;; (mapc #'disable-theme custom-enabled-themes)
 
+ '(warning-suppress-types '((comp) (comp)))
+ '(window-divider-mode nil))
