@@ -19,37 +19,51 @@ plug "kak-lsp/kak-lsp" do %{
         cargo install --locked --force --path .
 }
 
-# plug "andreyorst/smarttab.kak" defer smarttab %{
-#     set-option global softtabstop 4
-# } config %{
-#     set-option global expandtab
-#     hook global WinSetOption filetype=(dart|haskell|python|markdown) softtabstop 2
-# }
+plug "https://git.sr.ht/~c7s/hare.kak"
 
-# set-option global indentwidth 4
-# set-option global tabstop 4
+plug "andreyorst/smarttab.kak" defer smarttab %{
+    set-option global softtabstop 4
+} config %{
+    # # hook global WinSetOption filetype=(dart|haskell|python|markdown) softtabstop 2
+    # # these languages will use `expandtab' behavior
+    hook global WinSetOption filetype=(python|rust|markdown|kak|lisp|scheme|sh|perl) expandtab
+    # # these languages will use `noexpandtab' behavior
+    # hook global WinSetOption filetype=(makefile|gas) noexpandtab
+    # # these languages will use `smarttab' behavior
+    # hook global WinSetOption filetype=(c|cpp) smarttab
+}
+
+add-highlighter global/trailing-whitespace regex '\h+$' 0:Error
+
+set-option global indentwidth 4
+set-option global tabstop 4
 
 # hook global WinSetOption filetype=haskell %{
+#   set-option window softtabstop 2
 #   set-option window formatcmd 'fourmolu -i'
 #   set-option window indentwidth 2
 #   set-option window tabstop 2
 # }
 
 # hook global WinSetOption filetype=dart %{
+#   set-option window softtabstop 2
 #   set-option window indentwidth 2
 #   set-option window tabstop 2
 # }
 
-# hook global WinSetOption filetype=python %{
-#   set-option window indentwidth 2
-#   set-option window tabstop 2
-# }
+# # hook global WinSetOption filetype=python %{
+# #   set-option window softtabstop 2
+# #   set-option window indentwidth 2
+# #   set-option window tabstop 2
+# # }
+
 # hook global WinSetOption filetype=markdown %{
+#   set-option window softtabstop 2
 #   set-option window indentwidth 2
 #   set-option window tabstop 2
 # }
 
-hook global WinCreate .* %{addhl number_lines -relative}
+# hook global WinCreate .* %{addhl number_lines -relative}
 # map global user l %{: enter-user-mode lsp<ret>} -docstring "LSP mode"
 map global normal '#' ': comment-line<ret>'                   -docstring 'comment-line'
 map global normal '=' ': format<ret>'                         -docstring 'format'
@@ -57,9 +71,9 @@ map global normal '=' ': format<ret>'                         -docstring 'format
 map global normal <c-l> ': enter-user-mode lsp<ret>' -docstring "LSP mode"
 
 add-highlighter global/ number-lines -relative
-colorscheme plain
+# colorscheme plain
 # colorscheme tomorrow-night
-# colorscheme gruvbox
+colorscheme gruvbox-dark
 
 # face global PrimaryCursor grey,white
 
@@ -84,3 +98,6 @@ hook global InsertCompletionShow .* %{
     }
 }
 
+hook global NormalKey y|d|c %{ nop %sh{
+    printf %s "$kak_reg_dquote" | pbcopy
+}}
