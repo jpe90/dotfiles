@@ -4,7 +4,8 @@ plug "andreyorst/plug.kak" noload
 plug "andreyorst/fzf.kak" config %{
 	map global normal <c-p> ': fzf-mode<ret>'
 } defer "fzf-grep" %{
-    set-option global fzf_grep_command 'rg'
+    set-option global fzf_grep_preview_command "bat"
+    set-option global fzf_grep_command "rg"
 }
 
 plug "Delapouite/kakoune-registers"
@@ -31,6 +32,11 @@ plug "andreyorst/smarttab.kak" defer smarttab %{
     # hook global WinSetOption filetype=(makefile|gas) noexpandtab
     # # these languages will use `smarttab' behavior
     # hook global WinSetOption filetype=(c|cpp) smarttab
+}
+
+hook global WinSetOption filetype=mail %{
+        set window autowrap_column 72
+            autowrap-enable
 }
 
 add-highlighter global/trailing-whitespace regex '\h+$' 0:Error
