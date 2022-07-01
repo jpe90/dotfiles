@@ -62,7 +62,7 @@
 (package-refresh-contents)
 (package-install 'use-package))
 
-(first-time-load)
+;; (first-time-load)
 
 (defun load-if-exists (file)
   (if (file-exists-p file)
@@ -90,87 +90,6 @@
 
 (defvar gerbil-program-name
   (expand-file-name "/opt/homebrew/bin/gxi"))
-
-(defvar gambit-home "/Users/jon/Development/gambit/gambit")
-(defvar gerbil-home "/Users/jon/Development/gerbil/gerbil")
-
-(require 'gerbil-mode)
-
-(use-package gerbil-mode
-  :when (getenv "GERBIL_HOME")
-  :ensure nil
-  :defer t
-  :mode (("\\.ss\\'"  . gerbil-mode)
-         ("\\.pkg\\'" . gerbil-mode))
-  :bind (:map comint-mode-map
-              (("C-S-n" . comint-next-input)
-               ("C-S-p" . comint-previous-input)
-               ("C-S-l" . clear-comint-buffer))
-              :map gerbil-mode-map
-              (("C-S-l" . clear-comint-buffer)))
-  :init
-  (setf gambit "/Users/jon/Development/gambit/gambit")
-  (setf gerbil "/Users/jon/Development/gerbil/gerbil")
-  (autoload 'gerbil-mode
-    (concat gerbil "~/.emacs.d/lisp/gerbil-mode.el") "Gerbil editing mode." t)
-  :hook
-  ((gerbil-mode . linum-mode)
-   (inferior-scheme-mode-hook . gambit-inferior-mode))
-  :config
-  (require 'gambit)
-  (setf scheme-program-name gerbil-program-name)
-  (setf gerbil-tags-location "/Users/jon/Development/gerbil/gerbil/src/TAGS")
-  (setf gerbil-package-tags-location "/Users/jon/.gerbil/pkg/TAGS")
-  (visit-tags-table gerbil-tags-location)
-  (visit-tags-table gerbil-package-tags-location)
-
-  (defun clear-comint-buffer ()
-    (interactive)
-    (with-current-buffer "*scheme*"
-      (let ((comint-buffer-maximum-size 0))
-        (comint-truncate-buffer)))))
-
-(add-hook 'scheme-mode-hook 'highlight-numbers-mode)
-
-(defun gerbil-setup-buffers ()
-  "Change current buffer mode to gerbil-mode and start a REPL"
-  (interactive)
-  (gerbil-mode)
-  (split-window-right)
-  (shrink-window-horizontally 2)
-  (let ((buf (buffer-name)))
-    (other-window 1)
-    (run-scheme "gxi")
-    (switch-to-buffer-other-window "*scheme*" nil)
-    (switch-to-buffer buf)))
-
-;; (defun gerbil-setup-swank ()
-;;   "Change current buffer mode to gerbil-mode and start a REPL"
-;;   (interactive)
-;;   (gerbil-mode)
-;;   (let ((oldbuf (current-buffer)))
-;;     (run-scheme "gxi -e \"(import :drewc/gerbil-swank :gerbil/gambit/threads)\" -e \"(spawn start-swank 4205)\" -")
-;;     (pop-to-buffer-same-window oldbuf)
-;; )
-;;   )
-
-;; (defun slime-gerbil-connect ()
-;;   (interactive)
-;;   (slime-mode)
-;;   (slime-connect "localhost" 4205))
-
-;; (defun gerby ()
-;;   (interactive)
-;;   )
-
-;; (global-set-key (kbd "C-c C-g") 'gerbil-setup-buffers)
-
-
-
-;; (require 'gambit)
-;; (add-hook 'inferior-scheme-mode-hook 'gambit-inferior-mode)
- ; Set this for your GERBIL_HOME
-;; (setq scheme-program-name gerbil-program-name)
 
 
 
@@ -360,9 +279,9 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-O") #'delete-other-windows)
 (global-set-key (kbd "C-S-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
-;; (global-set-key (kbd "C-S-t") #'launch-iterm-in-vc-root)
+(global-set-key (kbd "C-S-t") #'launch-iterm-in-vc-root)
 ;; (global-set-key (kbd "C-S-s") #'swiper-thing-at-point)
-(global-set-key (kbd "C-S-t") #'launch-alacritty-in-vc-root)
+;; (global-set-key (kbd "C-S-t") #'launch-alacritty-in-vc-root)
 (global-set-key (kbd "C-;") #'comment-region)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
@@ -502,8 +421,14 @@ Repeated invocations toggle between the two most recently open buffers."
 (if (eq system-type 'darwin)
     (progn
       (setq mac-command-modifier 'control)
-      (setq mac-control-modifier 'hyper)
+      ;; (setq mac-control-modifier 'hyper)
+      (setq mac-control-modifier 'meta)
       (global-set-key (kbd "H-s") #'save-some-buffers)))
+
+(defun oryx-bindings ()
+  (interactive)
+  (setq mac-command-modifier 'control)
+  (setq mac-control-modifier 'meta))
 
 ;; ;; Set default font
 ;; (set-face-font 'default "SF Mono:size=12")
@@ -999,5 +924,9 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes '(github-dark-vscode))
  '(package-selected-packages
-   '(zig-mode yaml-mode wgrep web-mode use-package undo-tree twilight-theme twilight-bright-theme treadmill-history sublime-themes spacemacs-theme sly-quicklisp slime-company simplicity-theme rustic rainbow-mode racket-mode ox-haunt org-download monokai-pro-theme magit lsp-ui lsp-tailwindcss lsp-pyright license-templates jedi-core ivy-clojuredocs inf-clojure highlight-numbers gruvbox-theme go-mode github-theme github-modern-theme github-dark-vscode-theme geiser-guile flycheck-clj-kondo flx fish-mode fennel-mode expand-region exec-path-from-shell evil elpher dash-at-point dart-mode counsel-tramp counsel-dash counsel-at-point clojars clj-refactor clj-deps-new cargo almost-mono-themes a)))
+   '(lsp-treemacs zig-mode yaml-mode wgrep web-mode use-package undo-tree twilight-theme twilight-bright-theme treadmill-history sublime-themes spacemacs-theme sly-quicklisp slime-company simplicity-theme rustic rainbow-mode racket-mode ox-haunt org-download monokai-pro-theme magit lsp-ui lsp-tailwindcss lsp-pyright license-templates jedi-core ivy-clojuredocs inf-clojure highlight-numbers gruvbox-theme go-mode github-theme github-modern-theme github-dark-vscode-theme geiser-guile flycheck-clj-kondo flx fish-mode fennel-mode expand-region exec-path-from-shell evil elpher dash-at-point dart-mode counsel-tramp counsel-dash counsel-at-point clojars clj-refactor clj-deps-new cargo almost-mono-themes a))
+ '(safe-local-variable-values
+   '((inf-clojure-custom-repl-type . clojure)
+     (inf-clojure-custom-startup "localhost" . 7200))))

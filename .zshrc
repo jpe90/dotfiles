@@ -1,11 +1,20 @@
+#!/bin/zsh
 export FZF_DEFAULT_OPTS='--height 60% --reverse'
 export FZF_COMPLETION_TRIGGER='~~'
   
-export PATH="$HOME/.jenv/bin:$PATH"
-export PATH="$HOME/Development/Datomic/datomic-pro-1.0.6344/bin:$PATH"
+# export PATH="$HOME/.jenv/bin:$PATH"
+# export PATH="$HOME/Development/Datomic/datomic-pro-1.0.6344/bin:$PATH"
+# export PATH="$HOME/Development/scripts:$PATH"
+# export PATH="/opt/homebrew/bin:$PATH"
+# export PATH="`pwd`/flutter/bin:$PATH"
+# export ANDROID_SDK_ROOT="/Users/jon/Library/Android/sdk"
+# export CHROME_EXECUTABLE="/Applications/Brave Browser.app/Contents/MacOS/Brave Browser"
+# export PATH="/Users/jon/Development/Libraries/kitty/kitty.app/Contents/MacOS:$PATH"
+export EDITOR=kak
+export KAKOUNE_POSIX_SHELL=/bin/dash
 eval "$(jenv init -)"
 
-# source ~/Git/zsh-autocomplete/zsh-autocomplete.plugin.zsh
+# aliases
 
 # configure history
 
