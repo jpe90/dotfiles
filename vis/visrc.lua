@@ -3,6 +3,7 @@ require('vis')
 require('plugins/vis-commentary')
 require('plugins/hare/hare_detect')
 require('mail_detect')
+require('themes/min')
 plugin_vis_open = require('plugins/vis-fzf-open')
 
 vis.events.subscribe(vis.events.WIN_OPEN, function(win)
@@ -10,7 +11,9 @@ vis.events.subscribe(vis.events.WIN_OPEN, function(win)
     vis:command('set autoindent on')
     vis:command('set colorcolumn 80')
     vis:command('set cursorline')
-    vis:command('set expandtab on')
+    vis:command('set show-spaces on')
+    vis:command('set show-tabs')
+    -- vis:command('set expandtab on')
     vis:command('set number')
     vis:command('set relativenumbers')
     vis:command('set show-spaces off')
@@ -23,6 +26,9 @@ vis.events.subscribe(vis.events.WIN_OPEN, function(win)
     vis:command('set shell "/bin/dash"')
     if win.syntax == 'hare' then
         vis:command('set expandtab off')
+    end
+    if win.syntax == 'markdown' then
+        vis:command('set colorcolumn 0')
     end
 end)
 
@@ -57,6 +63,11 @@ fzf_file_args = string.gsub([[
         "ctrl-z:clear-screen"
     }, ",")
 })
+
+vis:command_register('sw', function(argv)
+    vis:command('set show-spaces on')
+    vis:command('set show-tabs on')
+end, "Turn whitespace on")
 
 -- Arguments passed to fzf (default: "")
 plugin_vis_open.fzf_args = fzf_file_args
