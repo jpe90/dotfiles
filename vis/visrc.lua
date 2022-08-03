@@ -1,7 +1,6 @@
 -- load standard vis module, providing parts of the Lua API
 require('vis')
 require('plugins/vis-commentary')
-require('plugins/hare/hare_detect')
 require('mail_detect')
 require('themes/min')
 plugin_vis_open = require('plugins/vis-fzf-open')
