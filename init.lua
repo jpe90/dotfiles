@@ -17,26 +17,22 @@ require('packer').startup(function(use)
   use 'ludovicchabant/vim-gutentags' -- Automatic tags management
   use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
-  use 'mjlbach/onedark.nvim' -- Theme inspired by Atom
+  use 'joshdick/onedark.vim' -- Theme inspired by Atom
+  use 'sainnhe/sonokai' -- Theme inspired by Atom
   use { "ellisonleao/gruvbox.nvim" }
   use { "rakr/vim-one" }
   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
-  -- use 'github/copilot.vim'
   use 'https://git.sr.ht/~sircmpwn/hare.vim'
-  use 'dag/vim-fish'
   use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
   use 'nvim-treesitter/nvim-treesitter'
   use 'nvim-treesitter/nvim-treesitter-textobjects'
   use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
   use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
-  use 'hrsh7th/cmp-buffer' -- Autocompletion plugin
   use 'hrsh7th/cmp-nvim-lsp'
   use 'saadparwaiz1/cmp_luasnip'
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
-  use 'fatih/vim-go' -- Snippets plugin
   use 'olical/conjure'
-  use 'lourenci/github-colors'
-  use 'marko-cerovac/material.nvim'
+  use 'ziglang/zig.vim'
 end)
 
 --Set highlight on search
@@ -64,19 +60,7 @@ vim.wo.signcolumn = 'yes'
 
 --Set colorscheme
 vim.o.termguicolors = true
--- vim.o.termguicolors = false
---Lua:
--- vim.g.material_style = "darker"
--- vim.cmd [[colorscheme github-colors]]
--- vim.g.monochrome_style = 'amplified'
--- vim.cmd [[colorscheme monochrome]]
--- vim.g.gruvbox_contrast_dark = 'hard'
--- vim.cmd [[colorscheme gruvbox]]
--- vim.cmd [[colorscheme material]]
--- vim.cmd [[colorscheme ron]]
--- vim.cmd [[colorscheme one]]
--- vim.cmd [[set background=light]]
--- vim.cmd [[syntax off]]
+vim.cmd [[colorscheme sonokai]]
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -84,8 +68,6 @@ vim.o.completeopt = 'menuone,noselect'
 -- Custom from our stuff
 vim.wo.relativenumber = true
 vim.cmd [[set clipboard+=unnamedplus]]
-vim.cmd [[highlight Pmenu ctermbg=black ctermfg=blue guibg=grey]]
--- vim.cmd [[syntax off]]
 
 --Set statusbar
 require('lualine').setup {
@@ -93,7 +75,7 @@ require('lualine').setup {
     icons_enabled = false,
     -- theme = 'monochrome',
     -- theme = 'material',
-    theme = 'gruvbox',
+    theme = 'sonokai',
     component_separators = '|',
     section_separators = '',
   },
@@ -121,62 +103,57 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
--- -- Indent blankline
--- require('indent_blankline').setup {
---   char = '┊',
---   show_trailing_blankline_indent = false,
+-- I'd like to find a way to make gitsigns toggleable; disabled for now
+-- Gitsigns
+-- require('gitsigns').setup {
+--   signs = {
+--     add = { text = '+' },
+--     change = { text = '~' },
+--     delete = { text = '_' },
+--     topdelete = { text = '‾' },
+--     changedelete = { text = '~' },
+--   },
+--   on_attach = function(bufnr)
+--     local gs = package.loaded.gitsigns
+--
+--     local function map(mode, l, r, opts)
+--       opts = opts or {}
+--       opts.buffer = bufnr
+--       vim.keymap.set(mode, l, r, opts)
+--     end
+--
+--     -- Navigation
+--     map('n', ']c', function()
+--       if vim.wo.diff then return ']c' end
+--       vim.schedule(function() gs.next_hunk() end)
+--       return '<Ignore>'
+--     end, {expr=true})
+--
+--     map('n', '[c', function()
+--       if vim.wo.diff then return '[c' end
+--       vim.schedule(function() gs.prev_hunk() end)
+--       return '<Ignore>'
+--     end, {expr=true})
+--
+--     -- Actions
+--     map({'n', 'v'}, '<leader>hs', ':Gitsigns stage_hunk<CR>')
+--     map({'n', 'v'}, '<leader>hr', ':Gitsigns reset_hunk<CR>')
+--     map('n', '<leader>hS', gs.stage_buffer)
+--     map('n', '<leader>hu', gs.undo_stage_hunk)
+--     map('n', '<leader>hR', gs.reset_buffer)
+--     map('n', '<leader>hp', gs.preview_hunk)
+--     map('n', '<leader>hb', function() gs.blame_line{full=true} end)
+--     map('n', '<leader>tb', gs.toggle_current_line_blame)
+--     map('n', '<leader>hd', gs.diffthis)
+--     map('n', '<leader>hD', function() gs.diffthis('~') end)
+--     map('n', '<leader>td', gs.toggle_deleted)
+--
+--     -- Text object
+--     map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+--   end
 -- }
 
--- Gitsigns
-require('gitsigns').setup {
-  signs = {
-    add = { text = '+' },
-    change = { text = '~' },
-    delete = { text = '_' },
-    topdelete = { text = '‾' },
-    changedelete = { text = '~' },
-  },
-  on_attach = function(bufnr)
-    local gs = package.loaded.gitsigns
-
-    local function map(mode, l, r, opts)
-      opts = opts or {}
-      opts.buffer = bufnr
-      vim.keymap.set(mode, l, r, opts)
-    end
-
-    -- Navigation
-    map('n', ']c', function()
-      if vim.wo.diff then return ']c' end
-      vim.schedule(function() gs.next_hunk() end)
-      return '<Ignore>'
-    end, {expr=true})
-
-    map('n', '[c', function()
-      if vim.wo.diff then return '[c' end
-      vim.schedule(function() gs.prev_hunk() end)
-      return '<Ignore>'
-    end, {expr=true})
-
-    -- Actions
-    map({'n', 'v'}, '<leader>hs', ':Gitsigns stage_hunk<CR>')
-    map({'n', 'v'}, '<leader>hr', ':Gitsigns reset_hunk<CR>')
-    map('n', '<leader>hS', gs.stage_buffer)
-    map('n', '<leader>hu', gs.undo_stage_hunk)
-    map('n', '<leader>hR', gs.reset_buffer)
-    map('n', '<leader>hp', gs.preview_hunk)
-    map('n', '<leader>hb', function() gs.blame_line{full=true} end)
-    map('n', '<leader>tb', gs.toggle_current_line_blame)
-    map('n', '<leader>hd', gs.diffthis)
-    map('n', '<leader>hD', function() gs.diffthis('~') end)
-    map('n', '<leader>td', gs.toggle_deleted)
-
-    -- Text object
-    map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
-  end
-}
-
--- Telescope
+-- -- Telescope
 require('telescope').setup {
   defaults = {
     mappings = {
@@ -191,7 +168,7 @@ require('telescope').setup {
 -- Enable telescope fzf native
 require('telescope').load_extension 'fzf'
 
---Add leader shortcuts
+-- Add leader shortcuts
 vim.keymap.set('n', '<leader><space>', require('telescope.builtin').buffers)
 vim.keymap.set('n', '<leader>sf', function()
   require('telescope.builtin').find_files { previewer = false }
@@ -225,8 +202,8 @@ require('nvim-treesitter.configs').setup {
     },
   },
   indent = {
-    -- enable = false,
-    disable = true
+    enable = false,
+    -- disable = true
   },
   textobjects = {
     select = {
@@ -271,7 +248,6 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist)
 
 -- my keymap
 -- vim.keymap.set('n', '<leader>c', vim.diagnostic.setloclist)
--- vim.api.nvim_set_keymap('n', '<Leader>co', ':Copilot status<CR>', { noremap = true, silent = true })
 
 -- LSP settings
 local lspconfig = require 'lspconfig'
@@ -300,7 +276,7 @@ local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 -- Enable the following language servers
-local servers = {'rust_analyzer', 'tsserver', 'gopls', 'pyright'}
+local servers = { 'clangd', 'rust_analyzer', 'tsserver', 'gopls', 'pyright'}
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
     on_attach = on_attach,
@@ -346,6 +322,10 @@ lspconfig.sumneko_lua.setup {
 -- luasnip setup
 local luasnip = require 'luasnip'
 
+local t = function(str)
+	return vim.api.nvim_replace_termcodes(str, true, true, true)
+end
+
 -- nvim-cmp setup
 local cmp = require 'cmp'
 cmp.setup {
@@ -357,7 +337,22 @@ cmp.setup {
   mapping = cmp.mapping.preset.insert({
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
-    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-Space>'] = cmp.mapping(function(fallback)
+      if vim.fn.pumvisible() == 1 then
+        if vim.fn.complete_info()["selected"] ~= -1 then
+          if vim.fn["UltiSnips#CanExpandSnippet"]() == 1 then
+            return vim.fn.feedkeys(t("<C-R>=UltiSnips#ExpandSnippet()<CR>"))
+          else
+            vim.fn.feedkeys(t("<cr>"), "n")
+          end
+        else
+          vim.fn.feedkeys(t("<C-e>"), "n")
+        end
+
+      else
+        fallback()
+      end
+		end, { "i", "s", }),
     ['<CR>'] = cmp.mapping.confirm {
       behavior = cmp.ConfirmBehavior.Replace,
       select = true,
@@ -383,7 +378,6 @@ cmp.setup {
   }),
   sources = {
     { name = 'nvim_lsp' },
-    { name = 'buffer' },
     { name = 'luasnip' },
   },
 }
