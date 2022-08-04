@@ -19,6 +19,7 @@ require('packer').startup(function(use)
   use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
   use 'joshdick/onedark.vim' -- Theme inspired by Atom
   use 'sainnhe/sonokai' -- Theme inspired by Atom
+  use 'sainnhe/everforest' -- Theme inspired by Atom
   use { "ellisonleao/gruvbox.nvim" }
   use { "rakr/vim-one" }
   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
@@ -33,6 +34,10 @@ require('packer').startup(function(use)
   use 'L3MON4D3/LuaSnip' -- Snippets plugin
   use 'olical/conjure'
   use 'ziglang/zig.vim'
+  use {
+    "windwp/nvim-autopairs",
+    config = function() require("nvim-autopairs").setup {} end
+}
 end)
 
 --Set highlight on search
@@ -60,7 +65,16 @@ vim.wo.signcolumn = 'yes'
 
 --Set colorscheme
 vim.o.termguicolors = true
-vim.cmd [[colorscheme sonokai]]
+
+-- vim.g.sonokai_style = 'andromeda'
+vim.g.sonokai_better_performance = 1
+
+vim.g.everforest_better_performance = 1
+vim.g.everforest_background = 'hard'
+-- vim.cmd [[colorscheme sonokai]]
+
+require('gruvbox').setup({contrast = "hard"})
+vim.cmd [[colorscheme gruvbox]]
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
