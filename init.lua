@@ -17,11 +17,6 @@ require('packer').startup(function(use)
 	use 'ludovicchabant/vim-gutentags' -- Automatic tags management
 	use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
 	use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
-	use 'joshdick/onedark.vim' -- Theme inspired by Atom
-	use 'sainnhe/sonokai' -- Theme inspired by Atom
-	use 'sainnhe/everforest' -- Theme inspired by Atom
-	use { "ellisonleao/gruvbox.nvim" }
-	use { "rakr/vim-one" }
 	use 'nvim-lualine/lualine.nvim' -- Fancier statusline
 	use 'https://git.sr.ht/~sircmpwn/hare.vim'
 	use { 'lewis6991/gitsigns.nvim', requires = { 'nvim-lua/plenary.nvim' } }
@@ -36,7 +31,6 @@ require('packer').startup(function(use)
 	use 'olical/aniseed'
 	use 'ziglang/zig.vim'
 	use 'dag/vim-fish'
-	use 'RRethy/nvim-base16'
 	use 'folke/lsp-colors.nvim'
 	use 'mfussenegger/nvim-dap'
 	use {
@@ -44,7 +38,7 @@ require('packer').startup(function(use)
 		config = function() require("nvim-autopairs").setup {} end
 	}
 	use 'arcticicestudio/nord-vim'
-	use '/Users/jon/Development/lua/nvimplugin'
+	-- use '/Users/jon/Development/lua/nvimplugin'
 	-- use '/Users/jon/Development/lua/aniseedplugin'
 	use 'mg979/vim-visual-multi'
 end)
@@ -74,7 +68,7 @@ vim.o.smartcase = true
 
 --Decrease update time
 vim.o.updatetime = 250
-vim.wo.signcolumn = 'yes'
+vim.wo.signcolumn = 'no'
 
 vim.opt.listchars = { space = '␣', tab = '»-', trail = '.'}
 
@@ -86,20 +80,9 @@ vim.opt.list = false
 vim.api.nvim_create_user_command('Tw', toggle_listchars, {})
 -- vim.api.nvim_add_user_command('Upper', 'echo toupper(<q-args>)', { nargs = 1 })
 
-
 --Set colorscheme
 -- vim.o.termguicolors = true
-
--- vim.g.sonokai_style = 'andromeda'
-vim.g.sonokai_better_performance = 1
-
-vim.g.everforest_better_performance = 1
-vim.g.everforest_background = 'hard'
-vim.cmd [[colorscheme nord]]
-
-require('gruvbox').setup({contrast = "hard"})
--- vim.cmd [[colorscheme gruvbox]]
--- vim.cmd [[colorscheme wal]]
+vim.cmd [[hi Pmenu ctermbg=gray]]
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
@@ -107,19 +90,6 @@ vim.o.completeopt = 'menuone,noselect'
 -- Custom from our stuff
 vim.wo.relativenumber = true
 vim.cmd [[set clipboard+=unnamedplus]]
-
--- --Set statusbar
--- require('lualine').setup {
---   options = {
---     icons_enabled = true,
---     theme = '16color',
---     -- theme = 'monochrome',
---     -- theme = 'material',
---     -- theme = 'nord',
---     component_separators = '|',
---     section_separators = '',
---   },
--- }
 
 --Enable Comment.nvim
 require('Comment').setup()
@@ -143,7 +113,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 	pattern = '*',
 })
 
--- I'd like to find a way to make gitsigns toggleable; disabled for now
 -- Gitsigns
 require('gitsigns').setup {
 	signs = {
@@ -192,6 +161,7 @@ require('gitsigns').setup {
 		map({'o', 'x'}, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
 	end
 }
+
 
 -- -- Telescope
 require('telescope').setup {
@@ -417,22 +387,5 @@ cmp.setup {
 	sources = {
 		{ name = 'nvim_lsp' },
 		{ name = 'luasnip' },
-	},
-}
-
-local dap = require "dap"
-dap.adapters.go = {
-	type = 'executable';
-	command = 'node';
-	args = {os.getenv('HOME') .. '/dev/golang/vscode-go/dist/debugAdapter.js'};
-}
-dap.configurations.go = {
-	{
-		type = 'go';
-		name = 'Debug';
-		request = 'launch';
-		showLog = false;
-		program = "${file}";
-		dlvToolPath = vim.fn.exepath('dlv')  -- Adjust to where delve is installed
 	},
 }
