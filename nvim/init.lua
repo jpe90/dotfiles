@@ -38,7 +38,7 @@ require('packer').startup(function(use)
 		config = function() require("nvim-autopairs").setup {} end
 	}
 	use 'arcticicestudio/nord-vim'
-	-- use '/Users/jon/Development/lua/nvimplugin'
+	-- use '/Users/jon/Development/lua/np'
 	-- use '/Users/jon/Development/lua/aniseedplugin'
 	use 'mg979/vim-visual-multi'
 end)
@@ -90,6 +90,8 @@ vim.o.completeopt = 'menuone,noselect'
 -- Custom from our stuff
 vim.wo.relativenumber = true
 vim.cmd [[set clipboard+=unnamedplus]]
+vim.wo.cursorline = true
+vim.opt.colorcolumn = "80"
 
 --Enable Comment.nvim
 require('Comment').setup()
