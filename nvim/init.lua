@@ -25,6 +25,7 @@ require('packer').startup(function(use)
 	use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
 	use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
 	use 'hrsh7th/cmp-nvim-lsp'
+	use 'hrsh7th/cmp-buffer'
 	use 'saadparwaiz1/cmp_luasnip'
 	use 'L3MON4D3/LuaSnip' -- Snippets plugin
 	use 'olical/conjure'
@@ -389,5 +390,6 @@ cmp.setup {
 	sources = {
 		{ name = 'nvim_lsp' },
 		{ name = 'luasnip' },
+		{ name = 'buffer' },
 	},
 }
