@@ -14,7 +14,8 @@ require('packer').startup(function(use)
 	use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
 	use 'tpope/vim-surround' -- Fugitive-companion to interact with github
 	use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
-	use 'ludovicchabant/vim-gutentags' -- Automatic tags management
+	-- use 'ludovicchabant/vim-gutentags' -- Automatic tags management
+    use 'folke/tokyonight.nvim'
 	use { 'nvim-telescope/telescope.nvim', requires = { 'nvim-lua/plenary.nvim' } }
 	use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' }
 	use 'nvim-lualine/lualine.nvim' -- Fancier statusline
@@ -26,6 +27,7 @@ require('packer').startup(function(use)
 	use 'hrsh7th/nvim-cmp' -- Autocompletion plugin
 	use 'hrsh7th/cmp-nvim-lsp'
 	use 'hrsh7th/cmp-buffer'
+	use 'hrsh7th/cmp-path'
 	use 'saadparwaiz1/cmp_luasnip'
 	use 'L3MON4D3/LuaSnip' -- Snippets plugin
 	use 'olical/conjure'
@@ -34,15 +36,13 @@ require('packer').startup(function(use)
 	use 'dag/vim-fish'
 	use 'folke/lsp-colors.nvim'
 	use 'mfussenegger/nvim-dap'
-	use {
-		"windwp/nvim-autopairs",
-		config = function() require("nvim-autopairs").setup {} end
-	}
-	use 'arcticicestudio/nord-vim'
-	-- use '/Users/jon/Development/lua/np'
-	-- use '/Users/jon/Development/lua/aniseedplugin'
+	use 'ggandor/leap.nvim'
+	-- use '/home/solaire/development/lua/nvim-plugins/export-colorscheme'
+	-- use '/Users/jon/Development/lua/'
 	use 'mg979/vim-visual-multi'
 end)
+
+require('leap').set_default_keymaps()
 
 vim.o.expandtab = true
 vim.o.tabstop = 4
@@ -190,6 +190,7 @@ vim.keymap.set('n', '<leader>b', require('telescope.builtin').buffers)
 -- can i just register a command instead? i don't need a hotkey for this
 vim.keymap.set('n', '<leader>re', require('telescope.builtin').registers)
 vim.keymap.set('n', '<leader>st', require('telescope.builtin').tags)
+vim.keymap.set('n', '<leader>gh', require('telescope.builtin').help_tags)
 vim.keymap.set('n', '<C-f>', require('telescope.builtin').live_grep)
 vim.keymap.set('n', '<leader>so', function()
 	require('telescope.builtin').tags { only_current_buffer = true }
@@ -391,5 +392,15 @@ cmp.setup {
 		{ name = 'nvim_lsp' },
 		{ name = 'luasnip' },
 		{ name = 'buffer' },
+		{ name = 'path' },
 	},
 }
+
+P = function(v)
+	print(vim.inspect(v))
+	return v
+end
+
+-- local testt = require("colorscheme-export.templates")
+-- testt.add_template({name="goo"})
+-- P(testt)
