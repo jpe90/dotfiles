@@ -1,4 +1,4 @@
--- Install packer
+
 local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
 
 if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
@@ -37,11 +37,13 @@ require('packer').startup(function(use)
 	use 'folke/lsp-colors.nvim'
 	use 'mfussenegger/nvim-dap'
 	use 'ggandor/leap.nvim'
+    use 'jpe90/export-colorscheme.nvim'
 	-- use '/home/solaire/development/lua/nvim-plugins/export-colorscheme'
 	-- use '/Users/jon/Development/lua/'
 	use 'mg979/vim-visual-multi'
 end)
 
+require('export-colorscheme')
 require('leap').set_default_keymaps()
 
 vim.o.expandtab = true
@@ -71,7 +73,7 @@ vim.o.smartcase = true
 vim.o.updatetime = 250
 vim.wo.signcolumn = 'no'
 
-vim.opt.listchars = { space = '␣', tab = '»-', trail = '.'}
+vim.opt.listchars = { space = '␣', tab = '» ', trail = '.'}
 
 local toggle_listchars = function()
 	vim.opt.list = not vim.opt.list
@@ -90,7 +92,7 @@ vim.o.completeopt = 'menuone,noselect'
 
 -- Custom from our stuff
 vim.wo.relativenumber = true
-vim.cmd [[set clipboard+=unnamedplus]]
+-- vim.cmd [[set clipboard+=unnamedplus]]
 vim.wo.cursorline = true
 vim.opt.colorcolumn = "80"
 
@@ -399,6 +401,17 @@ cmp.setup {
 P = function(v)
 	print(vim.inspect(v))
 	return v
+end
+
+Hex = function(rgb)
+	local fg = vim.api.nvim_get_hl_by_name(rgb,true).foreground
+	local bg = vim.api.nvim_get_hl_by_name(rgb,true).background
+	print(string.format("foreground %x", fg))
+	print(string.format("background %x", bg))
+end
+
+C = function(name)
+	P(vim.api.nvim_get_hl_by_name(name,true))
 end
 
 -- local testt = require("colorscheme-export.templates")
