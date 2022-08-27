@@ -4,9 +4,9 @@
 (require 'use-package)
 
 ;; for cosmopolitan elisp files
-(require 'sh-script)
-(require 'python)
-(require 'lua-mode)
+;; (require 'sh-script)
+;; (require 'python)
+;; (require 'lua-mode)
 
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -16,7 +16,6 @@
 (setq-default cursor-type 'box)
 (setq-default indent-tabs-mode t)
 (setq-default tab-width 4)
-(setq-default indent-tabs-mode nil)
 (setq backup-directory-alist (list (cons ".*" backup-dir)))
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
@@ -34,6 +33,7 @@
 (setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
 (setq lsp-headerline-breadcrumb-enable nil)
 (setq org-startup-folded t)
+(defvaralias 'c-basic-offset 'tab-width)
 
 (let ((default-directory  "~/.emacs.d/lisp/"))
   (normal-top-level-add-subdirs-to-load-path))
@@ -158,7 +158,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-o") #'split-window-right)
 (global-set-key (kbd "C-M-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
-(global-set-key (kbd "M-;") #'comment-region)
+(global-set-key (kbd "C-;") #'comment-line)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
 (global-set-key (kbd "<prior>") 'View-scroll-half-page-backward)
@@ -172,6 +172,8 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "M-`") #'other-frame)
 (global-set-key (kbd "<C-left>") #'back-to-indentation)
 (global-set-key (kbd "<C-right>") #'move-end-of-line)
+(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 
 
 (global-set-key (kbd "H-w")
@@ -239,6 +241,11 @@ Repeated invocations toggle between the two most recently open buffers."
                                         ; (toggle-scroll-bar -1)
 (menu-bar-mode -1)
 
+(use-package lua-mode
+  :ensure t
+  :config
+  (setq lua-indent-level 4))
+
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :ensure t
@@ -279,11 +286,6 @@ Repeated invocations toggle between the two most recently open buffers."
          ("\\.md\\'"       . markdown-mode)
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
-
-(use-package ivy-clojuredocs
-  :ensure t
-  :bind (:map clojure-mode-map
-              (("C-c d" . ivy-clojuredocs-at-point))))
 
 (use-package counsel
   :ensure t
@@ -512,6 +514,8 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package rainbow-mode
   :ensure t)
 
+
+
 ;; ;; ########################## Custom
 
 (custom-set-variables
@@ -522,7 +526,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(package-selected-packages
-   '(zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes sly-quicklisp rustic rainbow-mode racket-mode protobuf-mode paredit org-download naysayer-theme multiple-cursors monokai-pro-theme magit lua-mode lsp-ui lsp-tailwindcss lsp-pyright license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell evil dart-mode counsel-at-point company cider cargo))
+   '(magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes sly-quicklisp rustic rainbow-mode racket-mode protobuf-mode paredit org-download naysayer-theme multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point company cider cargo))
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
