@@ -150,8 +150,6 @@ Repeated invocations toggle between the two most recently open buffers."
   (interactive)
   (kill-new (expand-file-name default-directory)))
 
-;; imagine pressing C-z in a terminal emacs window after making extensive edits
-;; to see what this does
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-l"))
 
@@ -175,14 +173,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 
-
-(global-set-key (kbd "H-w")
-                (lambda ()
-                  (interactive)
-                  (kill-new (thing-at-point 'symbol))))
-
-
-
 ;;; scroll like vim
 (autoload 'View-scroll-half-page-forward "view")
 (autoload 'View-scroll-half-page-backward "view")
@@ -190,9 +180,7 @@ Repeated invocations toggle between the two most recently open buffers."
 ;; i think this ignores annoying messages about people coming and going on IRC channels
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
-;;; get rid of blinking cursor
 (blink-cursor-mode 0)
-
 (xterm-mouse-mode 1)
 
 ;; Escape C-x and C-c in terminal mode
@@ -213,19 +201,6 @@ Repeated invocations toggle between the two most recently open buffers."
             (syntax-propertize (point-max))))
 
 
-;; toggles auto matching of brackets and stuff
-(add-hook 'rust-mode-hook 'electric-pair-mode)
-(add-hook 'zig-mode-hook 'electric-pair-mode)
-(add-hook 'c++-mode-hook 'electric-pair-mode)
-
-;; ;; bind command to control on mac
-(if (eq system-type 'darwin)
-    (progn
-      (setq mac-command-modifier 'control)
-      ;; (setq mac-control-modifier 'hyper)
-      (setq mac-control-modifier 'meta)
-      (global-set-key (kbd "H-s") #'save-some-buffers)))
-
 ;;; allows evaluating code blocks for these languages in org mode
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -238,8 +213,11 @@ Repeated invocations toggle between the two most recently open buffers."
 
 ;;; toolbar visibility
 (tool-bar-mode -1)
-                                        ; (toggle-scroll-bar -1)
 (menu-bar-mode -1)
+
+(use-package clipetty
+  :ensure t
+  :hook (after-init . global-clipetty-mode))
 
 (use-package lua-mode
   :ensure t
@@ -290,7 +268,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package counsel
   :ensure t
   :bind (("M-x"     . counsel-M-x)
-         ;; ("C-s"     . swiper)
          ("C-x C-f" . counsel-find-file)
          ("C-x C-r" . counsel-recentf)  ; search for recently edited
          ("C-c g"   . counsel-git)      ; search for files in git repo
@@ -312,11 +289,9 @@ Repeated invocations toggle between the two most recently open buffers."
   :init
   (global-undo-tree-mode))
 
-
 (use-package paren
   :config
   (show-paren-mode +1))
-
 
 (use-package company
   :ensure t
@@ -370,9 +345,7 @@ Repeated invocations toggle between the two most recently open buffers."
   (setq geiser-guile-load-init-file-p t))
 
 (use-package clojure-mode
-  :ensure t
-  :config
-  :hook (clojure-mode . flycheck-mode))
+  :ensure t)
 
 ;; Similar to C-x C-e, but sends to REBL
 
@@ -440,33 +413,6 @@ Repeated invocations toggle between the two most recently open buffers."
   :ensure t
   :disabled t)
 
-(use-package lsp-mode
-  :disabled t
-  :ensure t
-  :commands lsp
-  :custom
-  ;; what to use when checking on-save. "check" is default, I prefer clippy
-  (lsp-rust-analyzer-cargo-watch-command "clippy")
-  ;; (lsp-idle-delay 0.6)
-  (lsp-rust-analyzer-server-display-inlay-hints t)
-  ;; :config  (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-  )
-
-(use-package lsp-ui
-  :ensure t
-  :disabled t
-  :commands lsp-ui-mode
-  :custom
-  (lsp-ui-peek-always-show nil)
-  (lsp-ui-sideline-show-hover nil)
-  (lsp-ui-sideline-show-code-actions t)
-  (lsp-ui-doc-enable t)
-  (lsp-lens-enable t)
-  (lsp-signature-auto-activate t)
-  (lsp-signature-render-documentation t)
-  :config
-  (setq lsp-ui-sideline-actions-kind-regex ".*"))
-
 ;; drag and drop images into org mode
 (use-package org-download
   :ensure t)
@@ -494,8 +440,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package license-templates
   :ensure t)
 
-;; (require 'license-templates)
-
 (use-package expand-region
   :ensure t)
 
@@ -503,10 +447,6 @@ Repeated invocations toggle between the two most recently open buffers."
   :ensure t)
 
 (use-package multiple-cursors
-  :ensure t)
-
-(use-package lsp-tailwindcss
-  :disabled t
   :ensure t)
 
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
@@ -526,7 +466,7 @@ Repeated invocations toggle between the two most recently open buffers."
  '(column-number-mode t)
  '(compilation-message-face 'default)
  '(package-selected-packages
-   '(magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes sly-quicklisp rustic rainbow-mode racket-mode protobuf-mode paredit org-download naysayer-theme multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point company cider cargo))
+   '(clipetty eglot magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes sly-quicklisp rustic rainbow-mode racket-mode protobuf-mode paredit org-download naysayer-theme multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point company cider cargo))
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
@@ -537,11 +477,3 @@ Repeated invocations toggle between the two most recently open buffers."
  '(warning-suppress-log-types '((comp)))
  '(window-divider-mode nil))
 (put 'dired-find-alternate-file 'disabled nil)
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
-
