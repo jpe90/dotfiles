@@ -6,20 +6,20 @@
 [[ $- != *i* ]] && return
 
 alias ls='ls --color=auto'
-alias examod="exa -lar -s mod"
+alias examod="exa -la -s mod"
 alias dotfiles="cd ~/development/dotfiles/"
+alias work="cd ~/development/c/circle_of_prisms/"
 alias blog="cd ~/development/web/blog/"
-alias csmo="cd ~/development/c/cosmo2/"
-alias vps="ssh"
-alias opennewterm="st >/dev/null 2>&1 & disown"
-alias ec="emacsclient -nw"
 
 PS1='[\u@\h \W]\$ '
-export EDITOR=emacsclient -nw
+export EDITOR=vim
 export BROWSER=firefox
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/development/shell:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOME/development/flutter/flutter/bin:$PATH"
+export PATH="/home/solaire/development/flutter/android-studio/bin:$PATH"
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 n ()
@@ -45,7 +45,7 @@ n ()
 
     # The backslash allows one to alias n to nnn if desired without making an
     # infinitely recursive alias
-    \nnn "$@"
+    \nnn -A "$@"
 
     if [ -f "$NNN_TMPFILE" ]; then
             . "$NNN_TMPFILE"
@@ -55,3 +55,49 @@ n ()
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+###-begin-flutter-completion-###
+
+if type complete &>/dev/null; then
+  __flutter_completion() {
+    local si="$IFS"
+    IFS=$'\n' COMPREPLY=($(COMP_CWORD="$COMP_CWORD" \
+                           COMP_LINE="$COMP_LINE" \
+                           COMP_POINT="$COMP_POINT" \
+                           flutter completion -- "${COMP_WORDS[@]}" \
+                           2>/dev/null)) || return $?
+    IFS="$si"
+  }
+  complete -F __flutter_completion flutter
+elif type compdef &>/dev/null; then
+  __flutter_completion() {
+    si=$IFS
+    compadd -- $(COMP_CWORD=$((CURRENT-1)) \
+                 COMP_LINE=$BUFFER \
+                 COMP_POINT=0 \
+                 flutter completion -- "${words[@]}" \
+                 2>/dev/null)
+    IFS=$si
+  }
+  compdef __flutter_completion flutter
+elif type compctl &>/dev/null; then
+  __flutter_completion() {
+    local cword line point words si
+    read -Ac words
+    read -cn cword
+    let cword-=1
+    read -l line
+    read -ln point
+    si="$IFS"
+    IFS=$'\n' reply=($(COMP_CWORD="$cword" \
+                       COMP_LINE="$line" \
+                       COMP_POINT="$point" \
+                       flutter completion -- "${words[@]}" \
+                       2>/dev/null)) || return $?
+    IFS="$si"
+  }
+  compctl -K __flutter_completion flutter
+fi
+
+###-end-flutter-completion-###
+

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+ # fzf -d ':' -n 2.. --ansi --no-sort --preview-window 'right:60%:+{2}-/2'\
+ # --preview 'clp -h {2} {1}'
+
+fzf --delimiter=':' -n 2.. --preview-window '+{2}-/2' --preview 'clp -h {2} {1}' --bind "ctrl-o:execute(vim +{2} {1} -c 'normal zz' < /dev/tty)"
+# fzf --delimiter=':' -n 2.. --preview-window '+{2}-/2' --preview 'clp -h {2} {1}' --bind "ctrl-o:execute(kak +{2} {1}< /dev/tty)"
