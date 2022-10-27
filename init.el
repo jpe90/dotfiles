@@ -10,14 +10,12 @@
 (setq mac-option-modifier 'meta)
 (setq mac-command-modifier 'control)
 (setq-default cursor-type 'box)
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 8)
 (setq backup-directory-alist (list (cons ".*" backup-dir)))
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
 (setq recentf-max-saved-items 100)
 (setq confirm-kill-emacs 'yes-or-no-p)
-(setq visible-cursor nil) ;; don't blink in terminal
+;;(setq visible-cursor nil) ;; don't blink in terminal
 (setq nrepl-use-ssh-fallback-for-remote-hosts t)
 (setq custom-safe-themes t)
 (setq split-height-threshold nil) ;; only open horizontal splits (theoretically)
@@ -32,14 +30,29 @@
 (setq-default show-trailing-whitespace t)
 (setq dired-kill-when-opening-new-dired-buffer t) ;; stop dired from cluttering buffer list
 
-;; turning off until I remember what it does 
+;; indent with spaces
+(setq-default indent-tabs-mode nil)
+(setq-default c-basic-offset 4)
+
+;; indent with tabs
+;; (setq-default indent-tabs-mode nil)
 ;; (defvaralias 'c-basic-offset 'tab-width)
+
+(if (display-graphic-p)
+    (scroll-bar-mode -1))
+
+(define-key global-map (kbd "C-c r") 'vr/replace)
+(define-key global-map (kbd "C-c q") 'vr/query-replace)
+(define-key global-map (kbd "C-c m") 'vr/mc-mark)
+(global-diff-hl-mode)
 
 (add-hook 'c-mode-hook
           (lambda ()
-            (setq-local indent-tabs-mode t)
+            (setq-local fill-column 80)
+            ;; (setq-local indent-tabs-mode t)
             (c-set-offset 'arglist-intro '+)
-            (c-set-offset 'arglist-close 0)))
+            (c-set-offset 'arglist-close 0)
+            (display-fill-column-indicator-mode)))
 
 (add-hook 'before-save-hook 'gofmt-before-save)
 
@@ -50,11 +63,7 @@
 ;; turning off until I remember what it does 
 ;; (setq c-offsets-alist '((arglist-cont-nonempty . +)))
 
-(defun create-tags (dir-name)
-  "Create tags file."
-  (interactive "DDirectory: ")
-  (shell-command
-   (format "%s -f TAGS -e -R %s" path-to-ctags (directory-file-name dir-name))))
+(interactive "DDirectory: ")
 
 (defun first-time-load ()
   (package-initialize)
@@ -88,24 +97,6 @@ Repeated invocations toggle between the two most recently open buffers."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
-(defun ar/prefilled-swiper ()
-  "Pre-fill swiper input with region."
-  (interactive)
-  (if (region-active-p)
-      (let ((region-text (buffer-substring (region-beginning)
-                                           (region-end))))
-        (swiper region-text))
-    (swiper)))
-
-(defun ar/prefilled-swiper-backward ()
-  "Pre-fill swiper input with region."
-  (interactive)
-  (if (region-active-p)
-      (let ((region-text (buffer-substring (region-beginning)
-                                           (region-end))))
-        (swiper-backward region-text))
-    (swiper-backward)))
-
 (defun change-theme (&rest args)
   "Like `load-theme', but disables all themes before loading the new one."
   ;; The `interactive' magic is for creating a future-proof passthrough (see <https://emacs.stackexchange.com/a/19242>).
@@ -115,21 +106,29 @@ Repeated invocations toggle between the two most recently open buffers."
   (apply (if (called-interactively-p 'any) #'funcall-interactively #'funcall)
          #'load-theme args))
 
-(defun replace-string-with (newval)
-  "https://stackoverflow.com/a/4925243/5067724"
-  (interactive)
-  (let ((my-quoted-string-regexp "\"\\(\\\\[\\\\\"]\\|[^\\\\\"]\\)*\""))
-    (replace-regexp my-quoted-string-regexp newval)))
-
 (add-hook 'emacs-lisp-mode-hook
-		  (lambda ()
-			(setq-local indent-tabs-mode nil)))
+          (lambda ()
+            (setq-local indent-tabs-mode nil)))
 
 (defun user-clojure-keybindings ()
   (if (not (bound-and-true-p cider-mode))
       (local-set-key (kbd "C-c C-c") 'inf-clojure)))
 
 (add-hook 'clojure-mode-hook #'user-clojure-keybindings)
+
+(defun my/select-current-line-and-forward-line (arg)
+  "Select the current line and move the cursor by ARG lines IF
+no region is selected.
+
+If a region is already selected when calling this command, only move
+the cursor by ARG lines."
+  (interactive "p")
+  (when (not (use-region-p))
+    (forward-line 0)
+    (set-mark-command nil))
+  (forward-line arg))
+
+(global-set-key (kbd "M-1") 'my/select-current-line-and-forward-line)
 
 (defun user-racket-keybindings ()
   (local-set-key (kbd "C-c C-c") 'racket-run))
@@ -146,21 +145,11 @@ Repeated invocations toggle between the two most recently open buffers."
   (local-set-key (kbd "C-c C-l") 'org-store-link))
 
 (add-hook 'prog-mode-hook		#'user-progmode-keybindings)
-
+;; problem exists below
 (defun user-flymake-keybindings ()
   (local-set-key (kbd "S-<f2>") 'flymake-goto-prev-error)
   (local-set-key (kbd "<f2>") 'flymake-goto-next-error))
 (add-hook 'flymake-mode-hook		#'user-flymake-keybindings)
-
-(defun org-mode-<>-syntax-fix (start end)
-  (when (eq major-mode 'org-mode)
-    (save-excursion
-      (goto-char start)
-      (while (re-search-forward "<\\|>" end t)
-        (when (get-text-property (point) 'src-block)
-          ;; This is a < or > in an org-src block
-          (put-text-property (point) (1- (point))
-                             'syntax-table (string-to-syntax "_")))))))
 
 (defun copy-parent-dir-as-kill ()
   (interactive)
@@ -168,9 +157,8 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (global-unset-key (kbd "C-z"))
 (global-unset-key (kbd "C-x C-l"))
-;; (scroll-bar-mode -1)
 
-(global-set-key (kbd "M-o") #'split-window-right)
+(global-set-key (kbd "M-o") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "C-M-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
 (global-set-key (kbd "C-;") #'comment-line)
@@ -179,8 +167,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "<prior>") 'View-scroll-half-page-backward)
 (global-set-key (kbd "C-.") 'project-find-regexp)
 (global-set-key (kbd "C-\\") 'project-switch-to-buffer)
-(global-set-key (kbd "C-x b") 'counsel-switch-buffer)
-(global-set-key (kbd "C-x B") 'counsel-switch-buffer-other-window)
+(global-set-key (kbd "C-x b") 'switch-to-buffer)
 (global-set-key (kbd "M-p") (lambda () (interactive) (exchange-point-and-mark) (keyboard-quit)))
 (global-set-key (kbd "C-`") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "M-`") #'other-frame)
@@ -189,10 +176,13 @@ Repeated invocations toggle between the two most recently open buffers."
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 (global-set-key (kbd "C-,") 'avy-goto-char)
+(global-unset-key (kbd "C-<next>"))
 
-;;; scroll like vim
-(autoload 'View-scroll-half-page-forward "view")
-(autoload 'View-scroll-half-page-backward "view")
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
+(ido-mode 1)
+(setq ido-file-extensions-order '(".org" ".c" ".go" ".el" ".lua" ".txt" ".py" ".emacs" ".xml" ".ini" ".cfg" ".cnf"))
+(setq ido-use-virtual-buffers t)
 
 ;; i think this ignores annoying messages about people coming and going on IRC channels
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
@@ -215,14 +205,7 @@ Repeated invocations toggle between the two most recently open buffers."
 	(local-set-key (kbd "M-p") 'flymake-goto-prev-error)))
 
 
-; (add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
-
-;; https://emacs.stackexchange.com/a/52209
-
-(add-hook 'org-mode-hook
-          (lambda ()
-            (setq syntax-propertize-function 'org-mode-<>-syntax-fix)
-            (syntax-propertize (point-max))))
+(add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
 
 (add-hook 'c-mode-hook
           (lambda ()
@@ -236,19 +219,33 @@ Repeated invocations toggle between the two most recently open buffers."
    (lisp . t)
    (clojure . t)))
 
-;; i have no idea why i ever wanted images in org mode
-;; (setq org-startup-with-inline-images t)
-
 ;;; toolbar visibility
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
-;; (use-package simplicity-theme
-;;   :ensure t)
+; (add-to-list 'custom-theme-load-path "/home/solaire/development/elisp/emacs-valheim-theme")
 
-(add-to-list 'custom-theme-load-path "/home/solaire/development/elisp/emacs-simplicity-theme")
-(load-theme 'simplicity t)
+(use-package elfeed
+    :ensure t
+    :config
+    (setq elfeed-feeds
+          '(("http://nullprogram.com/feed/" blog emacs)
+            ("https://eli.thegreenplace.net/feeds/all.atom.xml" blog dev)
+            ("https://www.joelonsoftware.com/feed/" blog dev)
+            ("https://danluu.com/atom.xml" dev blog)
+            ("https://drewdevault.com/feed.xml" blog dev)
+            )))
 
+(use-package ag
+    :ensure t)
+
+(use-package avy
+    :ensure t)
+
+(use-package visual-regexp
+    :ensure t)
+
+;; problem exists above
 (use-package which-key
   :init (which-key-mode 1)
   :ensure t)
@@ -273,26 +270,6 @@ Repeated invocations toggle between the two most recently open buffers."
   (when (memq window-system '(mac ns))
     (setenv "PATH" (concat "/opt/homebrew/bin/:" (getenv "PATH")))))
 
-
-(use-package ivy
-  :ensure t
-  :init (ivy-mode 1)
-  :config
-  (setq ivy-initial-inputs-alist nil)
-  (setq ivy-use-virtual-buffers t) ;; add recentf to buffers list
-  (setq ivy-re-builders-alist
-        '((counsel-git-grep . ivy--regex-plus)
-          (counsel-ag       . ivy--regex-plus)
-          (counsel-rg       . ivy--regex-plus)
-          ;; (counsel-find-file . ivy--regex-plus)
-          (swiper           . ivy--regex-fuzzy)
-          (t                . ivy--regex-fuzzy)))
-  (global-set-key (kbd "C-c i") 'counsel-imenu)
-  (global-set-key (kbd "C-c s") 'swiper))
-
-(ivy-configure 'counsel-imenu
-  :update-fn 'auto)
-
 (use-package flx
   :ensure t)
 
@@ -307,21 +284,12 @@ Repeated invocations toggle between the two most recently open buffers."
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-(use-package counsel
-  :ensure t
-  :bind (("M-x"     . counsel-M-x)
-         ("C-x C-f" . counsel-find-file)
-         ("C-x C-r" . counsel-recentf)  ; search for recently edited
-         ("C-c f"   . counsel-git)      ; search for files in git repo
-         ("C-c j"   . counsel-git-grep) ; search for regexp in git repo
-         ("C-c /"   . counsel-rg)      ; Use ag for regexp
-         ("C-c C-/"   . counsel-at-point-rg)
-         ("M-y"     . counsel-yank-pop)))
-
 (use-package magit
   :ensure t
   :bind (("C-x g" . magit-status)
-         ("C-x C-g" . magit-status)))
+         ("C-x C-g" . magit-status))
+  :config
+  (setq magit-log-margin '(t "%Y-%m-%d %H:%M " magit-log-margin-width t 18)))
 
 (use-package undo-tree
   :ensure t
@@ -354,7 +322,6 @@ Repeated invocations toggle between the two most recently open buffers."
 (use-package flycheck
   :disabled t
   :ensure t
-  ;; :disabled t
   :bind (("<f2>" . flycheck-next-error)
          ("S-<f2>" . flycheck-previous-error)))
 
@@ -364,8 +331,10 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (use-package paredit
   :ensure t
-  :bind (("M-(" . paredit-wrap-round)
-         ("M-{" . paredit-wrap-curly)
+  :bind (("C-c \(" . paredit-wrap-round)
+         ("C-c {" . paredit-wrap-curly)
+         ("C-c [" . paredit-wrap-square)
+         ("C-c <" . paredit-wrap-angled)
          ("C-M-{" . backward-paragraph)
          ("C-M-}" . forward-paragraph))
   :init
@@ -509,12 +478,13 @@ Repeated invocations toggle between the two most recently open buffers."
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(column-number-mode t)
+ '(company-quickhelp-delay 0)
+ '(company-quickhelp-mode t)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(gruvbox-dark-hard))
  '(eldoc-idle-delay 0)
+ '(lisp-indent-function 'common-lisp-indent-function)
  '(package-selected-packages
-   '(simplicity flutter ef-themes clj-deps-new mood-one-theme skewer-mode tao-theme zenburn-theme simple-httpd livereload clojars atom-one-dark-theme web-server dracula-theme org-roam plan9-theme toml-mode go-mode xclip monokai-theme gruvbox-theme evil counsel-fd magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes sly-quicklisp rustic rainbow-mode racket-mode protobuf-mode paredit org-download naysayer-theme multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point company cider cargo))
- '(tab-width 4)
+   '(geiser-chicken diff-hl elfeed avy ag color-theme-sanityinc-tomorrow visual-regexp simplicity-theme company-quickhelp-terminal simplicity flutter ef-themes clj-deps-new mood-one-theme skewer-mode tao-theme zenburn-theme simple-httpd livereload clojars atom-one-dark-theme web-server dracula-theme org-roam plan9-theme toml-mode go-mode xclip monokai-theme gruvbox-theme evil counsel-fd magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes sly-quicklisp rustic rainbow-mode racket-mode protobuf-mode paredit org-download naysayer-theme multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point company cider cargo))
  '(tool-bar-mode nil)
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
@@ -526,10 +496,11 @@ Repeated invocations toggle between the two most recently open buffers."
 
 (put 'dired-find-alternate-file 'disabled nil)
 
-
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-)
+ '(default ((t (:background nil)))))
+
+
