@@ -3,19 +3,26 @@
 
 (require 'use-package)
 
+; (add-to-list 'load-path "~/development/elisp/lsp-bridge")
+
+(require 'yasnippet)
+(yas-global-mode 1)
+
+(require 'lsp-bridge)
+(global-so-long-mode 1)
+;; (global-lsp-bridge-mode)
+
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
 (defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
 
 (setq mac-option-modifier 'meta)
 (setq mac-command-modifier 'control)
-(setq-default cursor-type 'box)
+(setq-default cursor-type 'bar)
 (setq backup-directory-alist (list (cons ".*" backup-dir)))
 (setq auto-save-list-file-prefix autosave-dir)
 (setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
 (setq recentf-max-saved-items 100)
-(setq confirm-kill-emacs 'yes-or-no-p)
-;;(setq visible-cursor nil) ;; don't blink in terminal
 (setq nrepl-use-ssh-fallback-for-remote-hosts t)
 (setq custom-safe-themes t)
 (setq split-height-threshold nil) ;; only open horizontal splits (theoretically)
@@ -37,6 +44,8 @@
 ;; indent with spaces
 (setq-default indent-tabs-mode nil)
 (setq c-basic-offset 4)
+(setq copilot-node-executable "~/.nvm/versions/node/v16.18.1/bin/node")
+(setq dired-deletion-confirmer '(lambda (x) t))
 
 ;; indent with tabs
 ;; (setq-default indent-tabs-mode nil)
@@ -46,7 +55,9 @@
 (unless (eq system-type 'windows-nt)
   (let ((default-directory  "~/.emacs.d/lisp/"))
     (normal-top-level-add-subdirs-to-load-path)))
-;;(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
+(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
+(load-file "~/.emacs.d/lisp/copilot.el/copilot.el")
+(require 'copilot)
 
 (if (display-graphic-p)
     (scroll-bar-mode -1))
@@ -54,6 +65,13 @@
 (define-key global-map (kbd "C-c r p") 'vr/replace)
 (define-key global-map (kbd "C-c q") 'vr/query-replace)
 (define-key global-map (kbd "C-c m") 'vr/mc-mark)
+
+(require 'yasnippet)
+(yas-global-mode 1)
+
+(add-hook 'html-mode-hook
+          (lambda ()
+            (setq c-basic-offset 2)))
 
 (add-hook 'eglot-managed-mode-hook
           (lambda ()
@@ -67,11 +85,25 @@
             (display-fill-column-indicator-mode)))
 
 (add-hook 'before-save-hook 'gofmt-before-save)
+;; (add-hook 'python-mode-hook 'copilot-mode)
+(add-hook 'python-mode-hook
+          (lambda ()
+            (define-key python-mode-map (kbd "C-c s") 'advent-submit)))
+;; (add-hook 'python-mode-hook 'eglot-ensure)
+(add-hook 'copilot-mode-hook
+          (lambda ()
+            (with-eval-after-load 'company
+              ;; disable inline previews
+              (delq 'company-preview-if-just-one-frontend company-frontends))
+            (define-key copilot-completion-map (kbd "<tab>") 'copilot-accept-completion)
+            (define-key copilot-completion-map (kbd "TAB") 'copilot-accept-completion)))
+
+(add-hook 'write-file-hooks 'delete-trailing-whitespace)
 
 ;; turning off until I remember what it does
 ;; (setq c-offsets-alist '((arglist-cont-nonempty . +)))
 
-(interactive "DDirectory: ")
+; (load-file "/home/solaire/.emacs.d/lisp/aoc.el")
 
 (defun first-time-load ()
   (package-initialize)
@@ -83,6 +115,11 @@
   (interactive)
   (let ((enable-local-variables :all))
     (hack-dir-local-variables-non-file-buffer)))
+
+(require 'recentf)
+(recentf-mode 1)
+(setq recentf-max-menu-items 50)
+(global-set-key "\C-x\ \C-r" 'recentf-open-files)
 
 (defun insert-org-codeblock (language)
   (interactive "sEnter language for code block: ")
@@ -129,16 +166,41 @@ the cursor by ARG lines."
     (set-mark-command nil))
   (forward-line arg))
 
+(defun launch-kitty-in-cwd ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (call-process "kitty" nil 0 nil "-d" default-directory)))
+
+(defun launch-kitty-in-vc-root ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (call-process "kitty" nil 0 nil "-d" project-root)))
+
+(defun launch-alacritty-in-cwd ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (shell-command "spawn-alacritty-cwd" nil nil)))
+
+(defun launch-alacritty-in-vc-root ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (async-shell-command (concat "fish -c \"alacritty --working-directory " project-root "\""))))
+
+(defun launch-iterm-in-vc-root ()
+  (interactive)
+  (let ((project-root (cdr (project-current))))
+    (shell-command (concat "open -a iTerm " project-root) nil nil)))
+
 (global-set-key (kbd "M-1") 'my/select-current-line-and-forward-line)
 (global-set-key (kbd "M-2") 'mark-defun)
-
-
+(global-set-key (kbd "C-w") 'backward-kill-word)
+(global-set-key (kbd "C-x C-k") 'kill-region)
+(global-set-key (kbd "C-x t") 'beginning-of-buffer)
+(global-set-key (kbd "C-x e") 'end-of-buffer)
 
 (add-hook 'racket-mode-hook
           (lambda ()
             (local-set-key (kbd "C-c C-c") 'racket-run)))
-
-
 
 (add-hook 'flycheck-mode-hook
           (lambda ()
@@ -180,19 +242,82 @@ the cursor by ARG lines."
 (global-set-key (kbd "<C-right>") #'move-end-of-line)
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
-(global-set-key (kbd "C-,") 'avy-goto-char)
+(global-set-key (kbd "C-,") 'copilot-mode)
 (global-unset-key (kbd "C-<next>"))
 
 ;; Interactively do things.
+
 (setq ido-use-virtual-buffers t)
 (ido-mode 1)
 (ido-everywhere)
 (setq ido-enable-flex-matching t)
 (fido-mode)
+(defadvice dired-create-directory (around inhibit-ido activate)
+  "Turn off Ido mode for the duration, then turn it on."
+  (unwind-protect
+       (progn (ido-everywhere -1) ad-do-it)
+    (ido-everywhere 1)))
+
+(require 'mu4e)
+
+;; use mu4e for e-mail in emacs
+(setq mail-user-agent 'mu4e-user-agent)
+
+(setq mu4e-drafts-folder "/[Gmail].Drafts")
+(setq mu4e-sent-folder   "/[Gmail].Sent Mail")
+(setq mu4e-trash-folder  "/[Gmail].Trash")
+
+;; don't save message to Sent Messages, Gmail/IMAP takes care of this
+(setq mu4e-sent-messages-behavior 'delete)
+
+;; (See the documentation for `mu4e-sent-messages-behavior' if you have
+;; additional non-Gmail addresses and want assign them different
+;; behavior.)
+
+;; setup some handy shortcuts
+;; you can quickly switch to your Inbox -- press ``ji''
+;; then, when you want archive some messages, move them to
+;; the 'All Mail' folder by pressing ``ma''.
+
+(setq mu4e-maildir-shortcuts
+    '( (:maildir "/INBOX"              :key ?i)
+       (:maildir "/[Gmail].Sent Mail"  :key ?s)
+       (:maildir "/[Gmail].Trash"      :key ?t)
+       (:maildir "/[Gmail].All Mail"   :key ?a)))
+
+;; allow for updating mail using 'U' in the main view:
+;; (setq mu4e-get-mail-command "")
+(setq mu4e-get-mail-command "mbsync -a")
+
+;; something about ourselves
+(setq
+ user-mail-address "eskinjp@gmail.com"
+ user-full-name  "Jon Eskin"
+ mu4e-compose-signature-auto-include nil)
+
+
+
+;; sending mail -- replace USERNAME with your gmail username
+;; also, make sure the gnutls command line utils are installed
+;; package 'gnutls-bin' in Debian/Ubuntu
+
+(require 'smtpmail)
+
+
+;; alternatively, for emacs-24 you can use:
+(setq message-send-mail-function 'smtpmail-send-it
+    smtpmail-stream-type 'starttls
+    smtpmail-default-smtp-server "smtp.gmail.com"
+    smtpmail-smtp-server "smtp.gmail.com"
+    smtpmail-smtp-service 587)
+
+;; don't keep message buffers around
+(setq message-kill-buffer-on-exit t)
 
 ;; i think this ignores annoying messages about people coming and going on IRC channels
 (setq erc-hide-list '("JOIN" "PART" "QUIT"))
 
+(blink-cursor-mode 0)
 (xterm-mouse-mode 1)
 
 ;; Escape C-x and C-c in terminal mode
@@ -212,6 +337,11 @@ the cursor by ARG lines."
 
 
 (add-hook 'c++-mode-hook (lambda () (c-toggle-comment-style 1)))
+
+(add-hook 'emacs-lisp-mode-hook
+          '(lambda ()
+            ;; (push 'company-elisp company-backends)
+            (local-set-key (kbd "C-c C-c") 'eval-buffer)))
 
 (add-hook 'c-mode-hook
           (lambda ()
@@ -257,7 +387,7 @@ the cursor by ARG lines."
 
 (defun vr--use-whole-buffer ()
   (unless (region-active-p) (setq vr--target-buffer-start (point-min))))
-(advice-add 'vr--set-target-buffer-start-end :after 'vr--use-whole-buffer)
+;; (advice-add 'vr--set-target-buffer-start-end :after 'vr--use-whole-buffer)
 
 (use-package which-key
     :init (which-key-mode 1)
@@ -316,15 +446,30 @@ the cursor by ARG lines."
     :config
   (show-paren-mode +1))
 
-(use-package company
-    :ensure t
-    :bind
-    (:map company-active-map ("<return>" . nil))
-    :hook
-    (prog-mode . company-mode)
-    :config
-    (setq company-backends '((company-files company-dabbrev company-etags)))
-    )
+;; (use-package company
+;;     :ensure t
+;;     :bind
+;;     (:map company-active-map ("<return>" . nil))
+;;     :hook
+;;     (prog-mode . company-mode)
+;;     :config
+;;     (setq company-minimum-prefix-length 1
+;;           company-idle-delay 0
+;;           company-backends '((
+;;                               company-files
+;;                               company-dabbrev
+;;                               company-etags
+;;                               )))
+;;     )
+
+;; (use-package company-flx
+;;     :ensure t)
+
+;; (with-eval-after-load 'company
+;;   (company-flx-mode +1))
+
+;; (use-package company-box
+;;     :ensure t)
 
 (use-package racket-mode
     :ensure t
@@ -377,8 +522,8 @@ the cursor by ARG lines."
 (use-package cider
     ;; :defer t
     :ensure t
-    :bind (("C-c =" . cider-format-buffer)
-           ("C-." . cider-find-dwim))
+    ;; :bind (("C-c =" . cider-format-buffer)
+           ;; ("C-." . cider-find-dwim))
     :init
     (progn
       ;; (add-hook 'clojure-mode-hook 'cider-mode)
@@ -394,16 +539,23 @@ the cursor by ARG lines."
 ;;; gdb setup
 (setq
  ;; use gdb-many-windows by default
- gdb-many-windows t
+ gdb-many-windows nil
  ;; Non-nil means display source file containing the main routine at startup
  gdb-show-main t)
 
 ;; slynk doesn't compile with ECL
-(use-package slime
-    :ensure t
-    :config (setq slime-lisp-implementations
-                  '((sbcl ("/usr/bin/sbcl"))
-                    (ecl ("/usr/bin/ecl")))))
+(use-package sly-quicklisp
+  :after sly
+  :ensure t)
+
+(use-package sly
+  :disabled t
+  :ensure t
+  :init
+  (setq sly-net-coding-system 'utf-8-unix)
+  (setq sly-lisp-implementations
+        '((sbcl ("sbcl") :coding-system utf-8-unix)
+          (ecl ("ecl") :coding-system utf-8-unix))))
 
 (use-package fish-mode
     :ensure t)
@@ -418,16 +570,6 @@ the cursor by ARG lines."
 
 (use-package web-mode
     :ensure t)
-
-                                        ; (use-package eglot
-                                        ;   :ensure t
-                                        ;   :init
-                                        ;   (progn
-                                        ;     (add-hook 'rust-mode-hook 'eglot-ensure)
-                                        ;     (add-hook 'go-mode-hook 'eglot-ensure)
-                                        ;     (add-hook 'c-mode-hook 'eglot-ensure)
-                                        ;     (add-hook 'c++-mode-hook 'eglot-ensure)
-                                        ;     (add-hook 'dart-mode-hook 'eglot-ensure)))
 
 ;; drag and drop images into org mode
 (use-package org-download
@@ -464,12 +606,21 @@ the cursor by ARG lines."
 (use-package multiple-cursors
     :ensure t)
 
+
+(use-package tree-sitter
+    :ensure t
+    :config
+    (global-tree-sitter-mode)
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs
+    :ensure t)
+
+
 (global-set-key (kbd "M-s") 'mc/edit-lines)
 
 (use-package rainbow-mode
     :ensure t) ;; show color previews in buffers
-
-                                        ; (setq rustic-lsp-client 'eglot)
 
 ;; TODO
 (defun run-from-root ()
@@ -488,14 +639,15 @@ the cursor by ARG lines."
  ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(column-number-mode t)
- '(company-quickhelp-delay 0)
- '(company-quickhelp-mode t)
+ '(company-dabbrev-downcase nil)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(wombat))
+ '(custom-enabled-themes '(standard-dark))
  '(eldoc-idle-delay 0)
  '(lisp-indent-function 'common-lisp-indent-function)
  '(package-selected-packages
-   '(diff-hl-mode global-diff-hl-mode message-view-patch slime geiser-chicken diff-hl elfeed avy ag color-theme-sanityinc-tomorrow visual-regexp simplicity-theme company-quickhelp-terminal simplicity flutter ef-themes clj-deps-new mood-one-theme skewer-mode tao-theme zenburn-theme simple-httpd livereload clojars atom-one-dark-theme web-server dracula-theme org-roam  toml-mode go-mode xclip monokai-theme gruvbox-theme evil counsel-fd magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes rustic rainbow-mode racket-mode protobuf-mode paredit org-download multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point company cider cargo))
+   '(github-dark-vscode-theme sly-quicklisp tree-sitter-langs tree-sitter indent-guide standard-themes 0x0 company-box editorconfig xclip realgud-lldb 0blayout almost-mono-themes evil-surround evil-commentary diff-hl-mode global-diff-hl-mode message-view-patch slime geiser-chicken diff-hl elfeed avy ag color-theme-sanityinc-tomorrow visual-regexp simplicity-theme company-quickhelp-terminal simplicity flutter ef-themes clj-deps-new mood-one-theme skewer-mode tao-theme zenburn-theme simple-httpd livereload clojars atom-one-dark-theme web-server dracula-theme org-roam toml-mode go-mode monokai-theme gruvbox-theme evil counsel-fd magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes rustic rainbow-mode racket-mode protobuf-mode paredit org-download multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point ompany cider cargo))
+ '(smtpmail-smtp-server "smtp.gmail.com")
+ '(smtpmail-smtp-service 25)
  '(tool-bar-mode nil)
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
@@ -512,5 +664,5 @@ the cursor by ARG lines."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "JetBrains Mono" :foundry "JB" :slant normal :weight regular :height 81 :width normal))))
+ '(default ((t (:family "JetBrains Mono" :foundry "JB" :slant normal :weight regular :height 101 :width normal))))
  '(region ((t (:extend t :background "dim gray" :foreground "#ffffff")))))
