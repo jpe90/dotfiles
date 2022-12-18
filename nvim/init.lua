@@ -14,6 +14,7 @@ require('packer').startup(function(use)
     use 'tpope/vim-rhubarb' -- Fugitive-companion to interact with github
     use 'tpope/vim-surround' -- Fugitive-companion to interact with github
     use 'tpope/vim-commentary' -- "gc" to comment visual regions/lines
+    use 'tpope/vim-rsi' -- readline keybindings for command window
     use { 'junegunn/fzf', run = ":call fzf#install()" }
     use { 'junegunn/fzf.vim' }
     use 'https://git.sr.ht/~sircmpwn/hare.vim'
@@ -21,54 +22,30 @@ require('packer').startup(function(use)
     use 'nvim-treesitter/nvim-treesitter'
     use 'nvim-treesitter/nvim-treesitter-textobjects'
     use 'ziglang/zig.vim'
-    use 'dag/vim-fish'
     use 'folke/tokyonight.nvim'
-	use {'neoclide/coc.nvim', branch = 'release'}
+    use 'github/copilot.vim'
+    use 'mcchrish/nnn.vim'
+    use "lukas-reineke/indent-blankline.nvim"
+    use { 'neoclide/coc.nvim', branch='release' }
 end)
 
--- require('export-colorscheme')
-require("tokyonight").setup({
-  -- your configuration comes here
-  -- or leave it empty to use the default settings
-  style = "night", -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
-  light_style = "day", -- The theme is used when the background is set to light
-  transparent = true, -- Enable this to disable setting the background color
-  terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
-  styles = {
-    -- Style to be applied to different syntax groups
-    -- Value is any valid attr-list value for `:help nvim_set_hl`
-    comments = { italic = true },
-    keywords = { italic = true },
-    functions = {},
-    variables = {},
-    -- Background styles. Can be "dark", "transparent" or "normal"
-    sidebars = "dark", -- style for sidebars, see below
-    floats = "dark", -- style for floating windows
-  },
-  sidebars = { "qf", "help" }, -- Set a darker background on sidebar-like windows. For example: `["qf", "vista_kind", "terminal", "packer"]`
-  day_brightness = 0.3, -- Adjusts the brightness of the colors of the **Day** style. Number between 0 and 1, from dull to vibrant colors
-  hide_inactive_statusline = false, -- Enabling this option, will hide inactive statuslines and replace them with a thin border instead. Should work with the standard **StatusLine** and **LuaLine**.
-  dim_inactive = false, -- dims inactive windows
-  lualine_bold = false, -- When `true`, section headers in the lualine theme will be bold
-
-  --- You can override specific color groups to use other groups or a hex color
-  --- function will be called with a ColorScheme table
-  ---@param colors ColorScheme
-  on_colors = function(colors) end,
-
-  --- You can override specific highlights to use other groups or a hex color
-  --- function will be called with a Highlights and ColorScheme table
-  ---@param highlights Highlights
-  ---@param colors ColorScheme
-  on_highlights = function(highlights, colors) end,
-})
-
-vim.cmd("colorscheme tokyonight")
+vim.cmd("colorscheme torte")
 vim.cmd([[
 match RedundantSpaces /\s\+$/
 ]])
+vim.g.copilot_node_command = "~/.nvm/versions/node/v16.18.1/bin/node"
 
--- require("flutter-tools").setup {} -- use defaults
+-- disable copilot
+vim.g.copilot_enabled = 0
+
+-- define toggle copilot command
+vim.cmd([[
+command! -nargs=0 ToggleCopilot lua vim.g.copilot_enabled = 1 - vim.g.copilot_enabled
+]])
+-- call ToggleCopilot with vim.keymap.set with leader tc
+vim.keymap.set('n', '<leader>tc', ':ToggleCopilot<CR>', { noremap = true, silent = true })
+
+-- default indentation
 vim.o.expandtab = true
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
@@ -96,27 +73,26 @@ vim.o.smartcase = true
 vim.o.updatetime = 250
 vim.wo.signcolumn = 'no'
 
-local toggle_listchars = function()
-    vim.opt.list = not vim.opt.list
-end
-
 vim.opt.list = false
 
 --Set colorscheme
-vim.o.termguicolors = true
-vim.o.background = "dark" -- or "light" for light mode
--- setup must be called before loading the colorscheme
--- Default options:
-
+-- vim.o.termguicolors = true
+-- vim.o.background = "dark" -- or "light" for light mode
 
 -- Set completeopt to have a better completion experience
 vim.o.completeopt = 'menuone,noselect'
 
--- Custom from our stuff
+-- relative line numbering
 vim.wo.relativenumber = true
+
+-- copy yanks to clipboard
 vim.cmd [[set clipboard+=unnamedplus]]
+
+-- better contrast on normal text
+vim.cmd [[highlight Normal ctermfg=white guifg=white]]
+
 -- vim.wo.cursorline = true
-vim.opt.colorcolumn = "80"
+-- vim.opt.colorcolumn = "80"
 
 --Remap comma as leader key
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
@@ -190,8 +166,8 @@ require('gitsigns').setup {
 -- Parsers must be installed manually via :TSInstall
 require('nvim-treesitter.configs').setup {
     highlight = {
-        enable = true, -- false will disable the whole extension
-        -- enable = false, -- false will disable the whole extension
+        -- enable = true, -- false will disable the whole extension
+        enable = false, -- false will disable the whole extension
     },
     incremental_selection = {
         enable = true,
@@ -248,6 +224,7 @@ require('nvim-treesitter.configs').setup {
     },
 }
 
+-- #################### START COC
 -- Some servers have issues with backup files, see #649.
 vim.opt.backup = false
 vim.opt.writebackup = false
@@ -327,6 +304,8 @@ keyset("n", "<leader>rn", "<Plug>(coc-rename)", {silent = true})
 -- Formatting selected code.
 keyset("x", "<leader>f", "<Plug>(coc-format-selected)", {silent = true})
 keyset("n", "<leader>f", "<Plug>(coc-format-selected)", {silent = true})
+-- ????????????????????????????????????????????????????
+keyset("n", "<leader>1", "1gt", {silent = true})
 
 
 -- Setup formatexpr specified filetype(s).
@@ -427,3 +406,29 @@ keyset("n", "<space>j", ":<C-u>CocNext<cr>", opts)
 keyset("n", "<space>k", ":<C-u>CocPrev<cr>", opts)
 -- Resume latest coc list.
 keyset("n", "<space>p", ":<C-u>CocListResume<cr>", opts)
+ --#################### END COC
+
+vim.cmd([[
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <silent> <C-f> :Ag<CR>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>xr :History<CR>
+
+nnoremap <leader>1 1gt
+nnoremap <leader>2 2gt
+nnoremap <leader>3 3gt
+nnoremap <leader>4 4gt
+nnoremap <leader>5 5gt
+nnoremap <leader>6 6gt
+nnoremap <leader>7 7gt
+nnoremap <leader>8 8gt
+nnoremap <leader>9 9gt
+nnoremap <silent> <leader>cd :cd %:p:h<cr>
+
+autocmd FileType css setlocal et tw=80 ts=2 sw=2 sts=2
+autocmd FileType c,cpp,h,hpp setlocal et tw=80 ts=4 sw=4 sts=4
+autocmd FileType javascript setlocal et tw=80 ts=2 sw=2 sts=2
+command! -nargs=0 ToggleCopilot :let g:copilot_enabled = !g:copilot_enabled
+nnoremap <silent> <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR> " Trim trailing spaces
+autocmd FileType python,lua setlocal et tw=80 ts=4 sw=4 sts=4
+]])
