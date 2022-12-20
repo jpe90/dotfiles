@@ -6,10 +6,14 @@
 [[ $- != *i* ]] && return
 
 alias ls='ls --color=auto'
+alias grep='grep -n --color'
 alias examod="exa -la -s mod"
 alias dotfiles="cd ~/development/dotfiles/"
-alias work="cd ~/development/c/circle_of_prisms/"
+alias leetcode="cd /home/solaire/development/python/leetcode/mysolutions"
+alias work="cd /home/solaire/development/web/web-components-examples"
 alias blog="cd ~/development/web/blog/"
+alias gaoc="cd ~/development/adventofcode/2022/"
+alias imp="vim ~/notes/aoc_improvement.md"
 
 PS1='[\u@\h \W]\$ '
 export EDITOR=vim
@@ -21,6 +25,12 @@ export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/development/flutter/flutter/bin:$PATH"
 export PATH="/home/solaire/development/flutter/android-studio/bin:$PATH"
 export _JAVA_AWT_WM_NONREPARENTING=1
+
+HISTSIZE=10000
+HISTFILESIZE=10000
+HISTIGNORE="history:ls:pwd:"
+
+export HISTCONTROL=ignorespace:ignoredups
 
 n ()
 {
@@ -54,7 +64,7 @@ n ()
 }
 
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 ###-begin-flutter-completion-###
 
@@ -101,3 +111,4 @@ fi
 
 ###-end-flutter-completion-###
 
+# source /usr/share/nvm/init-nvm.sh
