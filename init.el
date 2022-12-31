@@ -3,15 +3,6 @@
 
 (require 'use-package)
 
-; (add-to-list 'load-path "~/development/elisp/lsp-bridge")
-
-(require 'yasnippet)
-(yas-global-mode 1)
-
-(require 'lsp-bridge)
-(global-so-long-mode 1)
-;; (global-lsp-bridge-mode)
-
 ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
 (defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
@@ -40,11 +31,11 @@
 (setq create-lockfiles nil)
 (setq tao-theme-use-sepia nil)
 (setq path-to-ctags "/usr/bin/ctags")
-
 ;; indent with spaces
 (setq-default indent-tabs-mode nil)
 (setq c-basic-offset 4)
-(setq copilot-node-executable "~/.nvm/versions/node/v16.18.1/bin/node")
+(setq copilot-location "~/.emacs.d/lisp/copilot.el/copilot.el")
+(setq copilot-node-executable "~/.nvm/versions/node/v18.12.1/bin/node")
 (setq dired-deletion-confirmer '(lambda (x) t))
 
 ;; indent with tabs
@@ -55,9 +46,9 @@
 (unless (eq system-type 'windows-nt)
   (let ((default-directory  "~/.emacs.d/lisp/"))
     (normal-top-level-add-subdirs-to-load-path)))
-(add-to-list 'load-path "/usr/local/share/emacs/site-lisp/mu4e")
-(load-file "~/.emacs.d/lisp/copilot.el/copilot.el")
-(require 'copilot)
+
+;; (load-file copilot-location)
+;; (require 'copilot)
 
 (if (display-graphic-p)
     (scroll-bar-mode -1))
@@ -65,9 +56,6 @@
 (define-key global-map (kbd "C-c r p") 'vr/replace)
 (define-key global-map (kbd "C-c q") 'vr/query-replace)
 (define-key global-map (kbd "C-c m") 'vr/mc-mark)
-
-(require 'yasnippet)
-(yas-global-mode 1)
 
 (add-hook 'html-mode-hook
           (lambda ()
@@ -85,11 +73,9 @@
             (display-fill-column-indicator-mode)))
 
 (add-hook 'before-save-hook 'gofmt-before-save)
-;; (add-hook 'python-mode-hook 'copilot-mode)
 (add-hook 'python-mode-hook
           (lambda ()
             (define-key python-mode-map (kbd "C-c s") 'advent-submit)))
-;; (add-hook 'python-mode-hook 'eglot-ensure)
 (add-hook 'copilot-mode-hook
           (lambda ()
             (with-eval-after-load 'company
@@ -102,8 +88,6 @@
 
 ;; turning off until I remember what it does
 ;; (setq c-offsets-alist '((arglist-cont-nonempty . +)))
-
-; (load-file "/home/solaire/.emacs.d/lisp/aoc.el")
 
 (defun first-time-load ()
   (package-initialize)
@@ -228,7 +212,7 @@ the cursor by ARG lines."
 (global-set-key (kbd "M-o") #'er-switch-to-previous-buffer)
 (global-set-key (kbd "C-M-o") #'delete-other-windows)
 (global-set-key (kbd "C-o") #'other-window)
-(global-set-key (kbd "C-;") #'comment-line)
+(global-set-key (kbd "C-x ;") #'comment-line)
 (global-set-key [f2] nil)
 (global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
 (global-set-key (kbd "<prior>") 'View-scroll-half-page-backward)
@@ -257,59 +241,6 @@ the cursor by ARG lines."
   (unwind-protect
        (progn (ido-everywhere -1) ad-do-it)
     (ido-everywhere 1)))
-
-(require 'mu4e)
-
-;; use mu4e for e-mail in emacs
-(setq mail-user-agent 'mu4e-user-agent)
-
-(setq mu4e-drafts-folder "/[Gmail].Drafts")
-(setq mu4e-sent-folder   "/[Gmail].Sent Mail")
-(setq mu4e-trash-folder  "/[Gmail].Trash")
-
-;; don't save message to Sent Messages, Gmail/IMAP takes care of this
-(setq mu4e-sent-messages-behavior 'delete)
-
-;; (See the documentation for `mu4e-sent-messages-behavior' if you have
-;; additional non-Gmail addresses and want assign them different
-;; behavior.)
-
-;; setup some handy shortcuts
-;; you can quickly switch to your Inbox -- press ``ji''
-;; then, when you want archive some messages, move them to
-;; the 'All Mail' folder by pressing ``ma''.
-
-(setq mu4e-maildir-shortcuts
-    '( (:maildir "/INBOX"              :key ?i)
-       (:maildir "/[Gmail].Sent Mail"  :key ?s)
-       (:maildir "/[Gmail].Trash"      :key ?t)
-       (:maildir "/[Gmail].All Mail"   :key ?a)))
-
-;; allow for updating mail using 'U' in the main view:
-;; (setq mu4e-get-mail-command "")
-(setq mu4e-get-mail-command "mbsync -a")
-
-;; something about ourselves
-(setq
- user-mail-address "eskinjp@gmail.com"
- user-full-name  "Jon Eskin"
- mu4e-compose-signature-auto-include nil)
-
-
-
-;; sending mail -- replace USERNAME with your gmail username
-;; also, make sure the gnutls command line utils are installed
-;; package 'gnutls-bin' in Debian/Ubuntu
-
-(require 'smtpmail)
-
-
-;; alternatively, for emacs-24 you can use:
-(setq message-send-mail-function 'smtpmail-send-it
-    smtpmail-stream-type 'starttls
-    smtpmail-default-smtp-server "smtp.gmail.com"
-    smtpmail-smtp-server "smtp.gmail.com"
-    smtpmail-smtp-service 587)
 
 ;; don't keep message buffers around
 (setq message-kill-buffer-on-exit t)
@@ -359,11 +290,6 @@ the cursor by ARG lines."
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 
-; (add-to-list 'custom-theme-load-path "/home/solaire/development/elisp/emacs-valheim-theme")
-
-(use-package diff-hl
-    :ensure t)
-
 (use-package elfeed
     :ensure t
     :config
@@ -379,14 +305,13 @@ the cursor by ARG lines."
 (use-package ag
     :ensure t)
 
-(use-package avy
-    :ensure t)
-
 (use-package visual-regexp
     :ensure t)
 
-(defun vr--use-whole-buffer ()
-  (unless (region-active-p) (setq vr--target-buffer-start (point-min))))
+;; use whole buffer instead of from point downwards for visual-regexp
+
+;; (defun vr--use-whole-buffer ()
+;;   (unless (region-active-p) (setq vr--target-buffer-start (point-min))))
 ;; (advice-add 'vr--set-target-buffer-start-end :after 'vr--use-whole-buffer)
 
 (use-package which-key
@@ -446,30 +371,26 @@ the cursor by ARG lines."
     :config
   (show-paren-mode +1))
 
-;; (use-package company
-;;     :ensure t
-;;     :bind
-;;     (:map company-active-map ("<return>" . nil))
-;;     :hook
-;;     (prog-mode . company-mode)
-;;     :config
-;;     (setq company-minimum-prefix-length 1
-;;           company-idle-delay 0
-;;           company-backends '((
-;;                               company-files
-;;                               company-dabbrev
-;;                               company-etags
-;;                               )))
-;;     )
+(use-package company
+    :ensure t
+    :disabled t
+    :bind
+    (:map company-active-map ("<return>" . nil))
+    :config
+    (setq company-minimum-prefix-length 1
+          company-idle-delay 0
+          company-backends '((
+                              company-files
+                              company-dabbrev
+                              company-etags
+                              )))
+    )
 
-;; (use-package company-flx
-;;     :ensure t)
+(use-package company-flx
+    :ensure t)
 
-;; (with-eval-after-load 'company
-;;   (company-flx-mode +1))
-
-;; (use-package company-box
-;;     :ensure t)
+(with-eval-after-load 'company
+  (company-flx-mode +1))
 
 (use-package racket-mode
     :ensure t
@@ -508,28 +429,17 @@ the cursor by ARG lines."
       (add-hook 'scheme-mode-hook 'paredit-mode)
       (add-hook 'repl-mode-hook 'paredit-mode))
     :hook
-    (sly-mode . paredit-mode)
-    )
+    (sly-mode . paredit-mode))
 
 (use-package geiser-guile
-    :ensure t
-    :config
-    (setq geiser-guile-load-init-file-p t))
+    :ensure t)
 
 (use-package clojure-mode
     :ensure t)
 
 (use-package cider
-    ;; :defer t
     :ensure t
-    ;; :bind (("C-c =" . cider-format-buffer)
-           ;; ("C-." . cider-find-dwim))
-    :init
-    (progn
-      ;; (add-hook 'clojure-mode-hook 'cider-mode)
-      (add-hook 'clojurescript-mode-hook 'cider-mode)
-      ;; (add-hook 'clojurec-mode-hook 'cider-mode)
-      (add-hook 'cider-repl-mode-hook 'cider-mode))
+    :disabled t
     :config
     (setq cider-repl-display-help-banner nil)
     (setq cider-auto-mode t)
@@ -571,10 +481,6 @@ the cursor by ARG lines."
 (use-package web-mode
     :ensure t)
 
-;; drag and drop images into org mode
-(use-package org-download
-    :ensure t)
-
 (use-package cargo
     :ensure t)
 
@@ -586,13 +492,12 @@ the cursor by ARG lines."
     :config
     (yas-reload-all)
     (add-hook 'prog-mode-hook #'yas-minor-mode)
-    ;;(yas-global-mode 1)
     (setq yas-prompt-functions '(yas-dropdown-prompt
                                  yas-ido-prompt
                                  yas-completing-prompt)))
 
 (use-package expand-region
-    :bind ("C-=" . er/expand-region))
+    :bind ("C-x =" . er/expand-region))
 
 (use-package license-templates
     :ensure t)
@@ -605,7 +510,6 @@ the cursor by ARG lines."
 
 (use-package multiple-cursors
     :ensure t)
-
 
 (use-package tree-sitter
     :ensure t
@@ -622,16 +526,6 @@ the cursor by ARG lines."
 (use-package rainbow-mode
     :ensure t) ;; show color previews in buffers
 
-;; TODO
-(defun run-from-root ()
-  (interactive)
-  (message "finish later"))
-;; ########################## Custom
-
-;; (custom-theme-set-faces
-;;  'almost-mono-black
-;;  '(region ((t (:extend t :background "dim gray" :foreground "#ffffff")))))
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -641,13 +535,11 @@ the cursor by ARG lines."
  '(column-number-mode t)
  '(company-dabbrev-downcase nil)
  '(compilation-message-face 'default)
- '(custom-enabled-themes '(standard-dark))
+ '(custom-enabled-themes nil)
  '(eldoc-idle-delay 0)
  '(lisp-indent-function 'common-lisp-indent-function)
  '(package-selected-packages
-   '(github-dark-vscode-theme sly-quicklisp tree-sitter-langs tree-sitter indent-guide standard-themes 0x0 company-box editorconfig xclip realgud-lldb 0blayout almost-mono-themes evil-surround evil-commentary diff-hl-mode global-diff-hl-mode message-view-patch slime geiser-chicken diff-hl elfeed avy ag color-theme-sanityinc-tomorrow visual-regexp simplicity-theme company-quickhelp-terminal simplicity flutter ef-themes clj-deps-new mood-one-theme skewer-mode tao-theme zenburn-theme simple-httpd livereload clojars atom-one-dark-theme web-server dracula-theme org-roam toml-mode go-mode monokai-theme gruvbox-theme evil counsel-fd magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes rustic rainbow-mode racket-mode protobuf-mode paredit org-download multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point ompany cider cargo))
- '(smtpmail-smtp-server "smtp.gmail.com")
- '(smtpmail-smtp-service 25)
+   '(company-flx company github-dark-vscode-theme sly-quicklisp tree-sitter-langs tree-sitter indent-guide standard-themes 0x0 company-box editorconfig xclip realgud-lldb 0blayout almost-mono-themes evil-surround evil-commentary diff-hl-mode global-diff-hl-mode message-view-patch slime geiser-chicken elfeed avy ag color-theme-sanityinc-tomorrow visual-regexp simplicity-theme company-quickhelp-terminal simplicity flutter ef-themes clj-deps-new mood-one-theme skewer-mode tao-theme zenburn-theme simple-httpd livereload clojars atom-one-dark-theme web-server dracula-theme org-roam toml-mode go-mode monokai-theme gruvbox-theme evil counsel-fd magit flycheck-julia julia-repl eglot-jl janet-mode zig-mode yasnippet yaml-mode wgrep web-mode use-package undo-tree sublime-themes rustic rainbow-mode racket-mode protobuf-mode paredit org-download multiple-cursors monokai-pro-theme lua-mode license-templates ivy-clojuredocs geiser-guile flycheck-clj-kondo flx fish-mode expand-region exec-path-from-shell dart-mode counsel-at-point company cider cargo))
  '(tool-bar-mode nil)
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
@@ -656,13 +548,4 @@ the cursor by ARG lines."
  '(warning-suppress-log-types '((comp)))
  '(window-divider-mode nil))
 
-
 (put 'dired-find-alternate-file 'disabled nil)
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(default ((t (:family "JetBrains Mono" :foundry "JB" :slant normal :weight regular :height 101 :width normal))))
- '(region ((t (:extend t :background "dim gray" :foreground "#ffffff")))))
