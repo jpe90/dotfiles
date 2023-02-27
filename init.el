@@ -7,6 +7,7 @@
 
 (require 'use-package)
 (require 'recentf)
+(require 'dired)
 
 ;; ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -20,7 +21,6 @@
 (setq set-mark-command-repeat-pop t) ;; cycle thru marks w/ c-space
 (setq mouse-wheel-progressive-speed nil) ;; turn off mouse acceleration
 (setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
-(setq lsp-headerline-breadcrumb-enable nil)
 ;; (setq eldoc-echo-area-use-multiline-p nil)
 ;; (setq-default show-trailing-whitespace t)
 (setq dired-kill-when-opening-new-dired-buffer t) ;; stop dired from cluttering buffer list
@@ -35,6 +35,7 @@
 (setq split-height-threshold nil) ;; only open horizontal splits (works on searches)
 (setq undo-limit 20000000)
 (setq undo-strong-limit 40000000)
+(setq inhibit-startup-screen t)
 ;;; gdb setup
 (setq
  ;; use gdb-many-windows by default
@@ -101,10 +102,7 @@ the cursor by ARG lines."
 (defun user-progmode-keybindings ()
   (local-set-key (kbd "C-c C-l") 'org-store-link))
 
-
-
 ;;; I like to take notes in text files where I refer to stuff with filename:line w/o org mode
-
 (defun yank-filename-and-line ()
   "Yank the current filename and line number at point to the kill ring."
   (interactive)
@@ -157,35 +155,35 @@ recognized."
   (interactive)
   (kill-new (expand-file-name default-directory)))
 
-(global-unset-key (kbd "C-z"))
-(global-unset-key (kbd "C-x C-l"))
-
-(global-set-key "\eo" #'previous-buffer)
-(global-set-key (kbd "C-M-o") #'delete-other-windows)
-(global-set-key "" 'other-window)
-(global-set-key (kbd "C-;") #'comment-line)
-(global-set-key [f2] nil)
-(global-set-key (kbd "<next>") 'View-scroll-half-page-forward)
-(global-set-key (kbd "<prior>") 'View-scroll-half-page-backward)
-(global-set-key (kbd "C-,") 'project-find-regexp)
-(global-set-key (kbd "C-\\") 'consult-buffer)
-(global-set-key (kbd "C-x b") 'switch-to-buffer)
-(global-set-key "\ep" 'exchange-point-and-mark)
-(global-set-key "\e`" #'other-frame)
-(global-set-key (kbd "<C-left>") #'back-to-indentation)
-(global-set-key (kbd "<C-right>") #'move-end-of-line)
-(global-set-key (kbd "C-c C-f") 'format-all-buffer)
-(global-set-key (kbd "C-c r") 'project-compile)
-(global-set-key "\e1" 'mark-advance-line)
-(global-set-key "\e2" 'mark-defun)
-(global-set-key "\e3" 'imenu)
-(global-set-key "\es" 'cua-rectangle-mark-mode)
-(global-unset-key (kbd "C-<next>"))
-(global-set-key "\e/" #'yank-filename-and-line)
-(global-set-key (kbd "C-.") 'visit-source)
-(global-set-key "\C-x\ \C-r" 'recentf-open-files)
+(define-key global-map (kbd "C-z") nil)
+(define-key global-map (kbd "C-x C-l") nil)
+(define-key global-map (kbd "C-<next>") nil)
+(define-key global-map "\eo" #'previous-buffer)
+(define-key global-map (kbd "C-M-o") #'delete-other-windows)
+(define-key global-map "" 'other-window)
+(define-key global-map (kbd "C-;") #'comment-line)
+(define-key global-map [f2] nil)
+(define-key global-map (kbd "<next>") 'View-scroll-half-page-forward)
+(define-key global-map (kbd "<prior>") 'View-scroll-half-page-backward)
+(define-key global-map (kbd "C-,") 'project-find-regexp)
+(define-key global-map (kbd "C-\\") 'consult-buffer)
+(define-key global-map (kbd "C-x b") 'switch-to-buffer)
+(define-key global-map "\ep" 'exchange-point-and-mark)
+(define-key global-map "\e`" #'other-frame)
+(define-key global-map (kbd "<C-left>") #'back-to-indentation)
+(define-key global-map (kbd "<C-right>") #'move-end-of-line)
+(define-key global-map (kbd "C-c C-f") 'format-all-buffer)
+(define-key global-map (kbd "C-c r") 'project-compile)
+(define-key global-map "\e1" 'mark-advance-line)
+(define-key global-map "\e2" 'mark-defun)
+(define-key global-map "\e3" 'imenu)
+(define-key global-map "\es" 'cua-rectangle-mark-mode)
+(define-key global-map "\e/" #'yank-filename-and-line)
+(define-key global-map (kbd "C-.") 'visit-source)
+(define-key global-map "\C-x\ \C-r" 'recentf-open-files)
 
 (define-key emacs-lisp-mode-map (kbd "<f5>") 'eval-buffer)
+(define-key dired-mode-map "o" nil)
 
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
@@ -255,11 +253,10 @@ recognized."
 
 (use-package undo-fu
   :ensure t
-    :config
-  (global-unset-key (kbd "C-z"))
+  :config
+  (define-key global-map (kbd "C-z") nil)
   (global-set-key (kbd "C-z")   'undo-fu-only-undo)
   (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
-
 
 (use-package corfu
   :ensure t
@@ -313,22 +310,17 @@ recognized."
 (global-hl-line-mode 1)
 (set-face-background 'hl-line "midnight blue")
 
-
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(blink-cursor-mode nil)
  '(custom-enabled-themes nil)
  '(custom-safe-themes
    '("8b930a6af47e826c12be96de5c28f1d142dccab1927f196589dafffad0fc9652" "5d59bd44c5a875566348fa44ee01c98c1d72369dc531c1c5458b0864841f887c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "19a2c0b92a6aa1580f1be2deb7b8a8e3a4857b6c6ccf522d00547878837267e7" "cb4c6fef7d911b858f907f0c93890c4a44a78ad22537e9707c184f7e686e8024" "5a45c8bf60607dfa077b3e23edfb8df0f37c4759356682adf7ab762ba6b10600" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "279f74e365ba5aade8bc702e0588f0c90b5dee6cf04cf61f9455661700a6ebeb" "9fad628c15f1e94af44e07b00ebe3c15109be28f4d73adf4a9e22090845cbce9" default))
  '(initial-frame-alist '((fullscreen . maximized)))
- '(menu-bar-mode nil)
  '(package-selected-packages
-   '(format-all zig-mode xclip web-mode vertico use-package paredit orderless magit lua-mode go-mode exec-path-from-shell corfu consult))
- '(tool-bar-mode nil))
+   '(undo-fu xclip vertico use-package paredit orderless magit corfu consult)))
 
 (define-key global-map "\t" 'dabbrev-expand)
 (define-key global-map [S-tab] 'indent-for-tab-command)
