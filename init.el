@@ -184,6 +184,7 @@ recognized."
 
 (define-key emacs-lisp-mode-map (kbd "<f5>") 'eval-buffer)
 (define-key dired-mode-map "o" nil)
+(define-key dired-mode-map "" nil)
 
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
@@ -213,17 +214,6 @@ recognized."
             (local-set-key (kbd "C-c C-r") #'compile)))
 (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-(use-package consult
-  :ensure t)
-
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
-  (setq vertico-scroll-margin 0)
-  (setq vertico-count 20)
-  ;; (setq vertico-resize t)
-  (setq vertico-cycle t))
 
 (use-package savehist
   :init
@@ -231,13 +221,6 @@ recognized."
 
 ;; (use-package format-all
 ;;   :ensure t)
-
-(use-package orderless
-  :ensure t
-  :init
-  (setq completion-styles '(orderless basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package xclip
   :ensure t
@@ -257,11 +240,6 @@ recognized."
   (define-key global-map (kbd "C-z") nil)
   (global-set-key (kbd "C-z")   'undo-fu-only-undo)
   (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
-
-(use-package corfu
-  :ensure t
-  :init
-  (global-corfu-mode))
 
 (use-package paredit
   :ensure t
@@ -319,8 +297,7 @@ recognized."
  '(custom-safe-themes
    '("8b930a6af47e826c12be96de5c28f1d142dccab1927f196589dafffad0fc9652" "5d59bd44c5a875566348fa44ee01c98c1d72369dc531c1c5458b0864841f887c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "19a2c0b92a6aa1580f1be2deb7b8a8e3a4857b6c6ccf522d00547878837267e7" "cb4c6fef7d911b858f907f0c93890c4a44a78ad22537e9707c184f7e686e8024" "5a45c8bf60607dfa077b3e23edfb8df0f37c4759356682adf7ab762ba6b10600" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "279f74e365ba5aade8bc702e0588f0c90b5dee6cf04cf61f9455661700a6ebeb" "9fad628c15f1e94af44e07b00ebe3c15109be28f4d73adf4a9e22090845cbce9" default))
  '(initial-frame-alist '((fullscreen . maximized)))
- '(package-selected-packages
-   '(undo-fu xclip vertico use-package paredit orderless magit corfu consult)))
+ '(package-selected-packages '(undo-fu xclip use-package paredit magit consult)))
 
 (define-key global-map "\t" 'dabbrev-expand)
 (define-key global-map [S-tab] 'indent-for-tab-command)
@@ -339,3 +316,9 @@ recognized."
 (set-foreground-color "burlywood3")
 (set-background-color "#161616")
 (set-cursor-color "#40FF40")
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
