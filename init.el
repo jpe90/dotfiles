@@ -46,8 +46,13 @@
 (setq esup-depth 0) ;; for profiling
 (setq recentf-max-menu-items 50)
 (setq history-length 1000)
+(setq xref-search-program 'ripgrep)
 
-
+(blink-cursor-mode 0)
+(xterm-mouse-mode 1)
+(tool-bar-mode -1)
+(menu-bar-mode -1)
+(savehist-mode 1)
 (if (display-graphic-p)
     (scroll-bar-mode -1))
 (electric-pair-mode 1)
@@ -189,12 +194,6 @@ recognized."
 
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
-(blink-cursor-mode 0)
-(xterm-mouse-mode 1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(savehist-mode 1)
-
 ;; ;; Escape C-x and C-c in terminal mode
 ;; (add-hook 'term-mode-hook
 ;;           (lambda ()
@@ -215,50 +214,14 @@ recognized."
           (lambda ()
             (local-set-key (kbd "C-c C-r") #'compile)))
 (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-(add-hook 'dired-mode-hook
-          (lambda ()
-            (define-key dired-mode-map "o" nil)
-            (define-key dired-mode-map "" nil)))
-(with-eval-after-load 'grep
-  (grep-apply-setting
-   'grep-find-command
-   `(,(concat "rg --regexp '' --line-number --with-filename --null"
-              " --no-heading --no-messages --max-columns 80 --max-columns-preview"
-              " $(git rev-parse --show-superproject-working-tree --show-toplevel || pwd)")
-     . 14)))
+;; (add-hook 'dired-mode-hook
+;;           (lambda ()
+;;             (define-key dired-mode-map "o" nil)
+;;             (define-key dired-mode-map "" nil)))
 
-(setq xref-search-program 'ripgrep
-      xref-search-program-alist
-      `((ripgrep . ,(concat "xargs -0 rg <C> --null --line-number --with-filename"
-                            " --no-heading --no-messages --glob '!*/' --only-matching"
-                            " --regexp '.{0,60}'<R>'.{0,20}'"))))
 
-(defun ec-project-find-regexp (regexp)
-  "Find all matches for REGEXP in the current project's roots.
-This is like `project-find-regexp' except uses ripgrep on the
-project root instead of passing individual files and thus can
-make use of ignore files."
-  (interactive (list (project--read-regexp)))
-  (require 'xref)
-  (let* ((pr (project-current t))
-         (default-directory (expand-file-name (project-root pr))))
-    (xref--show-xrefs
-     (apply-partially #'ec-project--find-regexp regexp default-directory)
-     nil)))
 
-(defun ec-project--find-regexp (regexp dir)
-  (let* ((xref-search-program 'ripgrep)
-         ;; Remove the glob exception so ripgrep traverses directories.
-         (xref-search-program-alist
-          `((ripgrep . ,(concat "xargs -0 rg <C> --null --line-number --with-filename"
-                                " --no-heading --no-messages --only-matching"
-                                " --regexp '.{0,60}'<R>'.{0,20}'"))))
-         (xrefs (xref-matches-in-files regexp (list dir))))
-    (unless xrefs
-      (user-error "No matches for: %s" regexp))
-    xrefs))
-
-(defun toggle-camelcase-underscores (first-lower-p)
+(defun toggle-case (first-lower-p)
   "Toggle between camelcase and underscore notation for the
 symbol at point. If prefix arg, C-u, is supplied, then make first
 letter of camelcase lowercase."
@@ -287,10 +250,11 @@ letter of camelcase lowercase."
 ;; reports there are no matches).
 (setq shell-file-name "/bin/sh")
 
-(define-key global-map (kbd "C-x g") #'ec-project-find-regexp)
-
 ;; (use-package format-all
 ;;   :ensure t)
+
+(use-package rg
+  :ensure t)
 
 (use-package xclip
   :ensure t
@@ -340,7 +304,7 @@ letter of camelcase lowercase."
 (use-package orderless
   :ensure t
   :init
-  (setq completion-styles '(orderless basic)
+  (setq completion-styles '(orderless-flex basic)
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
@@ -386,7 +350,7 @@ letter of camelcase lowercase."
    '("8b930a6af47e826c12be96de5c28f1d142dccab1927f196589dafffad0fc9652" "5d59bd44c5a875566348fa44ee01c98c1d72369dc531c1c5458b0864841f887c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "19a2c0b92a6aa1580f1be2deb7b8a8e3a4857b6c6ccf522d00547878837267e7" "cb4c6fef7d911b858f907f0c93890c4a44a78ad22537e9707c184f7e686e8024" "5a45c8bf60607dfa077b3e23edfb8df0f37c4759356682adf7ab762ba6b10600" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "279f74e365ba5aade8bc702e0588f0c90b5dee6cf04cf61f9455661700a6ebeb" "9fad628c15f1e94af44e07b00ebe3c15109be28f4d73adf4a9e22090845cbce9" default))
  '(initial-frame-alist '((fullscreen . maximized)))
  '(package-selected-packages
-   '(corfu orderless vertico undo-fu xclip use-package paredit consult)))
+   '(rg corfu orderless vertico undo-fu xclip use-package paredit consult)))
 
 (define-key global-map "\t" 'dabbrev-completion)
 (define-key global-map [S-tab] 'indent-for-tab-command)
@@ -405,9 +369,3 @@ letter of camelcase lowercase."
 (set-foreground-color "burlywood3")
 (set-background-color "#161616")
 (set-cursor-color "#40FF40")
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
