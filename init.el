@@ -3,11 +3,12 @@
                                ;; restore after startup
                                (setq gc-cons-threshold 800000)))
 (require 'package)
+
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
 (require 'use-package)
 (require 'recentf)
-(require 'dired)
+;; (require 'dired)
 
 ;; ;;; backup/autosave
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
@@ -44,6 +45,8 @@
  gdb-show-main t)
 (setq esup-depth 0) ;; for profiling
 (setq recentf-max-menu-items 50)
+(setq history-length 1000)
+
 
 (if (display-graphic-p)
     (scroll-bar-mode -1))
@@ -183,8 +186,6 @@ recognized."
 (define-key global-map "\C-x\ \C-r" 'recentf-open-files)
 
 (define-key emacs-lisp-mode-map (kbd "<f5>") 'eval-buffer)
-(define-key dired-mode-map "o" nil)
-(define-key dired-mode-map "" nil)
 
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 
@@ -192,6 +193,7 @@ recognized."
 (xterm-mouse-mode 1)
 (tool-bar-mode -1)
 (menu-bar-mode -1)
+(savehist-mode 1)
 
 ;; ;; Escape C-x and C-c in terminal mode
 ;; (add-hook 'term-mode-hook
@@ -208,16 +210,84 @@ recognized."
             (local-set-key (kbd "M-p") 'flymake-goto-prev-error)))
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
-             (local-set-key (kbd "C-c C-c") 'eval-buffer)))
+            (local-set-key (kbd "C-c C-c") 'eval-buffer)))
 (add-hook 'c-mode-hook
           (lambda ()
             (local-set-key (kbd "C-c C-r") #'compile)))
 (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+(add-hook 'dired-mode-hook
+          (lambda ()
+            (define-key dired-mode-map "o" nil)
+            (define-key dired-mode-map "" nil)))
+(with-eval-after-load 'grep
+  (grep-apply-setting
+   'grep-find-command
+   `(,(concat "rg --regexp '' --line-number --with-filename --null"
+              " --no-heading --no-messages --max-columns 80 --max-columns-preview"
+              " $(git rev-parse --show-superproject-working-tree --show-toplevel || pwd)")
+     . 14)))
+
+(setq xref-search-program 'ripgrep
+      xref-search-program-alist
+      `((ripgrep . ,(concat "xargs -0 rg <C> --null --line-number --with-filename"
+                            " --no-heading --no-messages --glob '!*/' --only-matching"
+                            " --regexp '.{0,60}'<R>'.{0,20}'"))))
+
+(defun ec-project-find-regexp (regexp)
+  "Find all matches for REGEXP in the current project's roots.
+This is like `project-find-regexp' except uses ripgrep on the
+project root instead of passing individual files and thus can
+make use of ignore files."
+  (interactive (list (project--read-regexp)))
+  (require 'xref)
+  (let* ((pr (project-current t))
+         (default-directory (expand-file-name (project-root pr))))
+    (xref--show-xrefs
+     (apply-partially #'ec-project--find-regexp regexp default-directory)
+     nil)))
+
+(defun ec-project--find-regexp (regexp dir)
+  (let* ((xref-search-program 'ripgrep)
+         ;; Remove the glob exception so ripgrep traverses directories.
+         (xref-search-program-alist
+          `((ripgrep . ,(concat "xargs -0 rg <C> --null --line-number --with-filename"
+                                " --no-heading --no-messages --only-matching"
+                                " --regexp '.{0,60}'<R>'.{0,20}'"))))
+         (xrefs (xref-matches-in-files regexp (list dir))))
+    (unless xrefs
+      (user-error "No matches for: %s" regexp))
+    xrefs))
+
+(defun toggle-camelcase-underscores (first-lower-p)
+  "Toggle between camelcase and underscore notation for the
+symbol at point. If prefix arg, C-u, is supplied, then make first
+letter of camelcase lowercase."
+  (interactive "P")
+  (save-excursion
+    (let* ((bounds (bounds-of-thing-at-point 'symbol))
+           (start (car bounds))
+           (end (cdr bounds))
+           (currently-using-underscores-p (progn (goto-char start)
+                                                 (re-search-forward "_" end t))))
+      (if currently-using-underscores-p
+          (progn
+            (replace-string "_" " " nil start end)
+            (upcase-initials-region start end)
+            (replace-string " " "" nil start end)
+            (when first-lower-p
+              (downcase-region start (1+ start))))
+        (replace-regexp "\\([A-Z]\\)" "_\\1" nil (1+ start) end)
+        (downcase-region start (cdr (bounds-of-thing-at-point 'symbol)))))))
 
 
-(use-package savehist
-  :init
-  (savehist-mode))
+;; If the path to your shell is different locally from the remote then
+;; `xref-matches-in-files' will fail (in NixOS I end up getting
+;; /run/current-system/sw/bin/bash).  Rely on /bin/sh instead.
+;; TODO: What is the proper fix?  Also, no error is reported (instead it only
+;; reports there are no matches).
+(setq shell-file-name "/bin/sh")
+
+(define-key global-map (kbd "C-x g") #'ec-project-find-regexp)
 
 ;; (use-package format-all
 ;;   :ensure t)
@@ -225,14 +295,6 @@ recognized."
 (use-package xclip
   :ensure t
   :config (xclip-mode 1))
-
-(use-package magit
-  :disabled t
-  :ensure t
-  :bind (("C-x g" . magit-status)
-         ("C-x C-g" . magit-status))
-  :config
-  (setq magit-log-margin '(t "%Y-%m-%d %H:%M " magit-log-margin-width t 18)))
 
 (use-package undo-fu
   :ensure t
@@ -263,6 +325,30 @@ recognized."
   :hook
   (sly-mode . paredit-mode))
 
+(use-package consult
+  :ensure t)
+
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode)
+  (setq vertico-scroll-margin 0)
+  (setq vertico-count 20)
+  ;; (setq vertico-resize t)
+  (setq vertico-cycle t))
+
+(use-package orderless
+  :ensure t
+  :init
+  (setq completion-styles '(orderless basic)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package corfu
+  :ensure t
+  :init
+  (global-corfu-mode))
+
 ;; (use-package clojure-mode
 ;;   :ensure t)
 
@@ -288,6 +374,8 @@ recognized."
 (global-hl-line-mode 1)
 (set-face-background 'hl-line "midnight blue")
 
+(set-face-attribute 'region nil :background "blue")
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -297,13 +385,14 @@ recognized."
  '(custom-safe-themes
    '("8b930a6af47e826c12be96de5c28f1d142dccab1927f196589dafffad0fc9652" "5d59bd44c5a875566348fa44ee01c98c1d72369dc531c1c5458b0864841f887c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "19a2c0b92a6aa1580f1be2deb7b8a8e3a4857b6c6ccf522d00547878837267e7" "cb4c6fef7d911b858f907f0c93890c4a44a78ad22537e9707c184f7e686e8024" "5a45c8bf60607dfa077b3e23edfb8df0f37c4759356682adf7ab762ba6b10600" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "279f74e365ba5aade8bc702e0588f0c90b5dee6cf04cf61f9455661700a6ebeb" "9fad628c15f1e94af44e07b00ebe3c15109be28f4d73adf4a9e22090845cbce9" default))
  '(initial-frame-alist '((fullscreen . maximized)))
- '(package-selected-packages '(undo-fu xclip use-package paredit magit consult)))
+ '(package-selected-packages
+   '(corfu orderless vertico undo-fu xclip use-package paredit consult)))
 
-(define-key global-map "\t" 'dabbrev-expand)
+(define-key global-map "\t" 'dabbrev-completion)
 (define-key global-map [S-tab] 'indent-for-tab-command)
 
-(add-to-list 'default-frame-alist '(font . "Iosevka-16"))
-(set-face-attribute 'default t :font "Iosevka-16")
+(add-to-list 'default-frame-alist '(font . "Fira Code-14"))
+(set-face-attribute 'default t :font "Fira Code-14")
 (set-face-attribute 'font-lock-builtin-face nil :foreground "#DAB98F")
 (set-face-attribute 'font-lock-comment-face nil :foreground "gray50")
 (set-face-attribute 'font-lock-constant-face nil :foreground "olive drab")
