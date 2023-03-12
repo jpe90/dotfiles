@@ -1,3 +1,18 @@
+;; TODO
+;; override paste with a region check, e.g.
+;; (defun my-before-kill-buffer-hook ()
+;;   "Check whether the buffer is modified, and if it is, diff the buffer with its file and flag the buffer as not modified if the contents are identical."
+;;   (message "the fn has fired")
+;;   (when (and (buffer-modified-p)
+;;              (buffer-file-name))
+;;     (let ((buffer-contents (buffer-substring-no-properties (point-min) (point-max)))
+;;           (file-contents (with-temp-buffer
+;;                            (insert-file-contents-literally (buffer-file-name))
+;;                            (buffer-substring-no-properties (point-min) (point-max)))))
+;;       (when (string= buffer-contents file-contents)
+;;         (set-buffer-modified-p nil)))))
+
+;; (add-hook 'kill-buffer-hook 'my-before-kill-buffer-hook)
 (setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook #'(lambda ()
                                ;; restore after startup
@@ -8,11 +23,16 @@
 
 (require 'use-package)
 (require 'recentf)
-;; (require 'dired)
 
-;; ;;; backup/autosave
+;; in addition to making this easier to read, section headings let me jump around more easily
+;; e.g. as I'm writing a function lower down, I can ctrl + R for variable declaration as needed
+
+;; variable declaration
+
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
 (defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
+
+;; assignment
 
 (setq mac-option-modifier 'meta)
 (setq mac-command-modifier 'control)
@@ -22,8 +42,6 @@
 (setq set-mark-command-repeat-pop t) ;; cycle thru marks w/ c-space
 (setq mouse-wheel-progressive-speed nil) ;; turn off mouse acceleration
 (setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
-;; (setq eldoc-echo-area-use-multiline-p nil)
-;; (setq-default show-trailing-whitespace t)
 (setq dired-kill-when-opening-new-dired-buffer t) ;; stop dired from cluttering buffer list
 (setq c-default-style "k&r")
 (setq create-lockfiles nil)
@@ -37,6 +55,7 @@
 (setq undo-limit 20000000)
 (setq undo-strong-limit 40000000)
 (setq inhibit-startup-screen t)
+(setq column-number-mode t)
 ;;; gdb setup
 (setq
  ;; use gdb-many-windows by default
@@ -47,6 +66,11 @@
 (setq recentf-max-menu-items 50)
 (setq history-length 1000)
 (setq xref-search-program 'ripgrep)
+(setq mouse-autoselect-window t)
+(setq tags-revert-without-query t)
+(setq shell-file-name "/bin/sh") ;; NixOS fix, not currently used but doesn't hurt
+
+;; enable modes
 
 (blink-cursor-mode 0)
 (xterm-mouse-mode 1)
@@ -57,6 +81,8 @@
     (scroll-bar-mode -1))
 (electric-pair-mode 1)
 (recentf-mode 1)
+
+;; add hooks
 
 (add-hook 'html-mode-hook
           (lambda ()
@@ -72,6 +98,31 @@
           (lambda ()
             (local-set-key (kbd "S-<f2>") 'flymake-goto-prev-error)
             (local-set-key (kbd "<f2>") 'flymake-goto-next-error)))
+(add-hook 'flymake-mode-hook
+          (lambda ()
+            (local-set-key (kbd "M-n") 'flymake-goto-next-error)
+            (local-set-key (kbd "M-p") 'flymake-goto-prev-error)))
+(add-hook 'emacs-lisp-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c C-c") 'eval-buffer)))
+(add-hook 'c-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c C-r") #'compile)))
+(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+;; ;; Escape C-x and C-c in terminal mode
+;; ;; Disabled due to not currently using Emacs in terminal
+;; (add-hook 'term-mode-hook
+;;           (lambda ()
+;;             ;; Hack to set two escape chars.
+;;             (let (term-escape-char)
+;;               (term-set-escape-char ?\C-x))
+;;             (let (term-escape-char)
+;;               (term-set-escape-char ?\C-c))))
+
+(add-hook 'emacs-startup-hook #'display-startup-time)
+
+;; functions
 
 (defun first-time-load ()
   (package-initialize)
@@ -163,64 +214,6 @@ recognized."
   (interactive)
   (kill-new (expand-file-name default-directory)))
 
-(define-key global-map (kbd "C-z") nil)
-(define-key global-map (kbd "C-x C-l") nil)
-(define-key global-map (kbd "C-<next>") nil)
-(define-key global-map "\eo" #'previous-buffer)
-(define-key global-map (kbd "C-M-o") #'delete-other-windows)
-(define-key global-map "" 'other-window)
-(define-key global-map (kbd "C-;") #'comment-line)
-(define-key global-map [f2] nil)
-(define-key global-map (kbd "<next>") 'View-scroll-half-page-forward)
-(define-key global-map (kbd "<prior>") 'View-scroll-half-page-backward)
-(define-key global-map (kbd "C-,") 'project-find-regexp)
-(define-key global-map (kbd "C-\\") 'consult-buffer)
-(define-key global-map (kbd "C-x b") 'switch-to-buffer)
-(define-key global-map "\ep" 'exchange-point-and-mark)
-(define-key global-map "\e`" #'other-frame)
-(define-key global-map (kbd "<C-left>") #'back-to-indentation)
-(define-key global-map (kbd "<C-right>") #'move-end-of-line)
-(define-key global-map (kbd "C-c C-f") 'format-all-buffer)
-(define-key global-map (kbd "C-c r") 'project-compile)
-(define-key global-map "\e1" 'mark-advance-line)
-(define-key global-map "\e2" 'mark-defun)
-(define-key global-map "\e3" 'imenu)
-(define-key global-map "\es" 'cua-rectangle-mark-mode)
-(define-key global-map "\e/" #'yank-filename-and-line)
-(define-key global-map (kbd "C-.") 'visit-source)
-(define-key global-map "\C-x\ \C-r" 'recentf-open-files)
-
-(define-key emacs-lisp-mode-map (kbd "<f5>") 'eval-buffer)
-
-(add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
-
-;; ;; Escape C-x and C-c in terminal mode
-;; (add-hook 'term-mode-hook
-;;           (lambda ()
-;;             ;; Hack to set two escape chars.
-;;             (let (term-escape-char)
-;;               (term-set-escape-char ?\C-x))
-;;             (let (term-escape-char)
-;;               (term-set-escape-char ?\C-c))))
-
-(add-hook 'flymake-mode-hook
-          (lambda ()
-            (local-set-key (kbd "M-n") 'flymake-goto-next-error)
-            (local-set-key (kbd "M-p") 'flymake-goto-prev-error)))
-(add-hook 'emacs-lisp-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-c C-c") 'eval-buffer)))
-(add-hook 'c-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-c C-r") #'compile)))
-(add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
-;; (add-hook 'dired-mode-hook
-;;           (lambda ()
-;;             (define-key dired-mode-map "o" nil)
-;;             (define-key dired-mode-map "" nil)))
-
-
-
 (defun toggle-case (first-lower-p)
   "Toggle between camelcase and underscore notation for the
 symbol at point. If prefix arg, C-u, is supplied, then make first
@@ -242,30 +235,86 @@ letter of camelcase lowercase."
         (replace-regexp "\\([A-Z]\\)" "_\\1" nil (1+ start) end)
         (downcase-region start (cdr (bounds-of-thing-at-point 'symbol)))))))
 
+(defun revert-all-buffers ()
+  "Refreshes all open buffers from their respective files"
+  (interactive)
+  (let* ((list (buffer-list))
+         (buffer (car list)))
+    (while buffer
+      (when (and (buffer-file-name buffer)
+                 (not (buffer-modified-p buffer)))
+        (set-buffer buffer)
+        (revert-buffer t t t))
+      (setq list (cdr list))
+      (setq buffer (car list))))
+  (message "Refreshed open files"))
 
-;; If the path to your shell is different locally from the remote then
-;; `xref-matches-in-files' will fail (in NixOS I end up getting
-;; /run/current-system/sw/bin/bash).  Rely on /bin/sh instead.
-;; TODO: What is the proper fix?  Also, no error is reported (instead it only
-;; reports there are no matches).
-(setq shell-file-name "/bin/sh")
+(defun highlight-marked-text-and-unhighlight ()
+  "Highlight all instances of the marked text in the buffer, and then unhighlight when the user presses RET."
+  (interactive)
+  (let ((marked-text (buffer-substring-no-properties (region-beginning) (region-end))))
+    (highlight-regexp marked-text)
+    (message "Highlighted text. Press RET to unhighlight.")
+    (read-event)
+    (unhighlight-regexp marked-text)
+    (message "Unhighlighted text.")))
 
-;; (use-package format-all
-;;   :ensure t)
+(defun copy-current-kill-to-clipboard ()
+  (interactive)
+  (shell-command (concat "cat " (current-kill 0) " | pbcopy") ))
 
-(use-package rg
-  :ensure t)
+(defun display-startup-time ()
+  (message
+   "Emacs loaded in %s with %d garbage collections."
+   (format
+    "%.2f seconds"
+    (float-time
+     (time-subtract after-init-time before-init-time)))
+   gcs-done))
 
-(use-package xclip
-  :ensure t
-  :config (xclip-mode 1))
+;; key bindings
 
-(use-package undo-fu
-  :ensure t
-  :config
-  (define-key global-map (kbd "C-z") nil)
-  (global-set-key (kbd "C-z")   'undo-fu-only-undo)
-  (global-set-key (kbd "C-S-z") 'undo-fu-only-redo))
+(define-key global-map (kbd "C-z") nil)
+(define-key global-map (kbd "C-x C-l") nil)
+(define-key global-map (kbd "C-<next>") nil)
+(define-key global-map "\eo" #'previous-buffer)
+(define-key global-map (kbd "C-M-o") #'delete-other-windows)
+(define-key global-map "" 'other-window)
+(define-key global-map (kbd "C-;") #'comment-line)
+(define-key global-map [f2] nil)
+(define-key global-map (kbd "<next>") 'View-scroll-half-page-forward)
+(define-key global-map (kbd "<prior>") 'View-scroll-half-page-backward)
+(define-key global-map (kbd "C-,") 'project-find-regexp)
+(define-key global-map (kbd "C-\\") 'project-switch-to-buffer)
+(define-key global-map (kbd "C-x b") 'switch-to-buffer)
+(define-key global-map "\e3" 'exchange-point-and-mark)
+(define-key global-map "\e`" #'other-frame)
+(define-key global-map (kbd "<C-left>") #'back-to-indentation)
+(define-key global-map (kbd "<C-right>") #'move-end-of-line)
+(define-key global-map (kbd "C-c C-f") 'format-all-buffer)
+(define-key global-map (kbd "C-c r") 'project-compile)
+(define-key global-map "\e1" 'mark-advance-line)
+(define-key global-map "\e2" 'mark-defun)
+(define-key global-map "\e3" 'imenu)
+(define-key global-map "\es" 'cua-rectangle-mark-mode)
+(define-key global-map "\e/" 'project-find-regexp)
+(define-key global-map "\e4" 'yank-filename-and-line)
+(define-key global-map "\e5" 'visit-source)
+(define-key global-map "\en" 'forward-paragraph)
+(define-key global-map "\ep" 'backward-paragraph)
+(define-key global-map (kbd "C-.") 'project-find-regexp)
+(define-key global-map "\C-x\ \C-r" 'recentf-open-files)
+(define-key global-map [S-tab] 'indent-for-tab-command)
+(define-key global-map (kbd "TAB") 'dabbrev-expand)
+(global-set-key (kbd "C-x t") 'beginning-of-buffer)
+(global-set-key (kbd "C-x e") 'end-of-buffer)
+
+(define-key emacs-lisp-mode-map (kbd "<f5>") 'eval-buffer)
+
+;; file detection
+
+(add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
+(add-to-list 'auto-mode-alist '("\\.metal\\'" . c++-mode))
 
 (use-package paredit
   :ensure t
@@ -289,56 +338,6 @@ letter of camelcase lowercase."
   :hook
   (sly-mode . paredit-mode))
 
-(use-package consult
-  :ensure t)
-
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
-  (setq vertico-scroll-margin 0)
-  (setq vertico-count 20)
-  ;; (setq vertico-resize t)
-  (setq vertico-cycle t))
-
-(use-package orderless
-  :ensure t
-  :init
-  (setq completion-styles '(orderless-flex basic)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
-
-(use-package corfu
-  :ensure t
-  :init
-  (global-corfu-mode))
-
-;; (use-package clojure-mode
-;;   :ensure t)
-
-;; (use-package cider
-;;   :ensure t
-;;     :config
-;;     (setq cider-repl-display-help-banner nil)
-;;     (setq cider-auto-mode t)
-;;     (setq show-paren-mode t)
-;;     (setq cider-repl-pop-to-buffer-on-connect nil))
-
-;; Startup time
-(defun display-startup-time ()
-  (message
-   "Emacs loaded in %s with %d garbage collections."
-   (format
-    "%.2f seconds"
-    (float-time
-     (time-subtract after-init-time before-init-time)))
-   gcs-done))
-
-(add-hook 'emacs-startup-hook #'display-startup-time)
-(global-hl-line-mode 1)
-(set-face-background 'hl-line "midnight blue")
-
-(set-face-attribute 'region nil :background "blue")
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -349,23 +348,34 @@ letter of camelcase lowercase."
  '(custom-safe-themes
    '("8b930a6af47e826c12be96de5c28f1d142dccab1927f196589dafffad0fc9652" "5d59bd44c5a875566348fa44ee01c98c1d72369dc531c1c5458b0864841f887c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "19a2c0b92a6aa1580f1be2deb7b8a8e3a4857b6c6ccf522d00547878837267e7" "cb4c6fef7d911b858f907f0c93890c4a44a78ad22537e9707c184f7e686e8024" "5a45c8bf60607dfa077b3e23edfb8df0f37c4759356682adf7ab762ba6b10600" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "279f74e365ba5aade8bc702e0588f0c90b5dee6cf04cf61f9455661700a6ebeb" "9fad628c15f1e94af44e07b00ebe3c15109be28f4d73adf4a9e22090845cbce9" default))
  '(initial-frame-alist '((fullscreen . maximized)))
- '(package-selected-packages
-   '(rg corfu orderless vertico undo-fu xclip use-package paredit consult)))
+ '(package-selected-packages '(use-package paredit)))
 
-(define-key global-map "\t" 'dabbrev-completion)
-(define-key global-map [S-tab] 'indent-for-tab-command)
+(add-to-list 'default-frame-alist '(font . "Jetbrains Mono-16"))
+(set-face-attribute 'default t :font "Jetbrains Mono-16")
 
-(add-to-list 'default-frame-alist '(font . "Fira Code-14"))
-(set-face-attribute 'default t :font "Fira Code-14")
-(set-face-attribute 'font-lock-builtin-face nil :foreground "#DAB98F")
-(set-face-attribute 'font-lock-comment-face nil :foreground "gray50")
-(set-face-attribute 'font-lock-constant-face nil :foreground "olive drab")
-(set-face-attribute 'font-lock-doc-face nil :foreground "gray50")
-(set-face-attribute 'font-lock-function-name-face nil :foreground "burlywood3")
-(set-face-attribute 'font-lock-keyword-face nil :foreground "DarkGoldenrod3")
-(set-face-attribute 'font-lock-string-face nil :foreground "olive drab")
-(set-face-attribute 'font-lock-type-face nil :foreground "burlywood3")
-(set-face-attribute 'font-lock-variable-name-face nil :foreground "burlywood3")
-(set-foreground-color "burlywood3")
-(set-background-color "#161616")
-(set-cursor-color "#40FF40")
+;; sl
+(global-hl-line-mode -1)
+(setq frame-background-mode 'dark)
+(set-face-attribute 'hl-line nil :foreground "black" :background "gray")
+(set-face-attribute 'font-lock-comment-face nil :foreground "#BDBDBD")
+(set-face-attribute 'font-lock-string-face nil :foreground "#00cd00")
+(set-face-attribute 'font-lock-type-face nil :foreground "white")
+(set-face-attribute 'font-lock-constant-face nil :foreground "white")
+(set-face-attribute 'font-lock-function-name-face nil :foreground "#56c8ff")
+(set-face-attribute 'font-lock-keyword-face nil :foreground "#00cdcd")
+(set-face-attribute 'font-lock-variable-name-face nil :foreground "#BDBDBD")
+(set-face-attribute 'font-lock-builtin-face nil :foreground "#BDBDBD")
+(set-face-attribute 'error nil :foreground "#cd0000")
+;; (set-face-background 'mode-line "#E1FAFF")
+(set-background-color "black")
+(set-foreground-color "white")
+(set-cursor-color "white")
+
+
+(set-face-attribute 'region nil :background "#E8EB98" :foreground "black")
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
