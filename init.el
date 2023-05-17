@@ -1,86 +1,118 @@
-;; TODO
-;; override paste with a region check, e.g.
-;; (defun my-before-kill-buffer-hook ()
-;;   "Check whether the buffer is modified, and if it is, diff the buffer with its file and flag the buffer as not modified if the contents are identical."
-;;   (message "the fn has fired")
-;;   (when (and (buffer-modified-p)
-;;              (buffer-file-name))
-;;     (let ((buffer-contents (buffer-substring-no-properties (point-min) (point-max)))
-;;           (file-contents (with-temp-buffer
-;;                            (insert-file-contents-literally (buffer-file-name))
-;;                            (buffer-substring-no-properties (point-min) (point-max)))))
-;;       (when (string= buffer-contents file-contents)
-;;         (set-buffer-modified-p nil)))))
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/") t)
+(package-initialize)
 
-;; (add-hook 'kill-buffer-hook 'my-before-kill-buffer-hook)
+(setq package-deps '(better-defaults janet-mode inf-janet lua-mode treemacs eglot magit org-download
+                                     markdown-mode bookmark-in-project editorconfig imenu-list
+                                     rust-mode format-all cider vundo haskell-mode inf-clojure
+                                     clojure-mode swift-mode paredit slime
+                                     ;;copilot
+                                     editorconfig
+                                     ))
+
+(dolist (package package-deps)
+  (unless (package-installed-p package)
+    (package-refresh-contents)
+    (package-install package)))
+
+
+(when (string= system-type "darwin")
+  (setq dired-use-ls-dired nil))
+
+;; faster startup
 (setq gc-cons-threshold 64000000)
 (add-hook 'after-init-hook #'(lambda ()
-                               ;; restore after startup
                                (setq gc-cons-threshold 800000)))
-(require 'package)
 
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-
-(require 'use-package)
 (require 'recentf)
+(require 'better-defaults)
 
-;; in addition to making this easier to read, section headings let me jump around more easily
-;; e.g. as I'm writing a function lower down, I can ctrl + R for variable declaration as needed
+;; system specific stuff that i need to generalize at some point
 
-;; variable declaration
+(add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el/")
+(require 'copilot)
+(add-to-list 'load-path "/Users/jon/.emacs.d/lisp/orq/utils/")
+(require 'orq)
+;; load elisp file /Users/jon/.emacs.d/lisp/mu4e.el
+;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/mu/mu4e")
+;; (load-file "/Users/jon/.emacs.d/lisp/mu4e.el")
+
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t) ;; Other languages
+   (shell . t)
+   (python . t) ))
 
 (defvar backup-dir (expand-file-name "~/.emacs.d/backup/"))
 (defvar autosave-dir (expand-file-name "~/.emacs.d/autosave/"))
 
 ;; assignment
 
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'control)
-(setq backup-directory-alist (list (cons ".*" backup-dir)))
-(setq auto-save-list-file-prefix autosave-dir)
-(setq auto-save-file-name-transforms `((".*" ,autosave-dir t)))
-(setq set-mark-command-repeat-pop t) ;; cycle thru marks w/ c-space
-(setq mouse-wheel-progressive-speed nil) ;; turn off mouse acceleration
-(setq read-file-name-completion-ignore-case t) ;;; case insenstive autocompletion
-(setq dired-kill-when-opening-new-dired-buffer t) ;; stop dired from cluttering buffer list
-(setq c-default-style "k&r")
-(setq create-lockfiles nil)
-(setq minibuffer-prompt-properties
-      '(read-only t cursor-intangible t face minibuffer-prompt))
-;; indent with spaces
-(setq-default indent-tabs-mode nil)
-(setq c-basic-offset 4)
-(setq dired-deletion-confirmer '(lambda (x) t))
-(setq split-height-threshold nil) ;; only open horizontal splits (works on searches)
-(setq undo-limit 20000000)
-(setq undo-strong-limit 40000000)
-(setq inhibit-startup-screen t)
-(setq column-number-mode t)
-;;; gdb setup
 (setq
+ mac-option-modifier 'meta
+ mac-command-modifier 'control
+ backup-directory-alist (list (cons ".*" backup-dir))
+ auto-save-list-file-prefix autosave-dir
+ auto-save-file-name-transforms `((".*" ,autosave-dir t))
+ set-mark-command-repeat-pop t ;; cycle thru marks w/ c-space
+ mouse-wheel-progressive-speed nil ;; turn off mouse acceleration
+ read-file-name-completion-ignore-case t ;;; case insenstive autocompletion
+ dired-kill-when-opening-new-dired-buffer t ;; stop dired from cluttering buffer list
+ c-default-style "k&r"
+ create-lockfiles nil
+ minibuffer-prompt-properties
+ '(read-only t cursor-intangible t face minibuffer-prompt)
+ ;; indent with spaces
+ c-basic-offset 4
+ dired-deletion-confirmer '(lambda (x) t)
+ split-height-threshold nil ;; only open horizontal splits (works on searches)
+ undo-limit 20000000
+ undo-strong-limit 40000000
+ inhibit-startup-screen t
+ column-number-mode t
+ org-startup-with-inline-images t
+ org-startup-folded t
+;;; gdb setup
  ;; use gdb-many-windows by default
  gdb-many-windows nil
  ;; Non-nil means display source file containing the main routine at startup
- gdb-show-main t)
-(setq esup-depth 0) ;; for profiling
-(setq recentf-max-menu-items 50)
-(setq history-length 1000)
-(setq xref-search-program 'ripgrep)
-(setq mouse-autoselect-window t)
-(setq tags-revert-without-query t)
-(setq shell-file-name "/bin/sh") ;; NixOS fix, not currently used but doesn't hurt
+ gdb-show-main t
+ esup-depth 0 ;; for profiling
+ recentf-max-menu-items 500
+ recentf-max-saved-items 500
+ history-length 1000
+ xref-search-program 'ripgrep
+ mouse-autoselect-window t
+ tags-revert-without-query t
+ shell-file-name "/bin/sh" ;; NixOS fix, not currently used but doesn't hurt
+ python-shell-completion-native-disabled-interpreters '("python3")
+ edebug-print-length nil
+ edebug-print-level nil
+ catppuccin-flavor 'mocha ;; or 'frappe, 'latte, 'macchiato, or 'mocha
+ magit-save-repository-buffers nil
+ inferior-lisp-program "sbcl"
+ debug-on-error t
+ custom-file "~/.emacs.d/custom.el")
+(load custom-file)
+
+(setq-default indent-tabs-mode nil)
+
+;; start fullscreen
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 
 ;; enable modes
 
 (blink-cursor-mode 0)
 (xterm-mouse-mode 1)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(savehist-mode 1)
 (if (display-graphic-p)
     (scroll-bar-mode -1))
 (electric-pair-mode 1)
 (recentf-mode 1)
+(fido-vertical-mode 1)
+(delete-selection-mode 1)
 
 ;; add hooks
 
@@ -98,20 +130,35 @@
           (lambda ()
             (local-set-key (kbd "S-<f2>") 'flymake-goto-prev-error)
             (local-set-key (kbd "<f2>") 'flymake-goto-next-error)))
-(add-hook 'flymake-mode-hook
-          (lambda ()
-            (local-set-key (kbd "M-n") 'flymake-goto-next-error)
-            (local-set-key (kbd "M-p") 'flymake-goto-prev-error)))
 (add-hook 'emacs-lisp-mode-hook
           (lambda ()
+            (paredit-mode 1)
             (local-set-key (kbd "C-c C-c") 'eval-buffer)))
+(add-hook 'fennel-mode-hook
+          (lambda ()
+            (paredit-mode 1)))
 (add-hook 'c-mode-hook
           (lambda ()
             (local-set-key (kbd "C-c C-r") #'compile)))
 (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+(add-hook 'org-mode-hook
+          (lambda ()
+            (visual-line-mode 1)
+            (variable-pitch-mode 1)))
+(add-hook 'dired-mode-hook
+          (lambda ()
+            (local-unset-key (kbd "o"))
+            (local-unset-key (kbd "C-o"))))
+(add-hook 'janet-mode-hook (lambda ()
+                             (inf-janet-minor-mode 1)
+                             (paredit-mode 1)))
+(add-hook 'evil-mode-hook (lambda ()
+                            (linum-relative-global-mode 1)
+                            (linum-mode 1)
+                            (evil-surround-mode 1)
+                            (evil-global-set-key 'insert (kbd "C-SPC") 'hippie-expand)))
 
 ;; ;; Escape C-x and C-c in terminal mode
-;; ;; Disabled due to not currently using Emacs in terminal
 ;; (add-hook 'term-mode-hook
 ;;           (lambda ()
 ;;             ;; Hack to set two escape chars.
@@ -122,12 +169,16 @@
 
 (add-hook 'emacs-startup-hook #'display-startup-time)
 
-;; functions
+;; defadvice
 
-(defun first-time-load ()
-  (package-initialize)
-  (package-refresh-contents)
-  (package-install 'use-package))
+(defadvice yank (after indent-region activate)
+  (when (member major-mode '(c++-mode emacs-lisp-mode python-mode c-mode go-mode java-mode clojure-mode haskell-mode scheme-mode))
+    (unless mark-active
+      (exchange-point-and-mark))
+    (indent-region (region-beginning) (region-end) nil)
+    (goto-char (region-end))))
+
+;; functions
 
 (defun my-reload-dir-locals-for-current-buffer ()
   "reload dir locals for the current buffer"
@@ -161,7 +212,6 @@ the cursor by ARG lines."
 (defun user-progmode-keybindings ()
   (local-set-key (kbd "C-c C-l") 'org-store-link))
 
-;;; I like to take notes in text files where I refer to stuff with filename:line w/o org mode
 (defun yank-filename-and-line ()
   "Yank the current filename and line number at point to the kill ring."
   (interactive)
@@ -275,6 +325,11 @@ letter of camelcase lowercase."
 ;; key bindings
 
 (define-key global-map (kbd "C-z") nil)
+
+
+;; (require 'orq)
+;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/openai/")
+
 (define-key global-map (kbd "C-x C-l") nil)
 (define-key global-map (kbd "C-<next>") nil)
 (define-key global-map "\eo" #'previous-buffer)
@@ -282,12 +337,12 @@ letter of camelcase lowercase."
 (define-key global-map "" 'other-window)
 (define-key global-map (kbd "C-;") #'comment-line)
 (define-key global-map [f2] nil)
-(define-key global-map (kbd "<next>") 'View-scroll-half-page-forward)
-(define-key global-map (kbd "<prior>") 'View-scroll-half-page-backward)
+(define-key global-map (kbd "<next>") (lambda () (interactive) (View-scroll-half-page-forward)))
+(define-key global-map (kbd "<prior>") (lambda () (interactive) (View-scroll-half-page-backward)))
 (define-key global-map (kbd "C-,") 'project-find-regexp)
 (define-key global-map (kbd "C-\\") 'project-switch-to-buffer)
 (define-key global-map (kbd "C-x b") 'switch-to-buffer)
-(define-key global-map "\e3" 'exchange-point-and-mark)
+;; (define-key global-map "\e3" 'exchange-point-and-mark)
 (define-key global-map "\e`" #'other-frame)
 (define-key global-map (kbd "<C-left>") #'back-to-indentation)
 (define-key global-map (kbd "<C-right>") #'move-end-of-line)
@@ -295,87 +350,52 @@ letter of camelcase lowercase."
 (define-key global-map (kbd "C-c r") 'project-compile)
 (define-key global-map "\e1" 'mark-advance-line)
 (define-key global-map "\e2" 'mark-defun)
-(define-key global-map "\e3" 'imenu)
+;; (define-key global-map "\e3" 'project-dired)
+(define-key global-map "\e3" 'bookmark-in-project-toggle)
 (define-key global-map "\es" 'cua-rectangle-mark-mode)
-(define-key global-map "\e/" 'project-find-regexp)
+;; (define-key global-map "\e/" 'project-find-regexp)
 (define-key global-map "\e4" 'yank-filename-and-line)
 (define-key global-map "\e5" 'visit-source)
+(define-key global-map "\e6" 'bookmark-in-project-jump-next)
+(define-key global-map "\e7" 'bookmark-in-project-jump-previous)
 (define-key global-map "\en" 'forward-paragraph)
 (define-key global-map "\ep" 'backward-paragraph)
 (define-key global-map (kbd "C-.") 'project-find-regexp)
 (define-key global-map "\C-x\ \C-r" 'recentf-open-files)
 (define-key global-map [S-tab] 'indent-for-tab-command)
-(define-key global-map (kbd "TAB") 'dabbrev-expand)
-(global-set-key (kbd "C-x t") 'beginning-of-buffer)
-(global-set-key (kbd "C-x e") 'end-of-buffer)
+(define-key global-map (kbd "TAB") 'hippie-expand)
+(define-key global-map (kbd "C-<tab>") 'copilot-accept-completion)
+(define-key global-map (kbd "C-g") 'my/copilot-c-g)
+(define-key global-map (kbd "C-x t") 'beginning-of-buffer)
+(define-key global-map (kbd "C-x e") 'end-of-buffer)
+(define-key global-map (kbd "C-S-y") 'replace-yank)
+(define-key global-map "\e8" 'copilot-complete)
+(define-key global-map (kbd "\e%") 'query-replace-regexp)
+
+;; hippie function expansion wrecks paren balancing
+(dolist (f '(try-expand-line try-expand-list))
+  (setq hippie-expand-try-functions-list
+        (remq f hippie-expand-try-functions-list)))
+
+(defun my/copilot-tab ()
+  (interactive)
+  (or (copilot-accept-completion)
+      (dabbrev-expand)))
+
+(defun my/copilot-c-g ()
+  (interactive)
+  (or (copilot-clear-overlay)
+      (keyboard-quit)))
+
+(with-eval-after-load 'copilot
+  (define-key copilot-mode-map (kbd "C-<tab>") #'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "C-g") #'my/copilot-c-g))
 
 (define-key emacs-lisp-mode-map (kbd "<f5>") 'eval-buffer)
 
-;; file detection
-
 (add-to-list 'auto-mode-alist '("\\.mm\\'" . objc-mode))
 (add-to-list 'auto-mode-alist '("\\.metal\\'" . c++-mode))
-
-(use-package paredit
-  :ensure t
-  :bind (("C-c (" . paredit-wrap-round)
-         ("C-c {" . paredit-wrap-curly)
-         ("C-c [" . paredit-wrap-square)
-         ("C-c <" . paredit-wrap-angled)
-         ("C-M-{" . backward-paragraph)
-         ("C-M-}" . forward-paragraph))
-  :init
-  (progn
-    (add-hook 'emacs-lisp-mode-hook 'paredit-mode)
-    (add-hook 'clojure-mode-hook 'paredit-mode)
-    (add-hook 'clojurescript-mode-hook 'paredit-mode)
-    (add-hook 'cider-repl-mode-hook 'paredit-mode)
-    (add-hook 'racket-mode-hook 'paredit-mode)
-    (add-hook 'racket-repl-mode-hook 'paredit-mode)
-    (add-hook 'inferior-clojure-mode-hook 'paredit-mode)
-    (add-hook 'scheme-mode-hook 'paredit-mode)
-    (add-hook 'repl-mode-hook 'paredit-mode))
-  :hook
-  (sly-mode . paredit-mode))
-
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-enabled-themes nil)
- '(custom-safe-themes
-   '("8b930a6af47e826c12be96de5c28f1d142dccab1927f196589dafffad0fc9652" "5d59bd44c5a875566348fa44ee01c98c1d72369dc531c1c5458b0864841f887c" "8f5b54bf6a36fe1c138219960dd324aad8ab1f62f543bed73ef5ad60956e36ae" "19a2c0b92a6aa1580f1be2deb7b8a8e3a4857b6c6ccf522d00547878837267e7" "cb4c6fef7d911b858f907f0c93890c4a44a78ad22537e9707c184f7e686e8024" "5a45c8bf60607dfa077b3e23edfb8df0f37c4759356682adf7ab762ba6b10600" "cbd85ab34afb47003fa7f814a462c24affb1de81ebf172b78cb4e65186ba59d2" "279f74e365ba5aade8bc702e0588f0c90b5dee6cf04cf61f9455661700a6ebeb" "9fad628c15f1e94af44e07b00ebe3c15109be28f4d73adf4a9e22090845cbce9" default))
- '(initial-frame-alist '((fullscreen . maximized)))
- '(package-selected-packages '(use-package paredit)))
-
-(add-to-list 'default-frame-alist '(font . "Jetbrains Mono-16"))
-(set-face-attribute 'default t :font "Jetbrains Mono-16")
-
-;; sl
-(global-hl-line-mode -1)
-(setq frame-background-mode 'dark)
-(set-face-attribute 'hl-line nil :foreground "black" :background "gray")
-(set-face-attribute 'font-lock-comment-face nil :foreground "#BDBDBD")
-(set-face-attribute 'font-lock-string-face nil :foreground "#00cd00")
-(set-face-attribute 'font-lock-type-face nil :foreground "white")
-(set-face-attribute 'font-lock-constant-face nil :foreground "white")
-(set-face-attribute 'font-lock-function-name-face nil :foreground "#56c8ff")
-(set-face-attribute 'font-lock-keyword-face nil :foreground "#00cdcd")
-(set-face-attribute 'font-lock-variable-name-face nil :foreground "#BDBDBD")
-(set-face-attribute 'font-lock-builtin-face nil :foreground "#BDBDBD")
-(set-face-attribute 'error nil :foreground "#cd0000")
-;; (set-face-background 'mode-line "#E1FAFF")
-(set-background-color "black")
-(set-foreground-color "white")
-(set-cursor-color "white")
-
-
-(set-face-attribute 'region nil :background "#E8EB98" :foreground "black")
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
+;; (add-to-list 'auto-mode-alist '("\\.go\\'" .
+;;                                 (lambda ()
+;;                                   (go-ts-mode))))
+(add-to-list 'auto-mode-alist '("\\.swift\\'" . swift-mode))
