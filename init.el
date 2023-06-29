@@ -2,14 +2,19 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/") t)
 (package-initialize)
+;;(setq frame-background-mode dark)
 
-(setq package-deps '(better-defaults janet-mode inf-janet lua-mode treemacs eglot magit org-download
-                                     markdown-mode bookmark-in-project editorconfig imenu-list
-                                     rust-mode format-all cider vundo haskell-mode inf-clojure
-                                     clojure-mode swift-mode paredit slime
-                                     ;;copilot
-                                     editorconfig
-                                     ))
+(setq package-deps '(s dash better-defaults janet-mode lua-mode eglot magit org-download
+                       markdown-mode bookmark-in-project editorconfig imenu-list
+                       rust-mode format-all
+                       ;; cider
+                       vundo haskell-mode inf-clojure
+                       clojure-mode swift-mode paredit
+                       ;;copilot
+                       editorconfig
+                       ))
+
+;;(load (expand-file-name "~/.roswell/helper.el"))
 
 (dolist (package package-deps)
   (unless (package-installed-p package)
@@ -29,15 +34,17 @@
 (require 'better-defaults)
 
 ;; system specific stuff that i need to generalize at some point
-
 (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el/")
 (require 'copilot)
 (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/orq/utils/")
-(require 'orq)
+;; (require 'porq)
 ;; load elisp file /Users/jon/.emacs.d/lisp/mu4e.el
-;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/mu/mu4e")
-;; (load-file "/Users/jon/.emacs.d/lisp/mu4e.el")
 
+(defun mume ()
+  (interactive)
+  (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/mu/mu4e")
+  (load-file "/Users/jon/.emacs.d/lisp/mu4e.el")
+  (mu4e-update-mail-and-index t))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -50,13 +57,15 @@
 
 ;; assignment
 
+(setq python-shell-interpreter "remote-python"
+      python-shell-interpreter-args "-i --simple-prompt")
 (setq
  mac-option-modifier 'meta
  mac-command-modifier 'control
  backup-directory-alist (list (cons ".*" backup-dir))
  auto-save-list-file-prefix autosave-dir
  auto-save-file-name-transforms `((".*" ,autosave-dir t))
- set-mark-command-repeat-pop t ;; cycle thru marks w/ c-space
+ set-mark-command-repeat-pop t     ;; cycle thru marks w/ c-space
  mouse-wheel-progressive-speed nil ;; turn off mouse acceleration
  read-file-name-completion-ignore-case t ;;; case insenstive autocompletion
  dired-kill-when-opening-new-dired-buffer t ;; stop dired from cluttering buffer list
@@ -105,17 +114,27 @@
 
 ;; enable modes
 
+(global-so-long-mode 1)
 (blink-cursor-mode 0)
 (xterm-mouse-mode 1)
 (if (display-graphic-p)
     (scroll-bar-mode -1))
 (electric-pair-mode 1)
 (recentf-mode 1)
-(fido-vertical-mode 1)
 (delete-selection-mode 1)
+
+
 
 ;; add hooks
 
+(defun my-comint-shorten-long-lines (text)
+  (let* ((regexp "\\(.\\{75\\}[;,: ]\\)")
+         (shortened-text (replace-regexp-in-string regexp "\\1\n" text)))
+    (if (string= shortened-text text)
+        text
+      shortened-text)))
+
+(add-hook 'comint-preoutput-filter-functions 'my-comint-shorten-long-lines)
 (add-hook 'html-mode-hook
           (lambda ()
             (setq c-basic-offset 2)))
@@ -125,7 +144,10 @@
             (c-set-offset 'arglist-intro '+)
             (c-set-offset 'arglist-close 0)))
 (add-hook 'write-file-functions 'delete-trailing-whitespace)
-(add-hook 'prog-mode-hook		#'user-progmode-keybindings)
+;; (add-hook 'org-mode-hook
+;;           (lambda ()
+;;             (local-set-key (kbd "C-c C-l") 'org-store-link)))
+
 (add-hook 'flymake-mode-hook
           (lambda ()
             (local-set-key (kbd "S-<f2>") 'flymake-goto-prev-error)
@@ -136,19 +158,20 @@
             (local-set-key (kbd "C-c C-c") 'eval-buffer)))
 (add-hook 'fennel-mode-hook
           (lambda ()
-            (paredit-mode 1)))
+            (paredit-mode 1)
+            ))
+;; (add-hook 'fennel-mode-hook 'fennel-proto-repl-minor-mode)
 (add-hook 'c-mode-hook
           (lambda ()
             (local-set-key (kbd "C-c C-r") #'compile)))
 (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 (add-hook 'org-mode-hook
           (lambda ()
-            (visual-line-mode 1)
-            (variable-pitch-mode 1)))
-(add-hook 'dired-mode-hook
-          (lambda ()
-            (local-unset-key (kbd "o"))
-            (local-unset-key (kbd "C-o"))))
+            (visual-line-mode 1)))
+(add-hook 'markdown-mode-hook #'variable-pitch-mode)
+(with-eval-after-load 'dired-mode
+  (local-unset-key (kbd "o"))
+  (local-unset-key (kbd "C-o")))
 (add-hook 'janet-mode-hook (lambda ()
                              (inf-janet-minor-mode 1)
                              (paredit-mode 1)))
@@ -157,6 +180,24 @@
                             (linum-mode 1)
                             (evil-surround-mode 1)
                             (evil-global-set-key 'insert (kbd "C-SPC") 'hippie-expand)))
+(add-hook 'lisp-mode-hook (lambda ()
+                            (paredit-mode 1)))
+
+(add-hook 'eglot-mode-hook #'company-mode)
+(with-eval-after-load 'paredit-mode
+  (define-key paredit-mode-map (kbd "M-{") 'paredit-wrap-curly)
+  (define-key paredit-mode-map (kbd "M-[") 'paredit-wrap-square))
+(with-eval-after-load 'lua-mode
+  (setq lua-indent-level 2)
+  (setq lua-indent-nested-block-content-align nil)
+  (setq lua-indent-close-paren-align nil)
+  (setq lua-indent-string-contents t)
+
+  (define-key lua-mode-map (kbd "C-c C-b") 'lua-send-buffer)
+  (define-key lua-mode-map (kbd "C-c C-l") 'lua-send-current-line)
+  (define-key lua-mode-map (kbd "C-c C-f") 'lua-send-defun)
+  (define-key lua-mode-map (kbd "C-c C-r") 'lua-send-region)
+  (define-key lua-mode-map (kbd "C-c C-z") 'lua-show-process-buffer))
 
 ;; ;; Escape C-x and C-c in terminal mode
 ;; (add-hook 'term-mode-hook
@@ -204,13 +245,10 @@ the cursor by ARG lines."
     (set-mark-command nil))
   (forward-line arg))
 
-(defun launch-iterm-in-vc-root ()
+(defun open-iterm-in-vc-root ()
   (interactive)
-  (let ((project-root (cdr (project-current))))
+  (let ((project-root (caddr (project-current))))
     (shell-command (concat "open -a iTerm " project-root) nil nil)))
-
-(defun user-progmode-keybindings ()
-  (local-set-key (kbd "C-c C-l") 'org-store-link))
 
 (defun yank-filename-and-line ()
   "Yank the current filename and line number at point to the kill ring."
@@ -330,7 +368,7 @@ letter of camelcase lowercase."
 ;; (require 'orq)
 ;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/openai/")
 
-(define-key global-map (kbd "C-x C-l") nil)
+(define-key global-map (kbd "C-c C-l") #'org-store-link)
 (define-key global-map (kbd "C-<next>") nil)
 (define-key global-map "\eo" #'previous-buffer)
 (define-key global-map (kbd "C-M-o") #'delete-other-windows)
@@ -371,6 +409,7 @@ letter of camelcase lowercase."
 (define-key global-map (kbd "C-S-y") 'replace-yank)
 (define-key global-map "\e8" 'copilot-complete)
 (define-key global-map (kbd "\e%") 'query-replace-regexp)
+(define-key global-map (kbd "<f2>") 'cua-rectangle-mark-mode)
 
 ;; hippie function expansion wrecks paren balancing
 (dolist (f '(try-expand-line try-expand-list))
