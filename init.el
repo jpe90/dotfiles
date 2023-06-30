@@ -1,17 +1,15 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("jcs-elpa" . "https://jcs-emacs.github.io/jcs-elpa/packages/") t)
 (package-initialize)
 ;;(setq frame-background-mode dark)
 
-(setq package-deps '(s dash better-defaults janet-mode lua-mode eglot magit org-download
-                       markdown-mode bookmark-in-project editorconfig imenu-list
-                       rust-mode format-all
-                       ;; cider
-                       vundo haskell-mode inf-clojure
-                       clojure-mode swift-mode paredit
-                       ;;copilot
-                       editorconfig
+(setq package-deps '( better-defaults
+                      magit
+                      cider
+                      inf-clojure
+                      clojure-mode
+                      slime
+                      paredit
                        ))
 
 ;;(load (expand-file-name "~/.roswell/helper.el"))
@@ -32,19 +30,6 @@
 
 (require 'recentf)
 (require 'better-defaults)
-
-;; system specific stuff that i need to generalize at some point
-(add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el/")
-(require 'copilot)
-(add-to-list 'load-path "/Users/jon/.emacs.d/lisp/orq/utils/")
-;; (require 'porq)
-;; load elisp file /Users/jon/.emacs.d/lisp/mu4e.el
-
-(defun mume ()
-  (interactive)
-  (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/mu/mu4e")
-  (load-file "/Users/jon/.emacs.d/lisp/mu4e.el")
-  (mu4e-update-mail-and-index t))
 
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -95,7 +80,6 @@
  xref-search-program 'ripgrep
  mouse-autoselect-window t
  tags-revert-without-query t
- shell-file-name "/bin/sh" ;; NixOS fix, not currently used but doesn't hurt
  python-shell-completion-native-disabled-interpreters '("python3")
  edebug-print-length nil
  edebug-print-level nil
@@ -111,7 +95,6 @@
 ;; start fullscreen
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
-
 ;; enable modes
 
 (global-so-long-mode 1)
@@ -122,8 +105,6 @@
 (electric-pair-mode 1)
 (recentf-mode 1)
 (delete-selection-mode 1)
-
-
 
 ;; add hooks
 
@@ -363,11 +344,6 @@ letter of camelcase lowercase."
 ;; key bindings
 
 (define-key global-map (kbd "C-z") nil)
-
-
-;; (require 'orq)
-;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/openai/")
-
 (define-key global-map (kbd "C-c C-l") #'org-store-link)
 (define-key global-map (kbd "C-<next>") nil)
 (define-key global-map "\eo" #'previous-buffer)
@@ -402,12 +378,9 @@ letter of camelcase lowercase."
 (define-key global-map "\C-x\ \C-r" 'recentf-open-files)
 (define-key global-map [S-tab] 'indent-for-tab-command)
 (define-key global-map (kbd "TAB") 'hippie-expand)
-(define-key global-map (kbd "C-<tab>") 'copilot-accept-completion)
-(define-key global-map (kbd "C-g") 'my/copilot-c-g)
 (define-key global-map (kbd "C-x t") 'beginning-of-buffer)
 (define-key global-map (kbd "C-x e") 'end-of-buffer)
 (define-key global-map (kbd "C-S-y") 'replace-yank)
-(define-key global-map "\e8" 'copilot-complete)
 (define-key global-map (kbd "\e%") 'query-replace-regexp)
 (define-key global-map (kbd "<f2>") 'cua-rectangle-mark-mode)
 
