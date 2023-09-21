@@ -32,7 +32,7 @@
 
 (defun previous-buffer ()
   "Switch to previously open buffer.
-Repeated invocations toggle between the two most recently open buffers."
+Repeated  toggle between the two most recently open buffers."
   (interactive)
   (switch-to-buffer (other-buffer (current-buffer) 1)))
 
@@ -100,8 +100,8 @@ Repeated invocations toggle between the two most recently open buffers."
    '(";" . meow-reverse)
    '("," . meow-inner-of-thing)
    '("." . meow-bounds-of-thing)
-   '("[" . meow-beginning-of-thing)
-   '("]" . meow-end-of-thing)
+   '("<" . meow-beginning-of-thing)
+   '(">" . meow-end-of-thing)
    '("a" . meow-append)
    '("A" . meow-open-below)
    '("b" . meow-back-word)
@@ -118,22 +118,22 @@ Repeated invocations toggle between the two most recently open buffers."
    '("H" . meow-left-expand)
    '("i" . meow-insert)
    '("I" . meow-open-above)
-   '("j" . meow-next)
-   '("J" . meow-next-expand)
-   '("k" . meow-prev)
-   '("K" . meow-prev-expand)
+   '("n" . meow-next)
+   '("N" . meow-next-expand)
+   '("p" . meow-prev)
+   '("P" . meow-prev-expand)
    '("l" . meow-right)
    '("L" . meow-right-expand)
    '("m" . meow-join)
-   '("n" . meow-search)
+   '("s" . meow-search)
    '("o" . meow-block)
    '("O" . meow-to-block)
-   '("p" . meow-yank)
+   '("y" . meow-yank)
    '("q" . meow-quit)
    '("Q" . meow-goto-line)
    '("r" . meow-replace)
    '("R" . meow-swap-grab)
-   '("s" . meow-kill)
+   '("k" . meow-kill)
    '("t" . meow-till)
    '("u" . meow-undo)
    '("U" . meow-undo-in-selection)
@@ -146,6 +146,10 @@ Repeated invocations toggle between the two most recently open buffers."
    '("Y" . meow-sync-grab)
    '("z" . meow-pop-selection)
    '("'" . repeat)
+   '("&" . meow-query-replace-regexp)
+   '("%" . meow-query-replace)
+   '("]" . scroll-up-command)
+   '("[" . scroll-down-command)
    '("<escape>" . ignore)))
 
 (use-package meow
@@ -184,6 +188,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (delete-selection-mode 1)
 ;;(pixel-scroll-mode 1)
 (xclip-mode 1)
+(xterm-mouse-mode 1)
 
 (define-key global-map (kbd "C-z") nil)
 
@@ -203,6 +208,7 @@ Repeated invocations toggle between the two most recently open buffers."
 (define-key global-map "\en" 'forward-paragraph)
 (define-key global-map "\ep" 'backward-paragraph)
 (define-key global-map [S-tab] 'indent-for-tab-command)
-''(define-key global-map (kbd "C-x t") 'beginning-of-buffer)
-(define-key global-map (kbd "C-c p") 'project-find-regexp)
+(define-key global-map (kbd "C-c p") 'project-find-file)
 (setq-default indent-tabs-mode t)
+(load "/Users/jon/.emacs.d/custom.el")
+(load-theme 'standard-dark)
