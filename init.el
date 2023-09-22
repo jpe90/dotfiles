@@ -5,6 +5,9 @@
 (use-package better-defaults
   :ensure t)
 
+(use-package rg
+  :ensure t)
+  
 (use-package sly
   :disabled t
   :ensure t
@@ -128,7 +131,7 @@ Repeated  toggle between the two most recently open buffers."
    '("s" . meow-search)
    '("o" . meow-block)
    '("O" . meow-to-block)
-   '("y" . meow-yank)
+   '("j" . meow-yank)
    '("q" . meow-quit)
    '("Q" . meow-goto-line)
    '("r" . meow-replace)
@@ -152,6 +155,13 @@ Repeated  toggle between the two most recently open buffers."
    '("[" . scroll-down-command)
    '("<escape>" . ignore)))
 
+(use-package smex
+  :demand
+  :config
+  (global-set-key (kbd "M-x") 'smex)
+  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command))
+
 (use-package meow
   :ensure t
   :config
@@ -159,6 +169,12 @@ Repeated  toggle between the two most recently open buffers."
   (meow-global-mode 1))
 
 (use-package xclip
+  :ensure t)
+
+(use-package kaolin-themes
+  :ensure t)
+
+(use-package vundo
   :ensure t)
 
 (setq
@@ -210,5 +226,4 @@ Repeated  toggle between the two most recently open buffers."
 (define-key global-map [S-tab] 'indent-for-tab-command)
 (define-key global-map (kbd "C-c p") 'project-find-file)
 (setq-default indent-tabs-mode t)
-(load "/Users/jon/.emacs.d/custom.el")
-(load-theme 'standard-dark)
+(load "~/.emacs.d/custom.el")
