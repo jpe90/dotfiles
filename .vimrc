@@ -1,75 +1,51 @@
+" ========================
+" General Settings
+" ========================
 syntax on
+set nowrap
 set wildmenu
-set undodir=~/.vim/undo-dir
 set wildoptions+=fuzzy
-set wildignore=*.o,*~,*.pyc
-set wildignore+=*.pdf,*.pyo,*.pyc,*.zip,*.so,*.swp,*.dll,*.o,*.DS_Store,*.obj,*.bak,*.exe,*.pyc,*.jpg,*.gif,*.png,*.a
-set wildignore+=.git\*,.hg\*,.svn\*.o,*~,*pyc
-set hidden
+set wildignore=*.o,*~,*.pyc,*.pdf,*.pyo,*.zip,*.so,*.swp,*.dll,*.DS_Store,*.obj,*.bak,*.exe,*.jpg,*.gif,*.png,*.a,.git\*,.hg\*,.svn\*
+set undodir=~/.vim/undo-dir
 set undofile
-set background=dark
+set noswapfile
+set hidden
 set number
 set relativenumber
 set et
-
-" set statusline=%F%m%r%h%w%=\ [%Y]\ [%{&ff}]\ [%04l,%04v]\ [%p%%]\ [%L]
+set guicursor+=a:blinkon0
+set background=dark
 set laststatus=2
 set backspace=indent,eol,start
 set ruler
 set smartcase
 set hlsearch
 set incsearch
-" set termguicolors
-nmap Q <Nop> " 'Q' in normal mode enters Ex mode. You almost never want this.
-set noerrorbells visualbell t_vb=
+set noerrorbells
+set visualbell
+set t_vb=
 set mouse+=a
-set autoindent
 set ignorecase
 set modeline
 set nohls
-" don't indent function return type
-:set cino+=t0
+set textwidth=0
+set clipboard=unnamed
 filetype plugin indent on
 set foldmethod=marker
-" let g:coc_user_config="/home/solaire/.vim/coc-settings.json"
-colorscheme torte
-" highlight MatchParen ctermbg=grey ctermfg=white
-highlight ColorColumn ctermbg=darkgrey guibg=lightgrey
-highlight RedundantSpaces ctermbg=red guibg=red
-highlight Normal ctermfg=white guifg=white
-match RedundantSpaces /\s\+$/
 let c_no_curly_error=1
+let g:mapleader = " "
 
-" 80 chars/line
-set textwidth=0
-
-:command W w
-:command Q q
-
-" shortcuts for copying to clipboard
-nnoremap Y "+y
-vnoremap Y "+y
-nnoremap yY ^"+y$
-
-" nnoremap <SPACE> <Nop>
-let g:mapleader = ","
-
+" ========================
+" Mappings
+" ========================
+nmap Q <Nop>
+" Clear search highlight
 map <silent> <leader><cr> :noh<cr>
 
-" ################# EasyAlign #######################
- " Start interactive EasyAlign in visual mode (e.g. vipga)
- " xmap ga <Plug>(EasyAlign)
-
- " Start interactive EasyAlign for a motion/text object (e.g. gaip)
- " nmap ga <Plug>(EasyAlign)
-
-" ################# FZF #######################
-
-" nnoremap <silent> <C-p> :Files<CR>
-" nnoremap <silent> <C-f> :Ag<CR>
-" nnoremap <leader>b :Buffers<CR>
-" nnoremap <leader>xr :History<CR>
-
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <leader>f :Rg<CR>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>xr :History<CR>
 nnoremap <leader>1 1gt
 nnoremap <leader>2 2gt
 nnoremap <leader>3 3gt
@@ -79,37 +55,44 @@ nnoremap <leader>6 6gt
 nnoremap <leader>7 7gt
 nnoremap <leader>8 8gt
 nnoremap <leader>9 9gt
-nnoremap <silent> <leader>cd :cd %:p:h<cr>
-nnoremap <silent> <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR> " Trim trailing spaces
+nnoremap <silent> <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
+vnoremap Y "+y
+nnoremap yY ^"+y$
+vnoremap S "_dP
 
+" ========================
+" Commands
+" ========================
+:command W w
+:command Q q
+command! -nargs=0 Gofmt :!gofmt -s -w %
+
+" ========================
+" Autocommands
+" ========================
 autocmd FileType css setlocal et tw=80 ts=2 sw=2 sts=2
 autocmd FileType c,cpp,h,hpp setlocal et tw=80 ts=4 sw=4 sts=4
 autocmd FileType js setlocal et tw=80 ts=2 sw=2 sts=2
 autocmd FileType python setlocal et tw=80 ts=4 sw=4 sts=4
+autocmd FileType go setlocal noexpandtab tw=80 ts=8 sw=8 sts=8
+autocmd BufWritePre * :%s/\s\+$//e
+au BufRead,BufNewFile *.gohtml set filetype=gotexttmpl
+autocmd FileType go setlocal formatprg=gofmt
+if &diff
+    map <leader>1 :diffget LOCAL<CR>
+    map <leader>2 :diffget BASE<CR>
+    map <leader>3 :diffget REMOTE<CR>
+endif
 
-" ############## syntax highlighting fix for tmux
+" ========================
+" Other Configurations
+" ========================
+set encoding=utf-8
+set nobackup
+set nowritebackup
 
-" let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-" let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-" set termguicolors
+" Cursor settings
+let &t_SI.="\e[5 q" "SI = INSERT mode
+let &t_SR.="\e[4 q" "SR = REPLACE mode
+let &t_EI.="\e[1 q" "EI = NORMAL mode (ELSE)
 
-" vim hardcodes background color erase even if the terminfo file does
-" not contain bce (not to mention that libvte based terminals
-" incorrectly contain bce in their terminfo files). This causes
-" incorrect background rendering when using a color theme with a
-" background color.
-" let &t_ut=''
-
-highlight StatusLine cterm=none ctermbg=none ctermfg=darkgrey
-highlight StatusLineNC cterm=none ctermbg=none ctermfg=darkgrey
-
-" vimscript
-" let g:copilot_node_command = "~/.nvm/versions/node/v16.18.1/bin/node"
-" disable copilot
-let g:copilot_enabled = 0
-
-" command to toggle copilot
-command! -nargs=0 ToggleCopilot :let g:copilot_enabled = !g:copilot_enabled
-
-" bind toggle copilot to <leader>tc
-nnoremap <leader>tc :ToggleCopilot<CR>
