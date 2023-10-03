@@ -32,9 +32,6 @@
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-leader-define-key
-   ;; SPC j/k will run the original command in MOTION state.
-   '("j" . "H-j")
-   '("k" . "H-k")
    '("," . xref-pop-marker-stack)
    '("." . xref-find-definitions)
    '("f" . project-find-file)
@@ -42,7 +39,7 @@
    '("W" . window-swap-states)
    '("o" . delete-other-windows)
    '("s" . split-window-right)
-   '("-" . split-window-below)
+   '("v" . split-window-below)
    '("&" . +change-theme)
    '(";" . comment-line)
    '("K" . kill-this-buffer)
@@ -56,7 +53,7 @@
    '("p" . project-find-file)
    '("j" . project-switch-to-buffer)
    '("t" . tab-bar-switch-to-tab)
-   '("l" . project-switch-project)	
+   '("l" . project-switch-project)
    '("y" . magit)
    '("l" . recentf-open-files)
    '("n" . org-roam-keymap)
@@ -74,7 +71,8 @@
    '("9" . meow-digit-argument)
    '("0" . meow-digit-argument)
    '("/" . meow-keypad-describe-key)
-   '("?" . meow-cheatsheet))
+   '("?" . meow-cheatsheet)
+   '("@" . mark-sexp))
   (meow-normal-define-key
    '("0" . meow-expand-0)
    '("9" . meow-expand-9)
@@ -151,8 +149,8 @@
   (meow-global-mode 1)
   (setq meow-use-clipboard t)
   (setq meow-visit-sanitize-completion nil)
-  )  
-  
+  )
+
 (use-package xclip
   :ensure t)
 
@@ -164,6 +162,8 @@
   :config
   (load-theme 'kaolin-dark t))
 
+(defalias 'yes-or-no-p 'y-or-n-p)
+
 (autoload 'zap-up-to-char "misc"
   "Kill up to, but not including ARGth occurrence of CHAR." t)
 
@@ -171,6 +171,7 @@
 
 ;; Various Settings
 (setq mac-option-modifier 'meta
+      mac-command-modifier 'ctrl
       set-mark-command-repeat-pop t
       mouse-wheel-progressive-speed nil
       read-file-name-completion-ignore-case t
@@ -251,5 +252,5 @@ Repeated  toggle between the two most recently open buffers."
 (define-key Info-mode-map [remap scroll-down-command] 'View-scroll-half-page-backward)
 
 ;; Load Custom File
-(load "~/.emacs.d/custom.el")
-
+(when (file-readable-p "~/.emacs.d/custom.el")
+  (load "~/.emacs.d/custom.el"))
