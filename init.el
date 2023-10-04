@@ -155,9 +155,8 @@
 (use-package xclip
   :ensure t)
 
-;; (use-package vundo
-;;   :ensure t)
 (use-package undo-tree
+  :ensure t
   :diminish                       ;; Don't show an icon in the modeline
   :bind ("C-x u" . undo-tree-visualize)
   :config
