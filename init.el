@@ -59,6 +59,7 @@
    '("n" . org-roam-keymap)
    '(":" . eval-expression)
    '("e" . "C-x C-e")
+   '("u" . undo-tree-visualize)
    ;; Use SPC (0-9) for digit arguments.
    '("1" . meow-digit-argument)
    '("2" . meow-digit-argument)
@@ -154,8 +155,20 @@
 (use-package xclip
   :ensure t)
 
-(use-package vundo
-  :ensure t)
+;; (use-package vundo
+;;   :ensure t)
+(use-package undo-tree
+  :diminish                       ;; Don't show an icon in the modeline
+  :bind ("C-x u" . undo-tree-visualize)
+  :config
+    ;; Always have it on
+    (global-undo-tree-mode)
+
+    ;; Each node in the undo tree should have a timestamp.
+    (setq undo-tree-visualizer-timestamps t)
+
+    ;; Show a diff window displaying changes between undo nodes.
+    (setq undo-tree-visualizer-diff t))
 
 (use-package kaolin-themes
   :ensure t
@@ -206,6 +219,7 @@
 (unless backup-directory-alist
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                  "backups")))))
+(setq-default indent-tabs-mode nil)
 
 ;; Modes
 (delete-selection-mode 1)
@@ -216,8 +230,9 @@
 (ido-everywhere)
 (show-paren-mode 1)
 (savehist-mode 1)
-(setq-default indent-tabs-mode nil)
 (save-place-mode 1)
+(global-hl-line-mode 1)
+
 
 ;; === Functions ===
 
