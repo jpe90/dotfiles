@@ -29,6 +29,68 @@
   (global-set-key (kbd "M-X") 'smex-major-mode-commands)
   (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command))
 
+;; (use-package lsp-bridge
+;;   :ensure t 
+;;   :hook ((haskell-mode nix-mode jq-mode c-mode c++-mode c-or-c++-mode) . lsp-deferred)
+;;   :commands (lsp lsp-deferred)
+;;   :config
+;;   (setq lsp-clients-clangd-args '("-j=4" "-background-index" "--log=error" "--clang-tidy" "--enable-config"))
+;;   (setq lsp-auto-guess-root t))
+
+;; dependencies
+(use-package markdown-mode
+  :ensure t)
+
+(use-package posframe
+  :ensure t)
+
+(use-package yasnippet
+  :ensure t
+  :config
+  (yas-global-mode 1))
+
+
+(use-package lsp-bridge
+  :commands lsp-bridge-mode
+  :load-path "~/development/elisp/lsp-bridge/"
+  :ensure nil
+  :bind
+  (:map lsp-bridge-mode-map
+        ("M-." . lsp-bridge-find-def)
+        ("M-n i" . lsp-bridge-find-impl)
+        ("M-n RET" . lsp-bridge-code-action)
+        ("M-n ." . lsp-bridge-find-def-other-window)
+        ("M-," . lsp-bridge-find-def-return)
+        ("M-n d" . lsp-bridge-lookup-documentation)
+        ("M-n r" . lsp-bridge-rename)
+        ("M-n n" . lsp-bridge-diagnostic-jump-next)
+        ("M-n p" . lsp-bridge-diagnostic-jump-prev)
+        ("M-n l" . lsp-bridge-diagnostic-list)
+        ("M-n q" . lsp-bridge-restart-process))
+
+  :init
+  (use-package markdown-mode)
+  (use-package posframe)
+
+  ;; :hook
+  ;; (prog-mode . lsp-bridge-mode)
+
+  :config
+  (local-unset-key (kbd "M-,"))
+  (local-unset-key (kbd "M-."))
+  (setq lsp-bridge-enable-auto-format-code t)
+  (setq lsp-bridge-auto-format-code-idle 3)
+  (setq markdown-enable-highlighting-syntax t)
+
+  (require 'cl-lib)
+  ;; (use-package format-all
+  ;;   :config
+  ;;   (add-hook 'prog-mode-hook 'format-all-mode)
+  ;;   :bind
+  ;;   (:map lsp-bridge-mode-map ;; no format-all-mode-map, use lsp bridge
+  ;;         ("M-n f" . format-all-buffer)))
+  )
+
 (defun meow-setup ()
   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
   (meow-leader-define-key
@@ -231,7 +293,8 @@
 (savehist-mode 1)
 (save-place-mode 1)
 (global-hl-line-mode 1)
-
+(blink-cursor-mode -1)
+(menu-bar-mode -1)
 
 ;; === Functions ===
 
