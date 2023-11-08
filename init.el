@@ -1,5 +1,7 @@
 ;; === Packages and Initialization ===
 
+(setenv "GTAGSLIBPATH" "/usr/include/")
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -78,12 +80,17 @@
       ediff-window-setup-function 'ediff-setup-windows-plain
       custom-file (expand-file-name "custom.el" user-emacs-directory)
       inhibit-startup-screen t
-      path-to-ctags "/opt/homebrew/bin/ctags")
+      dired-mouse-drag-files t
+      gdb-many-windows t
+      gdb-show-main t)
+
+
 
 (unless backup-directory-alist
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                  "backups")))))
 (setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
 
 ;; === Modes ===
 
@@ -95,10 +102,12 @@
 (show-paren-mode 1)
 (savehist-mode 1)
 (save-place-mode 1)
-(global-hl-line-mode 1)
+;; (global-hl-line-mode 1)
 (blink-cursor-mode -1)
 (scroll-bar-mode -1)
 (context-menu-mode 1)
+(menu-bar-mode -1)
+(tool-bar-mode -1)
 
 ;; === Functions ===
 
@@ -152,6 +161,14 @@ the cursor by ARG lines."
 (defun rc/parent-directory (path)
   (file-name-directory (directory-file-name path)))
 
+(defun rc/put-parent-directory-on-clipboard ()
+  "Put the current buffer's parent directory on the clipboard"
+  (interactive)
+  (let ((parent-directory (rc/parent-directory (rc/buffer-file-name))))
+    (kill-new parent-directory)
+    (message parent-directory)))
+
+
 ;;; Stolen from http://ergoemacs.org/emacs/emacs_unfill-paragraph.html
 (defun rc/unfill-paragraph ()
   "Replace newline chars in current paragraph by single spaces.
@@ -203,13 +220,94 @@ This command does the inverse of `fill-paragraph'."
 (global-set-key (kbd "C-x C-l") 'recentf-open-files)
 (global-set-key (kbd "M-1") 'mark-advance-line)
 (global-set-key (kbd "M-2") 'mark-defun)
+(global-set-key (kbd "M-n") 'forward-paragraph)
+(global-set-key (kbd "M-p") 'backward-paragraph)
+
 (define-key global-map (kbd "C-x t") 'beginning-of-buffer)
 (define-key global-map (kbd "C-x e") 'end-of-buffer)
 (global-set-key [S-tab] 'indent-for-tab-command)
 (define-key Info-mode-map [remap scroll-up-command] 'View-scroll-half-page-forward)
 (define-key Info-mode-map [remap scroll-down-command] 'View-scroll-half-page-backward)
 
-;; ======== 
+;; ======== trial usage
+
+
+;; (use-package ggtags
+;;   :ensure t
+;;   :bind (:map ggtags-mode-map
+;;               ("C-c g s" . ggtags-find-other-symbol)
+;;               ("C-c g h" . ggtags-view-tag-history)
+;;               ("C-c g r" . ggtags-find-reference)
+;;               ("C-c g f" . ggtags-find-file)
+;;               ("C-c g c" . ggtags-create-tags)
+;;               ("C-c g u" . ggtags-update-tags)
+;;               ("M-," . pop-tag-mark)))
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (
+	( "C-S-c C-S-c" . 'mc/edit-lines)
+	("C-S-a C-S-a" . 'mc/edit-beginnings-of-lines)
+	("C-c C->" . 'mc/mark-all-like-this)
+	("C->" . 'mc/mark-next-like-this)
+	:map multiple-cursors-mode
+	(("C-?" . 'mc/unmark-next-like-this)
+	 ("C-c C-?".'mc/skip-to-next-like-this)
+	 ("C-<" . 'mc/mark-previous-like-this)
+	 ("C-S-s" . 'phi-search)
+	 ("C-S-r" . 'phi-search-backward))))
+
+
+;; (use-package company
+;;   :ensure t
+;;   :init
+;;   (global-company-mode))
+
+;; (add-to-list 'load-path "~/.emacs.d/lisp/")
+;; (require 'simpc-mode)
+;; (add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
+;; (add-hook 'simpc-mode-hook 'ggtags-mode)
+
+(add-hook 'c++-mode-hook 'ggtags-mode)
+
+(defun my-project-compile ()
+  "Run `compile' in the project root using the last entered command."
+  (interactive)
+  (let ((default-directory (project-root (project-current t)))
+        (compilation-buffer-name-function
+         (or project-compilation-buffer-name-function
+             compilation-buffer-name-function))
+        (command (or (and (boundp 'compile-command) compile-command)
+                     "make")))
+    (compile command)))
+
+;; ;; (setq my-current-project "/home/solaire/development/devkitpro/switch-examples/graphics/sdl2/sdl2-sanitycheck")
+;; (defun my-project-compile ()
+;;   "Run compile using `my-current-project` as the base directory if set, otherwise in the project root."
+;;   (interactive)
+;;   (let ((default-directory (if (and (boundp 'my-current-project)
+;;                                     my-current-project
+;;                                     (not (string-empty-p my-current-project)))
+;;                                my-current-project
+;;                              (project-root (project-current t))))
+;;         (command (or (and (boundp 'compile-command) compile-command)
+;;                      "make")))
+;;     (compile command)))
+
+
+(defun my-compile ()
+  "Run compile without prompt."
+  (interactive)
+  ;; Use the existing compile-command, or "make" if compile-command is empty
+  (let ((command (if (and compile-command (not (string-empty-p compile-command)))
+                     compile-command
+                   "make")))
+    (compile command)))
+
+
+(global-set-key (kbd "<f5>") 'project-compile)
+(global-set-key (kbd "<f6>") (lambda () (interactive) (shell-command "/home/solaire/development/cpp/egl_opengl_study/build/03_cube_with_texture")))
+(global-set-key (kbd "<f7>") 'clang-format-buffer)
 
 (use-package orderless
   :ensure t
@@ -244,50 +342,46 @@ This command does the inverse of `fill-paragraph'."
   ;; (setq vertico-resize t)
   (setq vertico-cycle t))
 
-(use-package ggtags
-  :ensure t
-  :bind (:map ggtags-mode-map
-              ("C-c g s" . ggtags-find-other-symbol)
-              ("C-c g h" . ggtags-view-tag-history)
-              ("C-c g r" . ggtags-find-reference)
-              ("C-c g f" . ggtags-find-file)
-              ("C-c g c" . ggtags-create-tags)
-              ("C-c g u" . ggtags-update-tags)
-              ("M-," . pop-tag-mark)))
-
-(use-package multiple-cursors
-  :ensure t
-  :bind (:map multiple-cursors-mode-hook
-              ("M-s" . mc/edit-lines)
-              ("C->" . 'mc/mark-next-like-this)         
-              ("C-<" . 'mc/mark-previous-like-this)         
-              ("C-c C-<" . 'mc/mark-all-like-this)     
-              ("C-\"" . 'mc/skip-to-next-like-this)        
-              ("C-:" . 'mc/skip-to-previous-like-this)))
-
-(use-package company
-  :ensure t
-  :init
-  (global-company-mode))
-
-(add-to-list 'load-path "~/.emacs.d/lisp/")
-(require 'simpc-mode)
-(add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
-(add-hook 'simpc-mode-hook 'ggtags-mode)
-
-
-(defun my-project-compile ()
-  "Run `compile' in the project root using the last entered command."
+(defun my/copilot-tab ()
   (interactive)
-  (let ((default-directory (project-root (project-current t)))
-        (compilation-buffer-name-function
-         (or project-compilation-buffer-name-function
-             compilation-buffer-name-function))
-        (command (or (and (boundp 'compile-command) compile-command)
-                     "make")))
-    (compile command)))
+  (or (copilot-accept-completion)
+      (dabbrev-expand)))
 
-(global-set-key (kbd "<f5>") 'my-project-compile)
+(defun my/copilot-c-g ()
+  (interactive)
+  (or (copilot-clear-overlay)
+      (keyboard-quit)))
+
+(with-eval-after-load 'copilot
+  (define-key copilot-mode-map (kbd "C-<tab>") #'copilot-accept-completion)
+  (define-key copilot-mode-map (kbd "C-g") #'my/copilot-c-g))
+
+
+(when (file-readable-p "~/.emacs.d/custom.el")
+  (load "~/.emacs.d/custom.el"))
+
+(defun dired-do-llm-format (&optional arg)
+  "Create a buffer with the contents of the marked (or next ARG) files, formatted in Markdown."
+  (interactive)
+  (let ((file-list (dired-get-marked-files t arg nil nil t))
+        (buffer (generate-new-buffer "*LLM Format*")))
+    (with-current-buffer buffer
+      (dolist (file file-list)
+        ;; Insert the file name with backticks
+        (insert "```" (file-name-nondirectory file) "\n")
+        ;; Save the position
+        (let ((start (point)))
+          ;; Insert the file contents
+          (insert-file-contents file)
+          ;; Insert the closing backticks
+          (goto-char (point-max))
+          (insert "\n```\n")))
+      (goto-char (point-min)))
+    (switch-to-buffer buffer)))
+
+(with-eval-after-load 'dired
+  (define-key dired-mode-map (kbd "b") 'dired-do-llm-format))
+
 
 ;; ======================== not currently in use
 
@@ -453,7 +547,7 @@ This command does the inverse of `fill-paragraph'."
 
 ;; (use-package lsp-bridge
 ;;   :commands lsp-bridge-mode
-;;   :load-path "~/development/elisp/lsp-bridge/"
+;;   :load-path "~/.emacs.d/lisp/lsp-bridge"
 ;;   :ensure nil
 ;;   :bind
 ;;   (:map lsp-bridge-mode-map
@@ -479,8 +573,8 @@ This command does the inverse of `fill-paragraph'."
 ;;   :config
 ;;   (local-unset-key (kbd "M-,"))
 ;;   (local-unset-key (kbd "M-."))
-;;   (setq lsp-bridge-enable-auto-format-code t)
-;;   (setq lsp-bridge-auto-format-code-idle 3)
+;;   ;; (setq lsp-bridge-enable-auto-format-code nil)
+;;   ;; (setq lsp-bridge-auto-format-code-idle 3)
 ;;   (setq markdown-enable-highlighting-syntax t)
 
 ;;   (require 'cl-lib)
@@ -496,7 +590,22 @@ This command does the inverse of `fill-paragraph'."
 
 ;; customizations
 
-(when (file-readable-p "~/.emacs.d/custom.el")
-  (load "~/.emacs.d/custom.el"))
+;; (use-package clipetty
+;;     :ensure t
+;;     :config
+;;     (global-clipetty-mode))
 
 
+
+;; (use-package smex
+;;   :ensure t)
+
+;; (use-package ido-completing-read+
+;;   :ensure t)
+
+;; (ido-mode 1)
+;; (ido-everywhere 1)
+;; (ido-ubiquitous-mode 1)
+
+;; (global-set-key (kbd "M-x") 'smex)
+;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
