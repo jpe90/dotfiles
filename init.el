@@ -270,6 +270,10 @@ This command does the inverse of `fill-paragraph'."
 
 (add-hook 'c++-mode-hook 'ggtags-mode)
 
+(add-hook 'org-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c w") 'rc/org-link-copy)))
+
 (defun my-project-compile ()
   "Run `compile' in the project root using the last entered command."
   (interactive)
