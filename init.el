@@ -1,7 +1,5 @@
 ;; === Packages and Initialization ===
 
-(setenv "GTAGSLIBPATH" "/usr/include/")
-
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -10,21 +8,14 @@
 (require 'uniquify)
 (require 'view)
 
-(use-package rg
+(use-package deadgrep
   :ensure t)
-
-(use-package xref
-  :init
-  (setq xref-search-program (cond
-                             ((executable-find "ugrep") 'ugrep)
-                             ((executable-find "rg") 'ripgrep)
-                             (t 'grep))))
 
 (use-package magit
-  :ensure t)
+  :disabled t)
 
 (use-package xclip
-  :ensure t)
+  :disabled t)
 
 (use-package undo-tree
   :diminish                       ;; Don't show an icon in the modeline
@@ -95,8 +86,8 @@
 ;; === Modes ===
 
 (delete-selection-mode 1)
-(xclip-mode 1)
-(xterm-mouse-mode 1)
+;; (xclip-mode 1)
+;; (xterm-mouse-mode 1)
 (recentf-mode 1)
 (global-auto-revert-mode 1)
 (show-paren-mode 1)
@@ -104,10 +95,11 @@
 (save-place-mode 1)
 ;; (global-hl-line-mode 1)
 (blink-cursor-mode -1)
-(scroll-bar-mode -1)
-(context-menu-mode 1)
+;; (scroll-bar-mode -1)
+;; (context-menu-mode 1)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
+(column-number-mode 1)
 
 ;; === Functions ===
 
@@ -222,6 +214,8 @@ This command does the inverse of `fill-paragraph'."
 (global-set-key (kbd "M-2") 'mark-defun)
 (global-set-key (kbd "M-n") 'forward-paragraph)
 (global-set-key (kbd "M-p") 'backward-paragraph)
+(global-set-key (kbd "C-c M-l") 'org-store-link)
+(global-set-key (kbd "C-c g") 'deadgrep)
 
 (define-key global-map (kbd "C-x t") 'beginning-of-buffer)
 (define-key global-map (kbd "C-x e") 'end-of-buffer)
@@ -230,18 +224,6 @@ This command does the inverse of `fill-paragraph'."
 (define-key Info-mode-map [remap scroll-down-command] 'View-scroll-half-page-backward)
 
 ;; ======== trial usage
-
-
-;; (use-package ggtags
-;;   :ensure t
-;;   :bind (:map ggtags-mode-map
-;;               ("C-c g s" . ggtags-find-other-symbol)
-;;               ("C-c g h" . ggtags-view-tag-history)
-;;               ("C-c g r" . ggtags-find-reference)
-;;               ("C-c g f" . ggtags-find-file)
-;;               ("C-c g c" . ggtags-create-tags)
-;;               ("C-c g u" . ggtags-update-tags)
-;;               ("M-," . pop-tag-mark)))
 
 (use-package multiple-cursors
   :ensure t
@@ -257,16 +239,14 @@ This command does the inverse of `fill-paragraph'."
 	 ("C-S-s" . 'phi-search)
 	 ("C-S-r" . 'phi-search-backward))))
 
+;; tsoding jai mode
+;; (require 'jai-mode)
+;; (add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
 
 ;; (use-package company
 ;;   :ensure t
 ;;   :init
 ;;   (global-company-mode))
-
-;; (add-to-list 'load-path "~/.emacs.d/lisp/")
-;; (require 'simpc-mode)
-;; (add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
-;; (add-hook 'simpc-mode-hook 'ggtags-mode)
 
 (add-hook 'c++-mode-hook 'ggtags-mode)
 
@@ -320,31 +300,21 @@ This command does the inverse of `fill-paragraph'."
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
-  ;; Enable rich annotations using the Marginalia package
-(use-package marginalia
-  :ensure t
-  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
-  ;; available in the *Completions* buffer, add it to the
-  ;; `completion-list-mode-map'.
-  :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
+(defun jai-compile-file ()
+  "Compile the current Jai buffer."
+  (interactive)
+  (let* ((file-name (file-name-nondirectory (buffer-file-name)))
+         (base-name (file-name-sans-extension file-name))
+         (compile-command (format "jai-macos %s.jai && ./%s" base-name base-name)))
+    (compile compile-command)))
 
-  ;; The :init section is always executed.
-  :init
-
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
-  (marginalia-mode))
-
-(use-package vertico
-  :ensure t
-  :init
-  (vertico-mode)
-  (setq vertico-scroll-margin 0)
-  (setq vertico-count 20)
-  ;; (setq vertico-resize t)
-  (setq vertico-cycle t))
+(defun python-compile-file ()
+    "Compile the current Python buffer."
+    (interactive)
+    (let* ((file-name (file-name-nondirectory (buffer-file-name)))
+             (base-name (file-name-sans-extension file-name))
+             (compile-command (format "python3 %s.py" base-name)))
+        (compile compile-command)))
 
 (defun my/copilot-tab ()
   (interactive)
@@ -356,6 +326,14 @@ This command does the inverse of `fill-paragraph'."
   (or (copilot-clear-overlay)
       (keyboard-quit)))
 
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode))
+
+(use-package rust-mode
+  :ensure t)
+
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "C-<tab>") #'copilot-accept-completion)
   (define-key copilot-mode-map (kbd "C-g") #'my/copilot-c-g))
@@ -363,6 +341,9 @@ This command does the inverse of `fill-paragraph'."
 
 (when (file-readable-p "~/.emacs.d/custom.el")
   (load "~/.emacs.d/custom.el"))
+
+;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el")
+;; (require 'copilot)
 
 (defun dired-do-llm-format (&optional arg)
   "Create a buffer with the contents of the marked (or next ARG) files, formatted in Markdown."
@@ -382,6 +363,27 @@ This command does the inverse of `fill-paragraph'."
           (insert "\n```\n")))
       (goto-char (point-min)))
     (switch-to-buffer buffer)))
+
+(defun create-llm-compilation-output ()
+  "Create a buffer named *LLM Compilation Output* with specified content."
+  (interactive)
+  (let ((compilation-content (with-current-buffer "*compilation*"
+                               (buffer-string)))
+        (current-content (buffer-string))
+        (current-filename (buffer-file-name)))
+
+    ;; Create new buffer
+    (with-current-buffer (get-buffer-create "*LLM Compilation Output*")
+      ;; Insert compilation content
+      (insert compilation-content "\n\n")
+
+      ;; Insert current buffer content enclosed in markdown code ticks
+      (insert "```" (file-name-nondirectory current-filename) "\n"
+              current-content
+              "```\n")
+
+      ;; Display the buffer
+      (switch-to-buffer-other-window "*LLM Compilation Output*"))))
 
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "b") 'dired-do-llm-format))
