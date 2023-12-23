@@ -89,3 +89,14 @@ nnoremap <leader>tc :ToggleCopilot<CR>
 " Go-specific settings
 command! -nargs=0 Gofmt :!gofmt -s -w %
 autocmd FileType go setlocal formatprg=gofmt
+
+" Rust-specific settings
+
+autocmd FileType rust compiler cargo
+autocmd FileType rust nnoremap <buffer> <F5> :make check<CR>
+
+" Set 'makeprg' to run the current Python file
+autocmd FileType python setlocal makeprg=python3\ %
+
+" Map F5 to run :make
+autocmd FileType python nnoremap <buffer> <F5> :w<CR>:make<CR>
