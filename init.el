@@ -1,5 +1,7 @@
 ;; === Packages and Initialization ===
 
+(set-face-attribute 'default nil :font "Berkeley Mono" :height 140)
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
@@ -8,28 +10,38 @@
 (require 'uniquify)
 (require 'view)
 
-(use-package deadgrep
+;; (use-package xclip
+;;   :ensure t)
+
+(use-package clipetty
   :ensure t)
 
-(use-package magit
-  :disabled t)
+;; if this is a terminal session, enable global clipetty mode
+(if (not (display-graphic-p))
+    (global-clipetty-mode 1))
 
-(use-package xclip
-  :disabled t)
+(use-package exec-path-from-shell
+  :ensure t)
+
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
 
 (use-package undo-tree
-  :diminish                       ;; Don't show an icon in the modeline
+  :diminish ;; Don't show an icon in the modeline
   :ensure t
   :bind ("C-x u" . undo-tree-visualize)
   :init
   (global-undo-tree-mode)
   :config
-    ;; Each node in the undo tree should have a timestamp.
+  ;; Each node in the undo tree should have a timestamp.
   (setq undo-tree-visualizer-timestamps t)
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
 
-    ;; Show a diff window displaying changes between undo nodes.
-    (setq undo-tree-visualizer-diff t))
+  ;; Show a diff window displaying changes between undo nodes.
+  (setq undo-tree-visualizer-diff t))
+
+(use-package ansi-color
+    :hook (compilation-filter . ansi-color-compilation-filter)) 
 
 (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -38,7 +50,8 @@
 
 ;; === Various Settings ===
 
-(setq mac-option-modifier 'meta
+(setq
+      mac-option-modifier 'meta
       mac-command-modifier 'ctrl
       set-mark-command-repeat-pop t
       mouse-wheel-progressive-speed nil
@@ -64,7 +77,7 @@
       apropos-do-all t
       mouse-yank-at-point t
       require-final-newline t
-      visible-bell t
+      visible-bell nil
       load-prefer-newer t
       backup-by-copying t
       frame-inhibit-implied-resize t
@@ -73,9 +86,20 @@
       inhibit-startup-screen t
       dired-mouse-drag-files t
       gdb-many-windows t
-      gdb-show-main t)
+      gdb-show-main t
+      compilation-ask-about-save nil
+      tao-theme-use-boxes nil
+      tao-theme-use-sepia nil
+      compilation-always-kill t
+      ido-enable-flex-matching t
+      completion-cycle-threshold 10
+      modus-themes-fringes nil
+      save-interprogram-paste-before-kill t
+      compilation-scroll-output t
+      ;; make cursor a line in all buffers
+      )
 
-
+;; (set-default 'cursor-type 'bar)
 
 (unless backup-directory-alist
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
@@ -83,23 +107,27 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
 
+;; (load-file "/Users/jon/.emacs.d/meow-setup.el")
+
 ;; === Modes ===
 
 (delete-selection-mode 1)
 ;; (xclip-mode 1)
-;; (xterm-mouse-mode 1)
+(xterm-mouse-mode 1)
 (recentf-mode 1)
 (global-auto-revert-mode 1)
 (show-paren-mode 1)
 (savehist-mode 1)
 (save-place-mode 1)
+;; (ido-mode 1)
 ;; (global-hl-line-mode 1)
-(blink-cursor-mode -1)
-;; (scroll-bar-mode -1)
-;; (context-menu-mode 1)
+;; (blink-cursor-mode 1)
+(scroll-bar-mode -1)
+;; (context-menu-mode 1) ;; crashing emacs on mac
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (column-number-mode 1)
+(etags-regen-mode 1)
 
 ;; === Functions ===
 
@@ -209,6 +237,7 @@ This command does the inverse of `fill-paragraph'."
 (global-set-key (kbd "C-o") 'other-window)
 (global-set-key (kbd "M-o") 'previous-buffer)
 (global-set-key (kbd "M-`") 'other-frame)
+(global-set-key (kbd "C-x l") 'recentf)
 (global-set-key (kbd "C-x C-l") 'recentf-open-files)
 (global-set-key (kbd "M-1") 'mark-advance-line)
 (global-set-key (kbd "M-2") 'mark-defun)
@@ -216,9 +245,29 @@ This command does the inverse of `fill-paragraph'."
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "C-c M-l") 'org-store-link)
 (global-set-key (kbd "C-c g") 'deadgrep)
+(global-set-key (kbd "C-c @") 'mark-sexp)
+(global-set-key (kbd "C-S-s") 'isearch-forward-thing-at-point)
+
+(global-set-key (kbd "C-ф") 'forward-char)
+(global-set-key (kbd "C-б") 'backward-char)
+(global-set-key (kbd "C-н") 'next-line)
+(global-set-key (kbd "C-п") 'previous-line)
+(global-set-key (kbd "M-в") 'scroll-up-command)
+(global-set-key (kbd "C-в") 'scroll-down-command)
+(global-set-key (kbd "C-к") 'kill-line)
+(global-set-key (kbd "C-д") 'delete-char)
+(global-set-key (kbd "M-д") 'kill-word)
+(global-set-key (kbd "C-а") 'beginning-of-line)
+(global-set-key (kbd "C-е") 'end-of-line)
+(global-set-key (kbd "C-с") 'isearch-forward)
+(global-set-key (kbd "C-р") 'isearch-backward)
+(global-set-key (kbd "C-х б") 'switch-to-buffer)
+(global-set-key (kbd "C-х л") 'recentf)
+(global-set-key (kbd "C-х г") 'keyboard-quit)
 
 (define-key global-map (kbd "C-x t") 'beginning-of-buffer)
 (define-key global-map (kbd "C-x e") 'end-of-buffer)
+
 (global-set-key [S-tab] 'indent-for-tab-command)
 (define-key Info-mode-map [remap scroll-up-command] 'View-scroll-half-page-forward)
 (define-key Info-mode-map [remap scroll-down-command] 'View-scroll-half-page-backward)
@@ -235,24 +284,28 @@ This command does the inverse of `fill-paragraph'."
 	:map multiple-cursors-mode
 	(("C-?" . 'mc/unmark-next-like-this)
 	 ("C-c C-?".'mc/skip-to-next-like-this)
-	 ("C-<" . 'mc/mark-previous-like-this)
-	 ("C-S-s" . 'phi-search)
-	 ("C-S-r" . 'phi-search-backward))))
+	 ("C-<" . 'mc/mark-previous-like-this))))
 
-;; tsoding jai mode
-;; (require 'jai-mode)
-;; (add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
 
 ;; (use-package company
 ;;   :ensure t
 ;;   :init
 ;;   (global-company-mode))
 
-(add-hook 'c++-mode-hook 'ggtags-mode)
+(when (file-directory-p "~/.emacs.d/lisp")
+  (add-to-list 'load-path "~/.emacs.d/lisp")
 
-(add-hook 'org-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-c w") 'rc/org-link-copy)))
+  (when (file-directory-p "~/.emacs.d/lisp/witness")
+    (add-to-list 'load-path "~/.emacs.d/lisp/witness")))
+
+(require 'jai-mode)
+(add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
+
+;; (require 'simpc-mode)
+;; (add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
+;; (add-hook 'simpc-mode-hook 'ggtags-mode)
+
+;; (add-hook 'c++-mode-hook 'ggtags-mode)
 
 (defun my-project-compile ()
   "Run `compile' in the project root using the last entered command."
@@ -266,19 +319,33 @@ This command does the inverse of `fill-paragraph'."
     (compile command)))
 
 ;; ;; (setq my-current-project "/home/solaire/development/devkitpro/switch-examples/graphics/sdl2/sdl2-sanitycheck")
-;; (defun my-project-compile ()
-;;   "Run compile using `my-current-project` as the base directory if set, otherwise in the project root."
-;;   (interactive)
-;;   (let ((default-directory (if (and (boundp 'my-current-project)
-;;                                     my-current-project
-;;                                     (not (string-empty-p my-current-project)))
-;;                                my-current-project
-;;                              (project-root (project-current t))))
-;;         (command (or (and (boundp 'compile-command) compile-command)
-;;                      "make")))
-;;     (compile command)))
+(defun my-project-compile ()
+  "Run compile using `my-current-project` as the base directory if set, otherwise in the project root."
+  (interactive)
+  (let ((default-directory (if (and (boundp 'my-current-project)
+                                    my-current-project
+                                    (not (string-empty-p my-current-project)))
+                               my-current-project
+                             (project-root (project-current t))))
+        (command (or (and (boundp 'compile-command) compile-command)
+                     "make")))
+    (compile command)))
 
+;; use oberon-mode for .MOD files
+(add-to-list 'auto-mode-alist '("\\.MOD\\'" . oberon-mode))
 
+;; -(defun open-iterm-in-vc-root ()
+;; -  (interactive)
+;; -  (let ((project-root (caddr (project-current))))
+;; -    (shell-command (concat "open -a iTerm " project-root) nil nil)))
+
+;; open iterm in cwd
+(defun open-iterm-in-cwd ()
+  (interactive)
+    (shell-command (concat "open -a iTerm " default-directory) nil nil))
+
+;; TODO: recognize if this is has a makefile in the root directory
+;; if I need CMake I'll just use someone else's package
 (defun my-compile ()
   "Run compile without prompt."
   (interactive)
@@ -287,18 +354,6 @@ This command does the inverse of `fill-paragraph'."
                      compile-command
                    "make")))
     (compile command)))
-
-
-(global-set-key (kbd "<f5>") 'project-compile)
-(global-set-key (kbd "<f6>") (lambda () (interactive) (shell-command "/home/solaire/development/cpp/egl_opengl_study/build/03_cube_with_texture")))
-(global-set-key (kbd "<f7>") 'clang-format-buffer)
-
-(use-package orderless
-  :ensure t
-  :init
-  (setq completion-styles '(orderless flex)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
 
 (defun jai-compile-file ()
   "Compile the current Jai buffer."
@@ -316,6 +371,61 @@ This command does the inverse of `fill-paragraph'."
              (compile-command (format "python3 %s.py" base-name)))
         (compile compile-command)))
 
+(global-set-key (kbd "<f7>") 'clang-format-buffer)
+
+(defun dynamic-compile ()
+  "Dynamically dispatch compile command based on current major mode."
+  (interactive)
+  (cond
+   ((eq major-mode 'jai-mode) (jai-compile-file))
+   ((eq major-mode 'python-mode) (python-compile-file))
+   (t (my-compile))))
+
+(global-set-key (kbd "<f5>") 'dynamic-compile)
+
+
+(use-package orderless
+  :ensure t
+  :init
+  (setq completion-styles '(orderless flex)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+  Enable rich annotations using the Marginalia package
+(use-package marginalia
+  :ensure t
+  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+  ;; available in the *Completions* buffer, add it to the
+  ;; `completion-list-mode-map'.
+  :bind (:map minibuffer-local-map
+         ("M-A" . marginalia-cycle))
+
+  ;; The :init section is always executed.
+  :init
+
+  ;; Marginalia must be activated in the :init section of use-package such that
+  ;; the mode gets enabled right away. Note that this forces loading the
+  ;; package.
+  (marginalia-mode))
+
+
+;; (use-package vertico
+;;   :ensure t
+;;   :init
+;;   (vertico-mode)
+;;   (setq vertico-scroll-margin 0)
+;;   (setq vertico-count 20)
+;;   ;; (setq vertico-resize t)
+;;   (setq vertico-cycle t))
+
+(use-package which-key
+  :ensure t
+  :init
+  (which-key-mode))
+
+(use-package rustic
+  :disabled t)
+
 (defun my/copilot-tab ()
   (interactive)
   (or (copilot-accept-completion)
@@ -326,24 +436,25 @@ This command does the inverse of `fill-paragraph'."
   (or (copilot-clear-overlay)
       (keyboard-quit)))
 
-(use-package which-key
-  :ensure t
-  :init
-  (which-key-mode))
-
-(use-package rust-mode
-  :ensure t)
+;; (use-package yasnippet
+;;   :ensure t
+;;   :config
+;;   (yas-global-mode 1))
 
 (with-eval-after-load 'copilot
   (define-key copilot-mode-map (kbd "C-<tab>") #'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "C-g") #'my/copilot-c-g))
+  (define-key copilot-mode-map (kbd "C-g") #'my/copilot-c-g)
+  (define-key copilot-mode-map (kbd "C-c <tab>") #'copilot-accept-completion))
 
 
 (when (file-readable-p "~/.emacs.d/custom.el")
   (load "~/.emacs.d/custom.el"))
 
-;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el")
-;; (require 'copilot)
+(add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el")
+(require 'copilot)
+
+(with-eval-after-load 'multiple-cursors
+  (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
 
 (defun dired-do-llm-format (&optional arg)
   "Create a buffer with the contents of the marked (or next ARG) files, formatted in Markdown."
@@ -351,6 +462,7 @@ This command does the inverse of `fill-paragraph'."
   (let ((file-list (dired-get-marked-files t arg nil nil t))
         (buffer (generate-new-buffer "*LLM Format*")))
     (with-current-buffer buffer
+      (markdown-mode)
       (dolist (file file-list)
         ;; Insert the file name with backticks
         (insert "```" (file-name-nondirectory file) "\n")
@@ -385,233 +497,117 @@ This command does the inverse of `fill-paragraph'."
       ;; Display the buffer
       (switch-to-buffer-other-window "*LLM Compilation Output*"))))
 
+
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "b") 'dired-do-llm-format))
 
+(defun goto-bell ()
+  "uses sshx to navigate to solaire@bell:/home/solaire"
+  (interactive)
+  (dired "/sshx:solaire@bell:/home/solaire"))
 
-;; ======================== not currently in use
+(defun goto-windows ()
+  "Uses sftp to navigate to the C:\\Users\\toast directory on a Windows machine."
+  (interactive)
+  (dired "/sftp:toast@192.168.1.47:/C:/Users/toast"))
 
-;; === cua ===
+(defun load-oculus-tags ()
+  "uses sshx to navigate to solaire@bell:/home/solaire/development/cpp/oculus"
+  (interactive)
+  (visit-tags-table "/sshx:solaire@bell:/home/solaire/development/cpp/oculus/TAGS"))
 
-;; (cua-mode 1)
-;; (global-set-key (kbd "<M-up>") 'scroll-down-command)
-;; (global-set-key (kbd "<M-down>") 'scroll-up-command)
-;; (global-set-key (kbd "C-a") 'mark-whole-buffer)
-;; (global-set-key "\C-i" 'isearch-forward)
-;; (define-key isearch-mode-map (kbd "C-S-i") 'isearch-repeat-backward)
-;; (define-key isearch-mode-map (kbd "C-i") 'isearch-repeat-forward)
-;; (global-set-key (kbd "C-s") 'save-buffer)
+;; in rustic-compilation-mode, use `p` for previous-error-no-select
+(with-eval-after-load 'rustic
+  (define-key rustic-compilation-mode-map (kbd "p") 'previous-error-no-select))
 
-;; === meow ===
+;; set variable pitch font to helvetica neue
+;; (set-face-attribute 'variable-pitch nil :font "Helvetica Neue" :height 140)
 
-;; I really like Meow but I'm keeping this disabled. I wish the cursor
-;; were a single character selection like in Kakoune. Needing to start
-;; a selection with `w` before extending does not spark joy.
+;; mitsuharu
 
-;; (defun meow-setup ()
-;;   (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
-;;   (meow-leader-define-key
-;;    '("," . xref-pop-marker-stack)
-;;    '("." . xref-find-definitions)
-;;    '("f" . project-find-file)
-;;    '("w" . other-window)
-;;    '("W" . window-swap-states)
-;;    '("o" . delete-other-windows)
-;;    '("s" . split-window-right)
-;;    '("v" . split-window-below)
-;;    '("&" . +change-theme)
-;;    '(";" . comment-line)
-;;    '("K" . kill-this-buffer)
-;;    '("d" . dired)
-;;    '("b" . switch-to-buffer)
-;;    '("r" . rg-project)
-;;    '("f" . find-file)
-;;    '("i" . imenu)
-;;    '("a" . execute-extended-command)
-;;    '("=" . org-store-link)
-;;    '("p" . project-find-file)
-;;    '("j" . project-switch-to-buffer)
-;;    '("t" . tab-bar-switch-to-tab)
-;;    '("l" . project-switch-project)
-;;    '("y" . magit)
-;;    '("l" . recentf-open-files)
-;;    '("n" . org-roam-keymap)
-;;    '(":" . eval-expression)
-;;    '("e" . "C-x C-e")
-;;    '("u" . undo-tree-visualize)
-;;    ;; Use SPC (0-9) for digit arguments.
-;;    '("1" . meow-digit-argument)
-;;    '("2" . meow-digit-argument)
-;;    '("3" . meow-digit-argument)
-;;    '("4" . meow-digit-argument)
-;;    '("5" . meow-digit-argument)
-;;    '("6" . meow-digit-argument)
-;;    '("7" . meow-digit-argument)
-;;    '("8" . meow-digit-argument)
-;;    '("9" . meow-digit-argument)
-;;    '("0" . meow-digit-argument)
-;;    '("/" . meow-keypad-describe-key)
-;;    '("?" . meow-cheatsheet)
-;;    '("@" . mark-sexp))
-;;   (meow-normal-define-key
-;;    '("0" . meow-expand-0)
-;;    '("9" . meow-expand-9)
-;;    '("8" . meow-expand-8)
-;;    '("7" . meow-expand-7)
-;;    '("6" . meow-expand-6)
-;;    '("5" . meow-expand-5)
-;;    '("4" . meow-expand-4)
-;;    '("3" . meow-expand-3)
-;;    '("2" . meow-expand-2)
-;;    '("1" . meow-expand-1)
-;;    '("-" . negative-argument)
-;;    '(";" . meow-reverse)
-;;    '("," . meow-inner-of-thing)
-;;    '("." . meow-bounds-of-thing)
-;;    '("<" . meow-beginning-of-thing)
-;;    '(">" . meow-end-of-thing)
-;;    '("a" . meow-append)
-;;    '("A" . meow-open-below)
-;;    '("b" . meow-back-word)
-;;    '("B" . meow-back-symbol)
-;;    '("c" . meow-change)
-;;    '("d" . meow-delete)
-;;    '("D" . meow-backward-delete)
-;;    '("e" . meow-next-word)
-;;    '("E" . meow-next-symbol)
-;;    '("f" . meow-find)
-;;    '("g" . meow-cancel-selection)
-;;    '("G" . meow-grab)
-;;    '("h" . meow-left)
-;;    '("H" . meow-left-expand)
-;;    '("i" . meow-insert)
-;;    '("I" . meow-open-above)
-;;    '("n" . meow-next)
-;;    '("N" . meow-next-expand)
-;;    '("p" . meow-prev)
-;;    '("P" . meow-prev-expand)
-;;    '("l" . meow-right)
-;;    '("L" . meow-right-expand)
-;;    '("m" . meow-join)
-;;    '("s" . meow-search)
-;;    '("o" . meow-block)
-;;    '("O" . meow-to-block)
-;;    '("j" . meow-yank)
-;;    '("q" . meow-quit)
-;;    '("Q" . meow-goto-line)
-;;    '("r" . meow-replace)
-;;    '("R" . meow-swap-grab)
-;;    '("k" . meow-kill)
-;;    '("t" . meow-till)
-;;    '("u" . meow-undo)
-;;    '("U" . meow-undo-in-selection)
-;;    '("v" . meow-visit)
-;;    '("w" . meow-mark-word)
-;;    '("W" . meow-mark-symbol)
-;;    '("x" . meow-line)
-;;    '("X" . meow-goto-line)
-;;    '("y" . meow-save)
-;;    '("Y" . meow-sync-grab)
-;;    '("z" . meow-pop-selection)
-;;    '("'" . repeat)
-;;    '("&" . meow-query-replace-regexp)
-;;    '("%" . meow-query-replace)
-;;    '("]" . scroll-up-command)
-;;    '("[" . scroll-down-command)
-;;    '("{" . backward-paragraph)
-;;    '("}" . forward-paragraph)
-;;    '("<escape>" . ignore)))
-
-;; (use-package meow
-;;   :ensure t
-;;   :config
-;;   (meow-setup)
-;;   (meow-global-mode 1)
-;;   (setq meow-use-clipboard t)
-;;   (setq meow-visit-sanitize-completion nil)
-;;   )
-
-;; === lsp-bridge ===
-
-;; This is a very ambitious package, and I like a lot of what it does,
-;; but the external requirements are annoying. There's not really a good
-;; way to get it set up on some of my systems, which restrict pip.
-;; Requiring python is just annoying.
-
-;; dependencies
-;; (use-package markdown-mode
-;;   :ensure t)
-
-;; (use-package posframe
-;;   :ensure t)
-
-;; (use-package yasnippet
-;;   :ensure t
-;;   :config
-;;   (yas-global-mode 1))
+(defun je/reconfigure-nsappearance ()
+  (let ((appearance (plist-get (mac-application-state) :appearance)))
+    ;; Disable all currently enabled themes.
+    (mapc #'disable-theme custom-enabled-themes)
+    ;; Now load the theme based on the macOS appearance setting.
+    (if (string-equal appearance "NSAppearanceNameDarkAqua")
+        (load-theme 'modus-vivendi t)
+      (load-theme 'standard-light t))))
 
 
-;; (use-package lsp-bridge
-;;   :commands lsp-bridge-mode
-;;   :load-path "~/.emacs.d/lisp/lsp-bridge"
-;;   :ensure nil
+(add-hook 'mac-effective-appearance-change-hook 'je/reconfigure-nsappearance)
+
+;; (use-package pixel-scroll
 ;;   :bind
-;;   (:map lsp-bridge-mode-map
-;;         ("M-." . lsp-bridge-find-def)
-;;         ("M-n i" . lsp-bridge-find-impl)
-;;         ("M-n RET" . lsp-bridge-code-action)
-;;         ("M-n ." . lsp-bridge-find-def-other-window)
-;;         ("M-," . lsp-bridge-find-def-return)
-;;         ("M-n d" . lsp-bridge-lookup-documentation)
-;;         ("M-n r" . lsp-bridge-rename)
-;;         ("M-n n" . lsp-bridge-diagnostic-jump-next)
-;;         ("M-n p" . lsp-bridge-diagnostic-jump-prev)
-;;         ("M-n l" . lsp-bridge-diagnostic-list)
-;;         ("M-n q" . lsp-bridge-restart-process))
-
+;;   ([remap scroll-up-command]   . pixel-scroll-interpolate-down)
+;;   ([remap scroll-down-command] . pixel-scroll-interpolate-up)
+;;   :custom
+;;   (pixel-scroll-precision-interpolate-page t)
 ;;   :init
-;;   (use-package markdown-mode)
-;;   (use-package posframe)
-
-;;   :hook
-;;   (prog-mode . lsp-bridge-mode)
-
-;;   :config
-;;   (local-unset-key (kbd "M-,"))
-;;   (local-unset-key (kbd "M-."))
-;;   ;; (setq lsp-bridge-enable-auto-format-code nil)
-;;   ;; (setq lsp-bridge-auto-format-code-idle 3)
-;;   (setq markdown-enable-highlighting-syntax t)
-
-;;   (require 'cl-lib)
-;;   ;; (use-package format-all
-;;   ;;   :config
-;;   ;;   (add-hook 'prog-mode-hook 'format-all-mode)
-;;   ;;   :bind
-;;   ;;   (:map lsp-bridge-mode-map ;; no format-all-mode-map, use lsp bridge
-;;   ;;         ("M-n f" . format-all-buffer)))
-;;   )
-;; (setq lsp-bridge-enable-log t)
-;; (setq lsp-bridge-enable-debug t)
-
-;; customizations
-
-;; (use-package clipetty
-;;     :ensure t
-;;     :config
-;;     (global-clipetty-mode))
+;;   (pixel-scroll-precision-mode 1))
 
 
+(use-package paredit
+  :ensure t
+  :config
+  (autoload 'enable-paredit-mode "paredit" t)
+  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+  (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+  (add-hook 'racket-mode-hook #'enable-paredit-mode)
+  )
+  
+(defun format-comment (comment)
+  "Format COMMENT to ensure each line is at most 80 characters long without breaking words."
+  (let ((words (split-string comment))
+        (max-width 80)
+        (line "")
+        (formatted-comment ""))
+    (dolist (word words)
+      (if (> (+ (length line) (length word) 1) max-width)
+          (setq formatted-comment (concat formatted-comment line "\n")
+                line ""))
+      (setq line (if (string= line "")
+                     word
+                   (concat line " " word))))
+    (concat formatted-comment line)))
 
-;; (use-package smex
-;;   :ensure t)
+(defun format-comment-at-point ()
+  "Format the comment line at the point to be no more than 80 characters long without breaking words."
+  (interactive)
+  (let* ((max-width 78)  ; Adjusted for the space after the comment character
+         (line-start (line-beginning-position))
+         (line-end (line-end-position))
+         (full-line (buffer-substring line-start line-end))
+         (comment-prefix (if comment-start
+                             (concat comment-start " ")
+                           "# "))  ; Default to "#" if comment-start is nil
+         (words (cdr (split-string full-line)))  ; Skip the first element assuming it's the comment character
+         (formatted-comment comment-prefix)
+         (line ""))
+    (dolist (word words)
+      (if (> (+ (length line) (length word) 1) max-width)
+          (progn
+            (setq formatted-comment (concat formatted-comment line "\n" comment-prefix))
+            (setq line "")))
+      (setq line (concat line (if (string= line "") "" " ") word)))
+    (setq formatted-comment (concat formatted-comment line))
 
-;; (use-package ido-completing-read+
-;;   :ensure t)
+    (save-excursion
+      (delete-region line-start line-end)
+      (goto-char line-start)
+      (insert formatted-comment))))
 
-;; (ido-mode 1)
-;; (ido-everywhere 1)
-;; (ido-ubiquitous-mode 1)
+(global-set-key (kbd "C-c C-l") 'format-comment-at-point)
 
-;; (global-set-key (kbd "M-x") 'smex)
-;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+;; (setq frame-background-mode 'dark)
+
+;; (autoload 'gerbil-mode "gerbil-mode" "Gerbil editing mode." t)
+;; (defvar gerbil-program-name
+;;   (expand-file-name  "/opt/homebrew/bin/gxi"))
+
+;;(setq scheme-program-name gerbil-program-name)
+
