@@ -1,6 +1,7 @@
 ;; === Packages and Initialization ===
 
-(set-face-attribute 'default nil :font "Berkeley Mono" :height 140)
+;; (set-face-attribute 'default nil :font "Fira Mono" :height 120)
+;; (set-face-attribute 'default nil :font "Fira Mono" :height 100)
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -13,15 +14,19 @@
 ;; (use-package xclip
 ;;   :ensure t)
 
-(use-package clipetty
-  :ensure t)
+;; (use-package clipetty
+;;   :ensure t)
 
 ;; if this is a terminal session, enable global clipetty mode
-(if (not (display-graphic-p))
-    (global-clipetty-mode 1))
+;; (if (not (display-graphic-p))
+;;     (global-clipetty-mode 1))
 
 (use-package exec-path-from-shell
   :ensure t)
+;; (setq exec-path-from-shell-shell-name "/opt/homebrew/bin/fish")
+
+(setq exec-path-from-shell-debug t)
+(setq exec-path-from-shell-shell-name "/bin/zsh")
 
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
@@ -96,6 +101,7 @@
       modus-themes-fringes nil
       save-interprogram-paste-before-kill t
       compilation-scroll-output t
+      inferior-lisp-program "sbcl"
       ;; make cursor a line in all buffers
       )
 
@@ -116,18 +122,42 @@
 (xterm-mouse-mode 1)
 (recentf-mode 1)
 (global-auto-revert-mode 1)
-(show-paren-mode 1)
+(show-paren-mode -1)
 (savehist-mode 1)
 (save-place-mode 1)
 ;; (ido-mode 1)
-;; (global-hl-line-mode 1)
+(global-hl-line-mode -1)
 ;; (blink-cursor-mode 1)
 (scroll-bar-mode -1)
 ;; (context-menu-mode 1) ;; crashing emacs on mac
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (column-number-mode 1)
-(etags-regen-mode 1)
+;; (etags-regen-mode 1)
+
+;; if you turn this off again, state why
+;; because it keeps jumping around bro
+;; (fido-vertical-mode 1)
+;; (golden-ratio-mode -1)
+
+;; ido + smex
+(ido-mode t)
+(setq ido-enable-flex-matching t)
+
+(use-package smex
+  :ensure t
+  :init
+  (smex-initialize))
+
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; This is your old M-x.
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+(use-package zoom
+  :ensure t)
+(custom-set-variables
+ '(zoom-size '(0.618 . 0.618)))
 
 ;; === Functions ===
 
@@ -236,7 +266,7 @@ This command does the inverse of `fill-paragraph'."
 (global-set-key (kbd "C-c p") 'project-find-file)
 (global-set-key (kbd "C-o") 'other-window)
 (global-set-key (kbd "M-o") 'previous-buffer)
-(global-set-key (kbd "M-`") 'other-frame)
+(global-set-key (kbd "C-`") 'other-frame)
 (global-set-key (kbd "C-x l") 'recentf)
 (global-set-key (kbd "C-x C-l") 'recentf-open-files)
 (global-set-key (kbd "M-1") 'mark-advance-line)
@@ -292,33 +322,44 @@ This command does the inverse of `fill-paragraph'."
 ;;   :init
 ;;   (global-company-mode))
 
+(setq company-backends '(company-files company-dabbrev company-capf))
+
+
 (when (file-directory-p "~/.emacs.d/lisp")
   (add-to-list 'load-path "~/.emacs.d/lisp")
 
   (when (file-directory-p "~/.emacs.d/lisp/witness")
     (add-to-list 'load-path "~/.emacs.d/lisp/witness")))
 
+(add-to-list 'load-path "~/development/elisp/emacs-kaolin-themes/")
+(require 'kaolin-themes)
+
 (require 'jai-mode)
 (add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
 
-;; (require 'simpc-mode)
-;; (add-to-list 'auto-mode-alist '("\\.[hc]\\(pp\\)?\\'" . simpc-mode))
-;; (add-hook 'simpc-mode-hook 'ggtags-mode)
+(use-package citre
+  :defer t
+  :init
+  ;; This is needed in `:init' block for lazy load to work.
+  (require 'citre-config)
+  ;; Bind your frequently used commands.  Alternatively, you can define them
+  ;; in `citre-mode-map' so you can only use them when `citre-mode' is enabled.
+  (global-set-key (kbd "C-x c j") 'citre-jump)
+  (global-set-key (kbd "C-x c J") 'citre-jump-back)
+  (global-set-key (kbd "C-x c p") 'citre-ace-peek)
+  (global-set-key (kbd "C-x c u") 'citre-relocate-tags-file)
+  (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
+  :config
+  (setq
+   ;; Set these if readtags/ctags is not in your PATH.
+   citre-readtags-program "/opt/homebrew/bin/readtags"
+   citre-ctags-program "/opt/homebrew/bin/ctags"))
+(add-hook 'jai-mode-hook 'citre-mode)
+(add-hook 'c-mode-hook 'citre-mode)
+(add-hook 'c++-mode-hook 'citre-mode)
+(add-hook 'lua-mode-hook 'citre-mode)
 
-;; (add-hook 'c++-mode-hook 'ggtags-mode)
-
-(defun my-project-compile ()
-  "Run `compile' in the project root using the last entered command."
-  (interactive)
-  (let ((default-directory (project-root (project-current t)))
-        (compilation-buffer-name-function
-         (or project-compilation-buffer-name-function
-             compilation-buffer-name-function))
-        (command (or (and (boundp 'compile-command) compile-command)
-                     "make")))
-    (compile command)))
-
-;; ;; (setq my-current-project "/home/solaire/development/devkitpro/switch-examples/graphics/sdl2/sdl2-sanitycheck")
+;; (setq my-current-project "/home/solaire/development/devkitpro/switch-examples/graphics/sdl2/sdl2-sanitycheck")
 (defun my-project-compile ()
   "Run compile using `my-current-project` as the base directory if set, otherwise in the project root."
   (interactive)
@@ -331,18 +372,25 @@ This command does the inverse of `fill-paragraph'."
                      "make")))
     (compile command)))
 
+(defun my-cmake-compile ()
+  "run make out of the build subdirectory of the project root"
+  (interactive)
+    (let ((default-directory (concat (project-root (project-current t)) "/build"))
+            (command "ninja"))
+      (compile command)))
+
+
 ;; use oberon-mode for .MOD files
 (add-to-list 'auto-mode-alist '("\\.MOD\\'" . oberon-mode))
-
-;; -(defun open-iterm-in-vc-root ()
-;; -  (interactive)
-;; -  (let ((project-root (caddr (project-current))))
-;; -    (shell-command (concat "open -a iTerm " project-root) nil nil)))
 
 ;; open iterm in cwd
 (defun open-iterm-in-cwd ()
   (interactive)
     (shell-command (concat "open -a iTerm " default-directory) nil nil))
+
+(defun open-terminal-in-cwd ()
+  (interactive)
+    (shell-command (concat "open -a Terminal " default-directory) nil nil))
 
 ;; TODO: recognize if this is has a makefile in the root directory
 ;; if I need CMake I'll just use someone else's package
@@ -360,18 +408,36 @@ This command does the inverse of `fill-paragraph'."
   (interactive)
   (let* ((file-name (file-name-nondirectory (buffer-file-name)))
          (base-name (file-name-sans-extension file-name))
-         (compile-command (format "jai-macos %s.jai && ./%s" base-name base-name)))
+         (compile-command (format "jai-macos %s.jai" base-name)))
     (compile compile-command)))
 
-(defun python-compile-file ()
-    "Compile the current Python buffer."
-    (interactive)
-    (let* ((file-name (file-name-nondirectory (buffer-file-name)))
-             (base-name (file-name-sans-extension file-name))
-             (compile-command (format "python3 %s.py" base-name)))
-        (compile compile-command)))
+(defun jai-run-file ()
+  "Run the build file for the current Jai buffer."
+  (interactive)
+  (let* ((file-name (file-name-nondirectory (buffer-file-name)))
+         (base-name (file-name-sans-extension file-name))
+         (run-command (format "./%s" base-name)))
+    (compile run-command)
+    ))
 
+(defun python-compile-file ()
+  "Compile the current Python buffer."
+  (interactive)
+  (let* ((file-name (file-name-nondirectory (buffer-file-name)))
+         (base-name (file-name-sans-extension file-name))
+         (compile-command (format "python3 %s.py" base-name)))
+    (compile compile-command)))
+
+(global-set-key (kbd "<f6>") 'jai-run-file)
 (global-set-key (kbd "<f7>") 'clang-format-buffer)
+
+(defun lua-love-compile ()
+  "Compile the current Lua buffer for LÖVE projects."
+  (interactive)
+  (let* ((project-dir (expand-file-name (project-root (project-current t)))) ; Expand the path
+         (compile-command (format "cd %s && love ." (shell-quote-argument project-dir))))
+    (compile compile-command)))
+
 
 (defun dynamic-compile ()
   "Dynamically dispatch compile command based on current major mode."
@@ -379,10 +445,32 @@ This command does the inverse of `fill-paragraph'."
   (cond
    ((eq major-mode 'jai-mode) (jai-compile-file))
    ((eq major-mode 'python-mode) (python-compile-file))
+   ((eq major-mode 'lua-mode) (lua-love-compile))
    (t (my-compile))))
 
-(global-set-key (kbd "<f5>") 'dynamic-compile)
+(defun my-run ()
+  "A generalized run command. Prompts the user for a command to run and runs it asynchronously."
+  (interactive)
+  (let ((command (read-shell-command "Run command: ")))
+    (async-shell-command command "*Async Shell Command*")))
 
+(defun throwaway-run ()
+  (interactive)
+    (async-shell-command "/Users/jon/development/cpp/sdl3-cmake-tutorial/build/Debug/sdl-min.app/Contents/MacOS/sdl-min"))
+
+(defun dynamic-run ()
+  "Dynamically dispatch compile command based on current major mode."
+  (interactive)
+  (cond
+   ((eq major-mode 'jai-mode) (jai-run-file))
+   ((eq major-mode 'c++-mode) (jai-run-file))
+   (t (my-run))))
+
+(global-set-key (kbd "<f5>") 'dynamic-compile)
+(global-set-key (kbd "<f5>") 'my-compile)
+;; (global-set-key (kbd "<f5>") 'my-cmake-compile)
+(global-set-key (kbd "<f6>") 'throwaway-run)
+(global-set-key (kbd "<f6>") 'dynamic-run)
 
 (use-package orderless
   :ensure t
@@ -391,7 +479,7 @@ This command does the inverse of `fill-paragraph'."
         completion-category-defaults nil
         completion-category-overrides '((file (styles partial-completion)))))
 
-  Enable rich annotations using the Marginalia package
+  ;; Enable rich annotations using the Marginalia package
 (use-package marginalia
   :ensure t
   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
@@ -399,24 +487,8 @@ This command does the inverse of `fill-paragraph'."
   ;; `completion-list-mode-map'.
   :bind (:map minibuffer-local-map
          ("M-A" . marginalia-cycle))
-
-  ;; The :init section is always executed.
   :init
-
-  ;; Marginalia must be activated in the :init section of use-package such that
-  ;; the mode gets enabled right away. Note that this forces loading the
-  ;; package.
   (marginalia-mode))
-
-
-;; (use-package vertico
-;;   :ensure t
-;;   :init
-;;   (vertico-mode)
-;;   (setq vertico-scroll-margin 0)
-;;   (setq vertico-count 20)
-;;   ;; (setq vertico-resize t)
-;;   (setq vertico-cycle t))
 
 (use-package which-key
   :ensure t
@@ -446,12 +518,11 @@ This command does the inverse of `fill-paragraph'."
   (define-key copilot-mode-map (kbd "C-g") #'my/copilot-c-g)
   (define-key copilot-mode-map (kbd "C-c <tab>") #'copilot-accept-completion))
 
-
 (when (file-readable-p "~/.emacs.d/custom.el")
   (load "~/.emacs.d/custom.el"))
 
-(add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el")
-(require 'copilot)
+;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el")
+;; (require 'copilot)
 
 (with-eval-after-load 'multiple-cursors
   (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
@@ -520,9 +591,6 @@ This command does the inverse of `fill-paragraph'."
 (with-eval-after-load 'rustic
   (define-key rustic-compilation-mode-map (kbd "p") 'previous-error-no-select))
 
-;; set variable pitch font to helvetica neue
-;; (set-face-attribute 'variable-pitch nil :font "Helvetica Neue" :height 140)
-
 ;; mitsuharu
 
 (defun je/reconfigure-nsappearance ()
@@ -535,7 +603,7 @@ This command does the inverse of `fill-paragraph'."
       (load-theme 'standard-light t))))
 
 
-(add-hook 'mac-effective-appearance-change-hook 'je/reconfigure-nsappearance)
+;; (add-hook 'mac-effective-appearance-change-hook 'je/reconfigure-nsappearance)
 
 ;; (use-package pixel-scroll
 ;;   :bind
@@ -547,18 +615,18 @@ This command does the inverse of `fill-paragraph'."
 ;;   (pixel-scroll-precision-mode 1))
 
 
-(use-package paredit
-  :ensure t
-  :config
-  (autoload 'enable-paredit-mode "paredit" t)
-  (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-  (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-  (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-  (add-hook 'scheme-mode-hook #'enable-paredit-mode)
-  (add-hook 'clojure-mode-hook #'enable-paredit-mode)
-  (add-hook 'racket-mode-hook #'enable-paredit-mode)
-  )
+;; (use-package paredit
+;;   :ensure t
+;;   :config
+;;   (autoload 'enable-paredit-mode "paredit" t)
+;;   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
+;;   (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
+;;   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
+;;   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
+;;   (add-hook 'scheme-mode-hook #'enable-paredit-mode)
+;;   (add-hook 'clojure-mode-hook #'enable-paredit-mode)
+;;   (add-hook 'racket-mode-hook #'enable-paredit-mode)
+;;   )
   
 (defun format-comment (comment)
   "Format COMMENT to ensure each line is at most 80 characters long without breaking words."
@@ -605,9 +673,16 @@ This command does the inverse of `fill-paragraph'."
 
 ;; (setq frame-background-mode 'dark)
 
-;; (autoload 'gerbil-mode "gerbil-mode" "Gerbil editing mode." t)
-;; (defvar gerbil-program-name
-;;   (expand-file-name  "/opt/homebrew/bin/gxi"))
+;; defun to set cursor color to dark grey
+(defun greyme ()
+  (interactive)
+  (set-cursor-color "dark grey"))
 
-;;(setq scheme-program-name gerbil-program-name)
+(defun greenme ()
+  (interactive)
+  (set-cursor-color "chartreuse2"))
 
+(defun my-c++-mode-setup ()
+  (c-set-offset 'innamespace 0))
+
+(add-hook 'c++-mode-hook 'my-c++-mode-setup)
