@@ -1,6 +1,8 @@
 ;; === Packages and Initialization ===
 
 ;; (set-face-attribute 'default nil :font "Fira Mono" :height 120)
+;; (set-face-attribute 'default nil :font "Menlo" :height 120)
+;; (set-face-attribute 'default nil :font "Go Mono" :height 120)
 ;; (set-face-attribute 'default nil :font "Fira Mono" :height 100)
 
 (require 'package)
@@ -30,6 +32,31 @@
 
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
+
+;; (use-package eglot
+;;   :init
+;;   (add-hook 'go-mode-hook 'eglot-ensure)
+;;   :config
+;;   ;; bind c-c c-d to eldoc
+;;     (define-key eglot-mode-map (kbd "C-c C-d") 'eldoc)
+;;   )
+
+;; Go mode setup
+(use-package go-mode
+  :ensure t
+  :hook ((before-save . gofmt-before-save)
+         (before-save . goimports-before-save)))
+
+(defun goimports-before-save ()
+  "Replace `gofmt' with `goimports' if it is installed."
+  (if (executable-find "goimports")
+      (let ((gofmt-command "goimports"))
+        (gofmt-before-save))))
+
+(add-hook 'go-mode-hook (lambda ()
+                          (setq gofmt-command "goimports")
+                          (add-hook 'before-save-hook 'gofmt-before-save nil t)))
+
 
 (use-package undo-tree
   :diminish ;; Don't show an icon in the modeline
@@ -96,12 +123,12 @@
       tao-theme-use-boxes nil
       tao-theme-use-sepia nil
       compilation-always-kill t
-      ido-enable-flex-matching t
       completion-cycle-threshold 10
       modus-themes-fringes nil
       save-interprogram-paste-before-kill t
       compilation-scroll-output t
       inferior-lisp-program "sbcl"
+      completion-styles '(flex)
       ;; make cursor a line in all buffers
       )
 
@@ -116,6 +143,17 @@
 ;; (load-file "/Users/jon/.emacs.d/meow-setup.el")
 
 ;; === Modes ===
+(defun indent-last-pasted-region ()
+  "Indent the last pasted region."
+  (interactive)
+  (when (and (boundp 'last-command)
+             (or (eq last-command 'yank)
+                 (eq last-command 'yank-pop)))
+    (let ((mark-even-if-inactive t))
+      (indent-region (region-beginning) (region-end)))))
+
+;; bind it to Shift+tab
+(global-set-key (kbd "<backtab>") 'indent-last-pasted-region)
 
 (delete-selection-mode 1)
 ;; (xclip-mode 1)
@@ -136,23 +174,24 @@
 ;; (etags-regen-mode 1)
 
 ;; if you turn this off again, state why
-;; because it keeps jumping around bro
+;; - turning off because tired of it jumping aroun
+;; - turning on because it makes lookin at stuff with citre easier
 ;; (fido-vertical-mode 1)
-;; (golden-ratio-mode -1)
+
+;; (use-package smex
+;;   :ensure t
+;;   :init
+;;   (smex-initialize))
 
 ;; ido + smex
-(ido-mode t)
-(setq ido-enable-flex-matching t)
+;; (ido-mode t)
+;; (setq ido-enable-flex-matching t)
 
-(use-package smex
-  :ensure t
-  :init
-  (smex-initialize))
 
-(global-set-key (kbd "M-x") 'smex)
-(global-set-key (kbd "M-X") 'smex-major-mode-commands)
-;; This is your old M-x.
-(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+;; (global-set-key (kbd "M-x") 'smex)
+;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+;; ;; This is your old M-x.
+;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 (use-package zoom
   :ensure t)
@@ -316,14 +355,12 @@ This command does the inverse of `fill-paragraph'."
 	 ("C-c C-?".'mc/skip-to-next-like-this)
 	 ("C-<" . 'mc/mark-previous-like-this))))
 
-
 ;; (use-package company
 ;;   :ensure t
 ;;   :init
 ;;   (global-company-mode))
 
-(setq company-backends '(company-files company-dabbrev company-capf))
-
+;; (setq company-backends '(company-files company-dabbrev company-capf))
 
 (when (file-directory-p "~/.emacs.d/lisp")
   (add-to-list 'load-path "~/.emacs.d/lisp")
@@ -369,7 +406,7 @@ This command does the inverse of `fill-paragraph'."
                                my-current-project
                              (project-root (project-current t))))
         (command (or (and (boundp 'compile-command) compile-command)
-                     "make")))
+                     "./build.sh")))
     (compile command)))
 
 (defun my-cmake-compile ()
@@ -378,6 +415,28 @@ This command does the inverse of `fill-paragraph'."
     (let ((default-directory (concat (project-root (project-current t)) "/build"))
             (command "ninja"))
       (compile command)))
+
+(defun my-fips-compile ()
+  "run make out of the build subdirectory of the project root"
+  (interactive)
+    (let ((default-directory  (project-root (project-current t)))
+            (command "./fips build"))
+      (compile command)))
+(defun my-fips-compile ()
+  "Run make out of the build subdirectory of the project root."
+  (interactive)
+  (let ((default-directory (project-root (project-current t)))
+        (command "./fips build"))
+    (compile command)
+    (with-current-buffer "*compilation*"
+      (font-lock-mode -1))))
+
+(defun disable-font-lock-in-compilation-buffer ()
+  "Disable syntax highlighting in the compilation buffer."
+  (font-lock-mode -1))
+
+(add-hook 'compilation-mode-hook 'disable-font-lock-in-compilation-buffer)
+
 
 
 ;; use oberon-mode for .MOD files
@@ -390,7 +449,11 @@ This command does the inverse of `fill-paragraph'."
 
 (defun open-terminal-in-cwd ()
   (interactive)
-    (shell-command (concat "open -a Terminal " default-directory) nil nil))
+  (shell-command (concat "open -a Terminal " default-directory) nil nil))
+
+(defun open-terminal-in-project-root ()
+    (interactive)
+    (shell-command (concat "open -a Terminal " (project-root (project-current t))) nil nil))
 
 ;; TODO: recognize if this is has a makefile in the root directory
 ;; if I need CMake I'll just use someone else's package
@@ -429,7 +492,7 @@ This command does the inverse of `fill-paragraph'."
     (compile compile-command)))
 
 (global-set-key (kbd "<f6>") 'jai-run-file)
-(global-set-key (kbd "<f7>") 'clang-format-buffer)
+(global-set-key (kbd "<f7>") 'copilot-mode)
 
 (defun lua-love-compile ()
   "Compile the current Lua buffer for LÖVE projects."
@@ -456,7 +519,8 @@ This command does the inverse of `fill-paragraph'."
 
 (defun throwaway-run ()
   (interactive)
-    (async-shell-command "/Users/jon/development/cpp/sdl3-cmake-tutorial/build/Debug/sdl-min.app/Contents/MacOS/sdl-min"))
+  (async-shell-command "bash -c 'cd /Users/jon/development/cpp/sdl3-cmake/ && /Users/jon/development/cpp/sdl3-cmake/build/sdl-min.app/Contents/MacOS/sdl-min'"))
+
 
 (defun dynamic-run ()
   "Dynamically dispatch compile command based on current major mode."
@@ -467,28 +531,30 @@ This command does the inverse of `fill-paragraph'."
    (t (my-run))))
 
 (global-set-key (kbd "<f5>") 'dynamic-compile)
-(global-set-key (kbd "<f5>") 'my-compile)
-;; (global-set-key (kbd "<f5>") 'my-cmake-compile)
+(global-set-key (kbd "<f5>") 'my-project-compile)
+(global-set-key (kbd "<f5>") 'my-cmake-compile)
+(global-set-key (kbd "<f5>") 'my-fips-compile)
+(global-set-key (kbd "<f5>") 'compile)
 (global-set-key (kbd "<f6>") 'throwaway-run)
-(global-set-key (kbd "<f6>") 'dynamic-run)
+;; (global-set-key (kbd "<f6>") 'dynamic-run)
 
-(use-package orderless
-  :ensure t
-  :init
-  (setq completion-styles '(orderless flex)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+;; (use-package orderless
+;;   :ensure t
+;;   :init
+;;   (setq completion-styles '(orderless flex)
+;;         completion-category-defaults nil
+;;         completion-category-overrides '((file (styles partial-completion)))))
 
   ;; Enable rich annotations using the Marginalia package
-(use-package marginalia
-  :ensure t
-  ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
-  ;; available in the *Completions* buffer, add it to the
-  ;; `completion-list-mode-map'.
-  :bind (:map minibuffer-local-map
-         ("M-A" . marginalia-cycle))
-  :init
-  (marginalia-mode))
+;; (use-package marginalia
+;;   :ensure t
+;;   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
+;;   ;; available in the *Completions* buffer, add it to the
+;;   ;; `completion-list-mode-map'.
+;;   :bind (:map minibuffer-local-map
+;;          ("M-A" . marginalia-cycle))
+;;   :init
+;;   (marginalia-mode))
 
 (use-package which-key
   :ensure t
@@ -497,6 +563,10 @@ This command does the inverse of `fill-paragraph'."
 
 (use-package rustic
   :disabled t)
+
+(use-package expand-region
+  :ensure t
+  :bind ("C-=" . 'er/expand-region))
 
 (defun my/copilot-tab ()
   (interactive)
@@ -521,8 +591,8 @@ This command does the inverse of `fill-paragraph'."
 (when (file-readable-p "~/.emacs.d/custom.el")
   (load "~/.emacs.d/custom.el"))
 
-;; (add-to-list 'load-path "/Users/jon/.emacs.d/lisp/copilot.el")
-;; (require 'copilot)
+(add-to-list 'load-path "/Users/jon/.emacs.d/copilot.el")
+(require 'copilot)
 
 (with-eval-after-load 'multiple-cursors
   (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
@@ -546,6 +616,57 @@ This command does the inverse of `fill-paragraph'."
           (insert "\n```\n")))
       (goto-char (point-min)))
     (switch-to-buffer buffer)))
+
+(defun dired-do-llm-format (&optional arg)
+  "Create a buffer with the contents of the marked (or next ARG) files, formatted in Markdown."
+  (interactive)
+  (let ((file-list (dired-get-marked-files t arg nil nil t))
+        (buffer (generate-new-buffer "*LLM Format*"))
+        (header-text (read-string "Enter text to insert at the top of the buffer: ")))
+    (with-current-buffer buffer
+      (markdown-mode)
+      ;; Insert the header text at the top
+      (insert header-text "\n\n")
+      (dolist (file file-list)
+        ;; Insert the file name with backticks
+        (insert "```" (file-name-nondirectory file) "\n")
+        ;; Save the position
+        (let ((start (point)))
+          ;; Insert the file contents
+          (insert-file-contents file)
+          ;; Insert the closing backticks
+          (goto-char (point-max))
+          (insert "\n```\n")))
+      (goto-char (point-min)))
+    (switch-to-buffer buffer)))
+
+(defun ibuffer-do-llm-format (&optional arg)
+  "Create a buffer with the contents of the marked (or next ARG) buffers, formatted in Markdown."
+  (interactive "P")
+  (let ((buffer-list (ibuffer-get-marked-buffers))
+        (new-buffer (generate-new-buffer "*LLM Format*"))
+        (header-text (read-string "Enter text to insert at the top of the buffer: ")))
+    (with-current-buffer new-buffer
+      (markdown-mode)
+      ;; Insert the header text at the top
+      (insert header-text "\n\n")
+      (dolist (buf buffer-list)
+        ;; Insert the buffer name with backticks
+        (insert "```" (buffer-name buf) "\n")
+        ;; Save the position
+        (let ((start (point)))
+          ;; Insert the buffer contents
+          (insert-buffer-substring buf)
+          ;; Insert the closing backticks
+          (goto-char (point-max))
+          (insert "\n```\n")))
+      (goto-char (point-min)))
+    (switch-to-buffer new-buffer)))
+
+(with-eval-after-load 'ibuffer
+  (define-key ibuffer-mode-map (kbd "b") 'ibuffer-do-llm-format))
+
+
 
 (defun create-llm-compilation-output ()
   "Create a buffer named *LLM Compilation Output* with specified content."
@@ -686,3 +807,41 @@ This command does the inverse of `fill-paragraph'."
   (c-set-offset 'innamespace 0))
 
 (add-hook 'c++-mode-hook 'my-c++-mode-setup)
+
+(defun toggle-standard-themes ()
+  (interactive)
+  (if (eq (car custom-enabled-themes) 'standard-dark)
+      (progn
+        (disable-theme 'standard-dark)
+        (load-theme 'standard-light t))
+    (progn
+      (disable-theme 'standard-light)
+      (load-theme 'standard-dark t))))
+
+(when (>= emacs-major-version 28)
+  ;; emacs 28 or later. use icomplete-vertical-mode and set flex match
+  (setq completion-styles '(flex))
+  (icomplete-vertical-mode 1))
+
+;; switch between header and source file for c/h or cpp/h or cc/hh
+(defun switch-header-source ()
+  "Switch between header and source file."
+  (interactive)
+  (let* ((file-name (buffer-file-name))
+         (file-name-sans-extension (file-name-sans-extension file-name))
+         (extension (file-name-extension file-name))
+         (header-extension (cond
+                            ((string= extension "h") "cpp")
+                            ((string= extension "hpp") "cpp")
+                            ((string= extension "c") "h")
+                            ((string= extension "cc") "hh")
+                            ((string= extension "cpp") "h")
+                            ((string= extension "hh") "cc")
+                            (t nil)))
+         (header-file-name (concat file-name-sans-extension "." header-extension)))
+    (if (file-exists-p header-file-name)
+        (find-file header-file-name)
+      (message "Header file not found."))))
+
+;; bind it to f8
+(global-set-key (kbd "<f8>") 'switch-header-source)
