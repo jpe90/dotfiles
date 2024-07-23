@@ -1,9 +1,19 @@
-;; === Packages and Initialization ===
+;; === Fonts ===
 
+;; (set-face-attribute 'default nil :font "Fira Mono" :height 90)
+;; (set-face-attribute 'default nil :font "monospace" :height 120)
 ;; (set-face-attribute 'default nil :font "Fira Mono" :height 120)
-;; (set-face-attribute 'default nil :font "Menlo" :height 120)
+;; (set-face-attribute 'default nil :font "Fira Mono" :height 140)
+;; lower weight fira moono
+;; (set-face-attribute 'default nil :font "monospace" :height 100)
+;; (set-face-attribute 'default nil :font "Monaco" :height 90)
+;; (set-face-attribute 'default nil :font "Iosevka" :height 90)
+;; (set-face-attribute 'default nil :font "Menlo" :height 140)
+(set-face-attribute 'default nil :font "Menlo" :height 120)
 ;; (set-face-attribute 'default nil :font "Go Mono" :height 120)
-;; (set-face-attribute 'default nil :font "Fira Mono" :height 100)
+;; (set-face-attribute 'default nil :font "Fira Mono" :height 140)
+
+;; === Packages and Initialization ===
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -13,33 +23,11 @@
 (require 'uniquify)
 (require 'view)
 
-;; (use-package xclip
-;;   :ensure t)
-
-;; (use-package clipetty
-;;   :ensure t)
-
-;; if this is a terminal session, enable global clipetty mode
-;; (if (not (display-graphic-p))
-;;     (global-clipetty-mode 1))
-
 (use-package exec-path-from-shell
   :ensure t)
-;; (setq exec-path-from-shell-shell-name "/opt/homebrew/bin/fish")
-
-(setq exec-path-from-shell-debug t)
-(setq exec-path-from-shell-shell-name "/bin/zsh")
-
 (when (memq window-system '(mac ns x))
   (exec-path-from-shell-initialize))
-
-;; (use-package eglot
-;;   :init
-;;   (add-hook 'go-mode-hook 'eglot-ensure)
-;;   :config
-;;   ;; bind c-c c-d to eldoc
-;;     (define-key eglot-mode-map (kbd "C-c C-d") 'eldoc)
-;;   )
+;; (add-to-list 'exec-path "/Users/jon/.local/bin")
 
 ;; Go mode setup
 (use-package go-mode
@@ -129,18 +117,14 @@
       compilation-scroll-output t
       inferior-lisp-program "sbcl"
       completion-styles '(flex)
-      ;; make cursor a line in all buffers
-      )
-
-;; (set-default 'cursor-type 'bar)
+      gptel-api-key ""
+      gptel-model "gpt-4o")
 
 (unless backup-directory-alist
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                  "backups")))))
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 4)
-
-;; (load-file "/Users/jon/.emacs.d/meow-setup.el")
 
 ;; === Modes ===
 (defun indent-last-pasted-region ()
@@ -157,13 +141,14 @@
 
 (delete-selection-mode 1)
 ;; (xclip-mode 1)
-(xterm-mouse-mode 1)
+;;(xterm-mouse-mode 1)
 (recentf-mode 1)
 (global-auto-revert-mode 1)
 (show-paren-mode -1)
 (savehist-mode 1)
 (save-place-mode 1)
-;; (ido-mode 1)
+(show-paren-mode 1)
+(ido-mode 'buffers)
 (global-hl-line-mode -1)
 ;; (blink-cursor-mode 1)
 (scroll-bar-mode -1)
@@ -173,25 +158,28 @@
 (column-number-mode 1)
 ;; (etags-regen-mode 1)
 
-;; if you turn this off again, state why
 ;; - turning off because tired of it jumping aroun
 ;; - turning on because it makes lookin at stuff with citre easier
 ;; (fido-vertical-mode 1)
 
-;; (use-package smex
-;;   :ensure t
-;;   :init
-;;   (smex-initialize))
+(use-package smex
+  :ensure t
+  :init
+  (smex-initialize))
 
 ;; ido + smex
 ;; (ido-mode t)
 ;; (setq ido-enable-flex-matching t)
 
 
-;; (global-set-key (kbd "M-x") 'smex)
-;; (global-set-key (kbd "M-X") 'smex-major-mode-commands)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "M-X") 'smex-major-mode-commands)
 ;; ;; This is your old M-x.
-;; (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
+
+(use-package cider :ensure t
+    :bind ("C-c C-e" . cider-eval-print-last-expression))
+(setq cider-repl-pop-to-buffer-on-connect nil)
 
 (use-package zoom
   :ensure t)
@@ -341,8 +329,6 @@ This command does the inverse of `fill-paragraph'."
 (define-key Info-mode-map [remap scroll-up-command] 'View-scroll-half-page-forward)
 (define-key Info-mode-map [remap scroll-down-command] 'View-scroll-half-page-backward)
 
-;; ======== trial usage
-
 (use-package multiple-cursors
   :ensure t
   :bind (
@@ -368,11 +354,9 @@ This command does the inverse of `fill-paragraph'."
   (when (file-directory-p "~/.emacs.d/lisp/witness")
     (add-to-list 'load-path "~/.emacs.d/lisp/witness")))
 
-(add-to-list 'load-path "~/development/elisp/emacs-kaolin-themes/")
-(require 'kaolin-themes)
-
-(require 'jai-mode)
-(add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
+;; check to see if we have jai-mode
+;; (require 'jai-mode)
+;; (add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
 
 (use-package citre
   :defer t
@@ -396,7 +380,6 @@ This command does the inverse of `fill-paragraph'."
 (add-hook 'c++-mode-hook 'citre-mode)
 (add-hook 'lua-mode-hook 'citre-mode)
 
-;; (setq my-current-project "/home/solaire/development/devkitpro/switch-examples/graphics/sdl2/sdl2-sanitycheck")
 (defun my-project-compile ()
   "Run compile using `my-current-project` as the base directory if set, otherwise in the project root."
   (interactive)
@@ -437,8 +420,6 @@ This command does the inverse of `fill-paragraph'."
 
 (add-hook 'compilation-mode-hook 'disable-font-lock-in-compilation-buffer)
 
-
-
 ;; use oberon-mode for .MOD files
 (add-to-list 'auto-mode-alist '("\\.MOD\\'" . oberon-mode))
 
@@ -455,8 +436,6 @@ This command does the inverse of `fill-paragraph'."
     (interactive)
     (shell-command (concat "open -a Terminal " (project-root (project-current t))) nil nil))
 
-;; TODO: recognize if this is has a makefile in the root directory
-;; if I need CMake I'll just use someone else's package
 (defun my-compile ()
   "Run compile without prompt."
   (interactive)
@@ -480,16 +459,20 @@ This command does the inverse of `fill-paragraph'."
   (let* ((file-name (file-name-nondirectory (buffer-file-name)))
          (base-name (file-name-sans-extension file-name))
          (run-command (format "./%s" base-name)))
-    (compile run-command)
-    ))
+    (compile run-command)))
 
 (defun python-compile-file ()
-  "Compile the current Python buffer."
+  "Save the current buffer and run the Python file asynchronously in a dedicated, cleared buffer."
   (interactive)
-  (let* ((file-name (file-name-nondirectory (buffer-file-name)))
-         (base-name (file-name-sans-extension file-name))
-         (compile-command (format "python3 %s.py" base-name)))
-    (compile compile-command)))
+  (save-buffer)  ; Save the current buffer
+  (let* ((file-name (buffer-file-name))
+         (default-directory (file-name-directory file-name))
+         (command (format "python3 %s" (shell-quote-argument file-name)))
+         (buffer-name "*Python Output*"))
+    (when (get-buffer buffer-name)
+      (with-current-buffer buffer-name
+        (erase-buffer)))
+    (async-shell-command command buffer-name)))
 
 (global-set-key (kbd "<f6>") 'jai-run-file)
 (global-set-key (kbd "<f7>") 'copilot-mode)
@@ -530,13 +513,13 @@ This command does the inverse of `fill-paragraph'."
    ((eq major-mode 'c++-mode) (jai-run-file))
    (t (my-run))))
 
-(global-set-key (kbd "<f5>") 'dynamic-compile)
 (global-set-key (kbd "<f5>") 'my-project-compile)
 (global-set-key (kbd "<f5>") 'my-cmake-compile)
 (global-set-key (kbd "<f5>") 'my-fips-compile)
-(global-set-key (kbd "<f5>") 'compile)
-(global-set-key (kbd "<f6>") 'throwaway-run)
-;; (global-set-key (kbd "<f6>") 'dynamic-run)
+(global-set-key (kbd "<f5>") 'code-cells-eval)
+(global-set-key (kbd "<f5>") 'dynamic-compile)
+
+(global-set-key (kbd "<f6>") 'dynamic-run)
 
 ;; (use-package orderless
 ;;   :ensure t
@@ -591,8 +574,8 @@ This command does the inverse of `fill-paragraph'."
 (when (file-readable-p "~/.emacs.d/custom.el")
   (load "~/.emacs.d/custom.el"))
 
-(add-to-list 'load-path "/Users/jon/.emacs.d/copilot.el")
-(require 'copilot)
+;; (add-to-list 'load-path "/Users/jon/.emacs.d/copilot.el")
+;; (require 'copilot)
 
 (with-eval-after-load 'multiple-cursors
   (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
@@ -666,8 +649,6 @@ This command does the inverse of `fill-paragraph'."
 (with-eval-after-load 'ibuffer
   (define-key ibuffer-mode-map (kbd "b") 'ibuffer-do-llm-format))
 
-
-
 (defun create-llm-compilation-output ()
   "Create a buffer named *LLM Compilation Output* with specified content."
   (interactive)
@@ -720,11 +701,10 @@ This command does the inverse of `fill-paragraph'."
     (mapc #'disable-theme custom-enabled-themes)
     ;; Now load the theme based on the macOS appearance setting.
     (if (string-equal appearance "NSAppearanceNameDarkAqua")
-        (load-theme 'modus-vivendi t)
+        (load-theme 'standard-dark t)
       (load-theme 'standard-light t))))
 
-
-;; (add-hook 'mac-effective-appearance-change-hook 'je/reconfigure-nsappearance)
+(add-hook 'mac-effective-appearance-change-hook 'je/reconfigure-nsappearance)
 
 ;; (use-package pixel-scroll
 ;;   :bind
@@ -735,19 +715,18 @@ This command does the inverse of `fill-paragraph'."
 ;;   :init
 ;;   (pixel-scroll-precision-mode 1))
 
+(use-package paredit
+  :ensure t
+  :hook ((clojure-mode
+          scheme-mode
+          emacs-lisp-mode
+          lisp-mode
+          racket-mode) . enable-paredit-mode)
+  :config
+  (show-paren-mode t))
 
-;; (use-package paredit
-;;   :ensure t
-;;   :config
-;;   (autoload 'enable-paredit-mode "paredit" t)
-;;   (add-hook 'emacs-lisp-mode-hook #'enable-paredit-mode)
-;;   (add-hook 'eval-expression-minibuffer-setup-hook #'enable-paredit-mode)
-;;   (add-hook 'lisp-mode-hook #'enable-paredit-mode)
-;;   (add-hook 'lisp-interaction-mode-hook #'enable-paredit-mode)
-;;   (add-hook 'scheme-mode-hook #'enable-paredit-mode)
-;;   (add-hook 'clojure-mode-hook #'enable-paredit-mode)
-;;   (add-hook 'racket-mode-hook #'enable-paredit-mode)
-;;   )
+(use-package ox-hugo
+  :ensure t)
   
 (defun format-comment (comment)
   "Format COMMENT to ensure each line is at most 80 characters long without breaking words."
@@ -843,5 +822,60 @@ This command does the inverse of `fill-paragraph'."
         (find-file header-file-name)
       (message "Header file not found."))))
 
-;; bind it to f8
 (global-set-key (kbd "<f8>") 'switch-header-source)
+
+
+(with-eval-after-load 'code-cells
+  (let ((map code-cells-mode-map))
+    (define-key map "n" (code-cells-speed-key 'code-cells-forward-cell))
+    (define-key map "p" (code-cells-speed-key 'code-cells-backward-cell))
+    (define-key map "e" (code-cells-speed-key 'code-cells-eval))
+    (define-key map (kbd "TAB") (code-cells-speed-key 'outline-cycle))))
+
+;; command to wrap selection in <center> tag
+(defun wrap-in-center-tag ()
+  "Wrap the selected text in a <center> tag."
+  (interactive)
+  (let ((start (region-beginning))
+        (end (region-end)))
+    (goto-char end)
+    (insert "</center>")
+    (goto-char start)
+    (insert "<center>")))
+;; bind it to C-c C-e in markdown
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (local-set-key (kbd "C-c C-e") 'wrap-in-center-tag)))
+(defun disable-eldoc-in-python-mode ()
+  "Disable eldoc-mode in python-mode."
+  (when (derived-mode-p 'python-mode)
+    (eldoc-mode -1)))
+
+(use-package auto-virtualenv
+  :ensure t
+  :init
+  (use-package pyvenv
+    :ensure t)
+  :config
+  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+  ;; (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)  ;; If using projectile
+  )
+(add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+
+(use-package perspective
+  :bind
+  ("C-x C-b" . persp-list-buffers) ; or use a nicer switcher, see below
+  :custom
+  (persp-mode-prefix-key (kbd "C-c M-p")) ; pick your own prefix key here
+  :init
+  (persp-mode))
+
+(when (file-readable-p "~/.emacs.d/persp-state")
+  (persp-state-load "~/.emacs.d/persp-state"))
+
+(add-hook 'window-configuration-change-hook 'auto-virtualenv-set-virtualenv)
+(add-hook 'focus-in-hook 'auto-virtualenv-set-virtualenv)
+
+(add-hook 'python-mode-hook 'disable-eldoc-in-python-mode)
+(add-hook 'python-mode-hook 'code-cells-mode-maybe)
+
