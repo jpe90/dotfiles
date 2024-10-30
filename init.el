@@ -1,17 +1,7 @@
 ;; === Fonts ===
 
-;; (set-face-attribute 'default nil :font "Fira Mono" :height 90)
-;; (set-face-attribute 'default nil :font "monospace" :height 120)
-;; (set-face-attribute 'default nil :font "Fira Mono" :height 120)
-;; (set-face-attribute 'default nil :font "Fira Mono" :height 140)
-;; lower weight fira moono
-;; (set-face-attribute 'default nil :font "monospace" :height 100)
-;; (set-face-attribute 'default nil :font "Monaco" :height 90)
-;; (set-face-attribute 'default nil :font "Iosevka" :height 90)
-;; (set-face-attribute 'default nil :font "Menlo" :height 140)
-(set-face-attribute 'default nil :font "Menlo" :height 120)
-;; (set-face-attribute 'default nil :font "Go Mono" :height 120)
-;; (set-face-attribute 'default nil :font "Fira Mono" :height 140)
+(set-face-attribute 'default nil :font "SF Mono" :height 100)
+;; (set-face-attribute 'default nil :font "Iosevka" :height 160)
 
 ;; === Packages and Initialization ===
 
@@ -23,50 +13,31 @@
 (require 'uniquify)
 (require 'view)
 
-(use-package exec-path-from-shell
-  :ensure t)
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-;; (add-to-list 'exec-path "/Users/jon/.local/bin")
-
-;; Go mode setup
-(use-package go-mode
-  :ensure t
-  :hook ((before-save . gofmt-before-save)
-         (before-save . goimports-before-save)))
-
-(defun goimports-before-save ()
-  "Replace `gofmt' with `goimports' if it is installed."
-  (if (executable-find "goimports")
-      (let ((gofmt-command "goimports"))
-        (gofmt-before-save))))
-
-(add-hook 'go-mode-hook (lambda ()
-                          (setq gofmt-command "goimports")
-                          (add-hook 'before-save-hook 'gofmt-before-save nil t)))
-
-
-(use-package undo-tree
-  :diminish ;; Don't show an icon in the modeline
-  :ensure t
-  :bind ("C-x u" . undo-tree-visualize)
-  :init
-  (global-undo-tree-mode)
-  :config
-  ;; Each node in the undo tree should have a timestamp.
-  (setq undo-tree-visualizer-timestamps t)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-
-  ;; Show a diff window displaying changes between undo nodes.
-  (setq undo-tree-visualizer-diff t))
-
-(use-package ansi-color
-    :hook (compilation-filter . ansi-color-compilation-filter)) 
-
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (autoload 'zap-up-to-char "misc"
   "Kill up to, but not including ARGth occurrence of CHAR." t)
+
+;; (add-hook 'python-mode-hook
+;;           (lambda ()
+;;             (python-ts-mode 1)
+;;             (eglot-ensure)))
+
+(add-hook 'python-mode-hook
+          (lambda ()
+            (if (fboundp 'python-ts-mode)
+                (python-ts-mode 1)
+              (message "python-ts-mode not available"))
+            (if (fboundp 'eglot-ensure)
+                (eglot-ensure)
+              (message "eglot-ensure not available"))))
+
+;; (setq frame-background-mode 'dark)
+
+
+;; (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
+;; (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+(setq-default c-basic-offset 4)
 
 ;; === Various Settings ===
 
@@ -117,8 +88,11 @@
       compilation-scroll-output t
       inferior-lisp-program "sbcl"
       completion-styles '(flex)
-      gptel-api-key ""
-      gptel-model "gpt-4o")
+      ;; put backup files in the .emacs.d/backups directory
+      backup-directory-alist `(("." . ,(concat user-emacs-directory
+                                                 "backups")))
+      )
+      
 
 (unless backup-directory-alist
   (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
@@ -151,11 +125,12 @@
 (ido-mode 'buffers)
 (global-hl-line-mode -1)
 ;; (blink-cursor-mode 1)
-(scroll-bar-mode -1)
+;; (scroll-bar-mode -1)
 ;; (context-menu-mode 1) ;; crashing emacs on mac
 (menu-bar-mode -1)
 (tool-bar-mode -1)
 (column-number-mode 1)
+(pixel-scroll-mode 1)
 ;; (etags-regen-mode 1)
 
 ;; - turning off because tired of it jumping aroun
@@ -167,9 +142,33 @@
   :init
   (smex-initialize))
 
+
+(use-package which-key
+  :ensure t)
+
+(use-package magit
+  :ensure t)
+
+(use-package deadgrep
+  :ensure t)
+
+(use-package multiple-cursors
+  :ensure t
+  :bind (
+	( "C-S-c C-S-c" . 'mc/edit-lines)
+	("C-S-a C-S-a" . 'mc/edit-beginnings-of-lines)
+	("C-c C->" . 'mc/mark-all-like-this)
+	("C->" . 'mc/mark-next-like-this)
+	:map multiple-cursors-mode
+	(("C-?" . 'mc/unmark-next-like-this)
+	 ("C-c C-?".'mc/skip-to-next-like-this)
+	 ("C-<" . 'mc/mark-previous-like-this)
+	 ("C-S-s" . 'phi-search)
+	 ("C-S-r" . 'phi-search-backward))))
+
 ;; ido + smex
-;; (ido-mode t)
-;; (setq ido-enable-flex-matching t)
+(ido-mode t)
+(setq ido-enable-flex-matching t)
 
 
 (global-set-key (kbd "M-x") 'smex)
@@ -177,22 +176,7 @@
 ;; ;; This is your old M-x.
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
-(use-package cider :ensure t
-    :bind ("C-c C-e" . cider-eval-print-last-expression))
-(setq cider-repl-pop-to-buffer-on-connect nil)
-
-(use-package zoom
-  :ensure t)
-(custom-set-variables
- '(zoom-size '(0.618 . 0.618)))
-
 ;; === Functions ===
-
-(defun create-tags (dir-name)
-  "Create tags file."
-  (interactive "DDirectory: ")
-  (shell-command
-   (format "%s -f TAGS -e -R %s" path-to-ctags (directory-file-name dir-name))))
 
 (defun previous-buffer ()
   "Switch to previously open buffer.
@@ -326,27 +310,6 @@ This command does the inverse of `fill-paragraph'."
 (define-key global-map (kbd "C-x e") 'end-of-buffer)
 
 (global-set-key [S-tab] 'indent-for-tab-command)
-(define-key Info-mode-map [remap scroll-up-command] 'View-scroll-half-page-forward)
-(define-key Info-mode-map [remap scroll-down-command] 'View-scroll-half-page-backward)
-
-(use-package multiple-cursors
-  :ensure t
-  :bind (
-	( "C-S-c C-S-c" . 'mc/edit-lines)
-	("C-S-a C-S-a" . 'mc/edit-beginnings-of-lines)
-	("C-c C->" . 'mc/mark-all-like-this)
-	("C->" . 'mc/mark-next-like-this)
-	:map multiple-cursors-mode
-	(("C-?" . 'mc/unmark-next-like-this)
-	 ("C-c C-?".'mc/skip-to-next-like-this)
-	 ("C-<" . 'mc/mark-previous-like-this))))
-
-;; (use-package company
-;;   :ensure t
-;;   :init
-;;   (global-company-mode))
-
-;; (setq company-backends '(company-files company-dabbrev company-capf))
 
 (when (file-directory-p "~/.emacs.d/lisp")
   (add-to-list 'load-path "~/.emacs.d/lisp")
@@ -354,228 +317,14 @@ This command does the inverse of `fill-paragraph'."
   (when (file-directory-p "~/.emacs.d/lisp/witness")
     (add-to-list 'load-path "~/.emacs.d/lisp/witness")))
 
-;; check to see if we have jai-mode
-;; (require 'jai-mode)
-;; (add-to-list 'auto-mode-alist '("\\.jai\\'" . jai-mode))
-
-(use-package citre
-  :defer t
-  :init
-  ;; This is needed in `:init' block for lazy load to work.
-  (require 'citre-config)
-  ;; Bind your frequently used commands.  Alternatively, you can define them
-  ;; in `citre-mode-map' so you can only use them when `citre-mode' is enabled.
-  (global-set-key (kbd "C-x c j") 'citre-jump)
-  (global-set-key (kbd "C-x c J") 'citre-jump-back)
-  (global-set-key (kbd "C-x c p") 'citre-ace-peek)
-  (global-set-key (kbd "C-x c u") 'citre-relocate-tags-file)
-  (global-set-key (kbd "C-x c u") 'citre-update-this-tags-file)
-  :config
-  (setq
-   ;; Set these if readtags/ctags is not in your PATH.
-   citre-readtags-program "/opt/homebrew/bin/readtags"
-   citre-ctags-program "/opt/homebrew/bin/ctags"))
-(add-hook 'jai-mode-hook 'citre-mode)
-(add-hook 'c-mode-hook 'citre-mode)
-(add-hook 'c++-mode-hook 'citre-mode)
-(add-hook 'lua-mode-hook 'citre-mode)
-
-(defun my-project-compile ()
-  "Run compile using `my-current-project` as the base directory if set, otherwise in the project root."
-  (interactive)
-  (let ((default-directory (if (and (boundp 'my-current-project)
-                                    my-current-project
-                                    (not (string-empty-p my-current-project)))
-                               my-current-project
-                             (project-root (project-current t))))
-        (command (or (and (boundp 'compile-command) compile-command)
-                     "./build.sh")))
-    (compile command)))
-
-(defun my-cmake-compile ()
-  "run make out of the build subdirectory of the project root"
-  (interactive)
-    (let ((default-directory (concat (project-root (project-current t)) "/build"))
-            (command "ninja"))
-      (compile command)))
-
-(defun my-fips-compile ()
-  "run make out of the build subdirectory of the project root"
-  (interactive)
-    (let ((default-directory  (project-root (project-current t)))
-            (command "./fips build"))
-      (compile command)))
-(defun my-fips-compile ()
-  "Run make out of the build subdirectory of the project root."
-  (interactive)
-  (let ((default-directory (project-root (project-current t)))
-        (command "./fips build"))
-    (compile command)
-    (with-current-buffer "*compilation*"
-      (font-lock-mode -1))))
-
 (defun disable-font-lock-in-compilation-buffer ()
   "Disable syntax highlighting in the compilation buffer."
   (font-lock-mode -1))
 
 (add-hook 'compilation-mode-hook 'disable-font-lock-in-compilation-buffer)
 
-;; use oberon-mode for .MOD files
-(add-to-list 'auto-mode-alist '("\\.MOD\\'" . oberon-mode))
-
-;; open iterm in cwd
-(defun open-iterm-in-cwd ()
-  (interactive)
-    (shell-command (concat "open -a iTerm " default-directory) nil nil))
-
-(defun open-terminal-in-cwd ()
-  (interactive)
-  (shell-command (concat "open -a Terminal " default-directory) nil nil))
-
-(defun open-terminal-in-project-root ()
-    (interactive)
-    (shell-command (concat "open -a Terminal " (project-root (project-current t))) nil nil))
-
-(defun my-compile ()
-  "Run compile without prompt."
-  (interactive)
-  ;; Use the existing compile-command, or "make" if compile-command is empty
-  (let ((command (if (and compile-command (not (string-empty-p compile-command)))
-                     compile-command
-                   "make")))
-    (compile command)))
-
-(defun jai-compile-file ()
-  "Compile the current Jai buffer."
-  (interactive)
-  (let* ((file-name (file-name-nondirectory (buffer-file-name)))
-         (base-name (file-name-sans-extension file-name))
-         (compile-command (format "jai-macos %s.jai" base-name)))
-    (compile compile-command)))
-
-(defun jai-run-file ()
-  "Run the build file for the current Jai buffer."
-  (interactive)
-  (let* ((file-name (file-name-nondirectory (buffer-file-name)))
-         (base-name (file-name-sans-extension file-name))
-         (run-command (format "./%s" base-name)))
-    (compile run-command)))
-
-(defun python-compile-file ()
-  "Save the current buffer and run the Python file asynchronously in a dedicated, cleared buffer."
-  (interactive)
-  (save-buffer)  ; Save the current buffer
-  (let* ((file-name (buffer-file-name))
-         (default-directory (file-name-directory file-name))
-         (command (format "python3 %s" (shell-quote-argument file-name)))
-         (buffer-name "*Python Output*"))
-    (when (get-buffer buffer-name)
-      (with-current-buffer buffer-name
-        (erase-buffer)))
-    (async-shell-command command buffer-name)))
-
-(global-set-key (kbd "<f6>") 'jai-run-file)
-(global-set-key (kbd "<f7>") 'copilot-mode)
-
-(defun lua-love-compile ()
-  "Compile the current Lua buffer for LÖVE projects."
-  (interactive)
-  (let* ((project-dir (expand-file-name (project-root (project-current t)))) ; Expand the path
-         (compile-command (format "cd %s && love ." (shell-quote-argument project-dir))))
-    (compile compile-command)))
-
-
-(defun dynamic-compile ()
-  "Dynamically dispatch compile command based on current major mode."
-  (interactive)
-  (cond
-   ((eq major-mode 'jai-mode) (jai-compile-file))
-   ((eq major-mode 'python-mode) (python-compile-file))
-   ((eq major-mode 'lua-mode) (lua-love-compile))
-   (t (my-compile))))
-
-(defun my-run ()
-  "A generalized run command. Prompts the user for a command to run and runs it asynchronously."
-  (interactive)
-  (let ((command (read-shell-command "Run command: ")))
-    (async-shell-command command "*Async Shell Command*")))
-
-(defun throwaway-run ()
-  (interactive)
-  (async-shell-command "bash -c 'cd /Users/jon/development/cpp/sdl3-cmake/ && /Users/jon/development/cpp/sdl3-cmake/build/sdl-min.app/Contents/MacOS/sdl-min'"))
-
-
-(defun dynamic-run ()
-  "Dynamically dispatch compile command based on current major mode."
-  (interactive)
-  (cond
-   ((eq major-mode 'jai-mode) (jai-run-file))
-   ((eq major-mode 'c++-mode) (jai-run-file))
-   (t (my-run))))
-
-(global-set-key (kbd "<f5>") 'my-project-compile)
-(global-set-key (kbd "<f5>") 'my-cmake-compile)
-(global-set-key (kbd "<f5>") 'my-fips-compile)
-(global-set-key (kbd "<f5>") 'code-cells-eval)
-(global-set-key (kbd "<f5>") 'dynamic-compile)
-
-(global-set-key (kbd "<f6>") 'dynamic-run)
-
-;; (use-package orderless
-;;   :ensure t
-;;   :init
-;;   (setq completion-styles '(orderless flex)
-;;         completion-category-defaults nil
-;;         completion-category-overrides '((file (styles partial-completion)))))
-
-  ;; Enable rich annotations using the Marginalia package
-;; (use-package marginalia
-;;   :ensure t
-;;   ;; Bind `marginalia-cycle' locally in the minibuffer.  To make the binding
-;;   ;; available in the *Completions* buffer, add it to the
-;;   ;; `completion-list-mode-map'.
-;;   :bind (:map minibuffer-local-map
-;;          ("M-A" . marginalia-cycle))
-;;   :init
-;;   (marginalia-mode))
-
-(use-package which-key
-  :ensure t
-  :init
-  (which-key-mode))
-
-(use-package rustic
-  :disabled t)
-
-(use-package expand-region
-  :ensure t
-  :bind ("C-=" . 'er/expand-region))
-
-(defun my/copilot-tab ()
-  (interactive)
-  (or (copilot-accept-completion)
-      (dabbrev-expand)))
-
-(defun my/copilot-c-g ()
-  (interactive)
-  (or (copilot-clear-overlay)
-      (keyboard-quit)))
-
-;; (use-package yasnippet
-;;   :ensure t
-;;   :config
-;;   (yas-global-mode 1))
-
-(with-eval-after-load 'copilot
-  (define-key copilot-mode-map (kbd "C-<tab>") #'copilot-accept-completion)
-  (define-key copilot-mode-map (kbd "C-g") #'my/copilot-c-g)
-  (define-key copilot-mode-map (kbd "C-c <tab>") #'copilot-accept-completion))
-
 (when (file-readable-p "~/.emacs.d/custom.el")
   (load "~/.emacs.d/custom.el"))
-
-;; (add-to-list 'load-path "/Users/jon/.emacs.d/copilot.el")
-;; (require 'copilot)
 
 (with-eval-after-load 'multiple-cursors
   (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
@@ -674,134 +423,6 @@ This command does the inverse of `fill-paragraph'."
 (with-eval-after-load 'dired
   (define-key dired-mode-map (kbd "b") 'dired-do-llm-format))
 
-(defun goto-bell ()
-  "uses sshx to navigate to solaire@bell:/home/solaire"
-  (interactive)
-  (dired "/sshx:solaire@bell:/home/solaire"))
-
-(defun goto-windows ()
-  "Uses sftp to navigate to the C:\\Users\\toast directory on a Windows machine."
-  (interactive)
-  (dired "/sftp:toast@192.168.1.47:/C:/Users/toast"))
-
-(defun load-oculus-tags ()
-  "uses sshx to navigate to solaire@bell:/home/solaire/development/cpp/oculus"
-  (interactive)
-  (visit-tags-table "/sshx:solaire@bell:/home/solaire/development/cpp/oculus/TAGS"))
-
-;; in rustic-compilation-mode, use `p` for previous-error-no-select
-(with-eval-after-load 'rustic
-  (define-key rustic-compilation-mode-map (kbd "p") 'previous-error-no-select))
-
-;; mitsuharu
-
-(defun je/reconfigure-nsappearance ()
-  (let ((appearance (plist-get (mac-application-state) :appearance)))
-    ;; Disable all currently enabled themes.
-    (mapc #'disable-theme custom-enabled-themes)
-    ;; Now load the theme based on the macOS appearance setting.
-    (if (string-equal appearance "NSAppearanceNameDarkAqua")
-        (load-theme 'standard-dark t)
-      (load-theme 'standard-light t))))
-
-(add-hook 'mac-effective-appearance-change-hook 'je/reconfigure-nsappearance)
-
-;; (use-package pixel-scroll
-;;   :bind
-;;   ([remap scroll-up-command]   . pixel-scroll-interpolate-down)
-;;   ([remap scroll-down-command] . pixel-scroll-interpolate-up)
-;;   :custom
-;;   (pixel-scroll-precision-interpolate-page t)
-;;   :init
-;;   (pixel-scroll-precision-mode 1))
-
-(use-package paredit
-  :ensure t
-  :hook ((clojure-mode
-          scheme-mode
-          emacs-lisp-mode
-          lisp-mode
-          racket-mode) . enable-paredit-mode)
-  :config
-  (show-paren-mode t))
-
-(use-package ox-hugo
-  :ensure t)
-  
-(defun format-comment (comment)
-  "Format COMMENT to ensure each line is at most 80 characters long without breaking words."
-  (let ((words (split-string comment))
-        (max-width 80)
-        (line "")
-        (formatted-comment ""))
-    (dolist (word words)
-      (if (> (+ (length line) (length word) 1) max-width)
-          (setq formatted-comment (concat formatted-comment line "\n")
-                line ""))
-      (setq line (if (string= line "")
-                     word
-                   (concat line " " word))))
-    (concat formatted-comment line)))
-
-(defun format-comment-at-point ()
-  "Format the comment line at the point to be no more than 80 characters long without breaking words."
-  (interactive)
-  (let* ((max-width 78)  ; Adjusted for the space after the comment character
-         (line-start (line-beginning-position))
-         (line-end (line-end-position))
-         (full-line (buffer-substring line-start line-end))
-         (comment-prefix (if comment-start
-                             (concat comment-start " ")
-                           "# "))  ; Default to "#" if comment-start is nil
-         (words (cdr (split-string full-line)))  ; Skip the first element assuming it's the comment character
-         (formatted-comment comment-prefix)
-         (line ""))
-    (dolist (word words)
-      (if (> (+ (length line) (length word) 1) max-width)
-          (progn
-            (setq formatted-comment (concat formatted-comment line "\n" comment-prefix))
-            (setq line "")))
-      (setq line (concat line (if (string= line "") "" " ") word)))
-    (setq formatted-comment (concat formatted-comment line))
-
-    (save-excursion
-      (delete-region line-start line-end)
-      (goto-char line-start)
-      (insert formatted-comment))))
-
-(global-set-key (kbd "C-c C-l") 'format-comment-at-point)
-
-;; (setq frame-background-mode 'dark)
-
-;; defun to set cursor color to dark grey
-(defun greyme ()
-  (interactive)
-  (set-cursor-color "dark grey"))
-
-(defun greenme ()
-  (interactive)
-  (set-cursor-color "chartreuse2"))
-
-(defun my-c++-mode-setup ()
-  (c-set-offset 'innamespace 0))
-
-(add-hook 'c++-mode-hook 'my-c++-mode-setup)
-
-(defun toggle-standard-themes ()
-  (interactive)
-  (if (eq (car custom-enabled-themes) 'standard-dark)
-      (progn
-        (disable-theme 'standard-dark)
-        (load-theme 'standard-light t))
-    (progn
-      (disable-theme 'standard-light)
-      (load-theme 'standard-dark t))))
-
-(when (>= emacs-major-version 28)
-  ;; emacs 28 or later. use icomplete-vertical-mode and set flex match
-  (setq completion-styles '(flex))
-  (icomplete-vertical-mode 1))
-
 ;; switch between header and source file for c/h or cpp/h or cc/hh
 (defun switch-header-source ()
   "Switch between header and source file."
@@ -824,58 +445,43 @@ This command does the inverse of `fill-paragraph'."
 
 (global-set-key (kbd "<f8>") 'switch-header-source)
 
-
-(with-eval-after-load 'code-cells
-  (let ((map code-cells-mode-map))
-    (define-key map "n" (code-cells-speed-key 'code-cells-forward-cell))
-    (define-key map "p" (code-cells-speed-key 'code-cells-backward-cell))
-    (define-key map "e" (code-cells-speed-key 'code-cells-eval))
-    (define-key map (kbd "TAB") (code-cells-speed-key 'outline-cycle))))
-
-;; command to wrap selection in <center> tag
-(defun wrap-in-center-tag ()
-  "Wrap the selected text in a <center> tag."
-  (interactive)
-  (let ((start (region-beginning))
-        (end (region-end)))
-    (goto-char end)
-    (insert "</center>")
-    (goto-char start)
-    (insert "<center>")))
-;; bind it to C-c C-e in markdown
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (local-set-key (kbd "C-c C-e") 'wrap-in-center-tag)))
 (defun disable-eldoc-in-python-mode ()
   "Disable eldoc-mode in python-mode."
   (when (derived-mode-p 'python-mode)
     (eldoc-mode -1)))
+(defun my-cmake-compile ()
+  "run make out of the build subdirectory of the project root"
+  (interactive)
+    (let ((default-directory (concat (project-root (project-current t)) "/build"))
+            (command "cmake --build . --config Debug"))
+      (compile command)))
+(global-set-key (kbd "<f5>") 'my-cmake-compile)
 
-(use-package auto-virtualenv
+(defun my-project-run ()
+  "Run the specified application."
+  (interactive)
+  (start-process "sdl-min" "*sdl-min-output*"
+                 "/Users/jon/development/cpp/solitaire/build/Debug/sdl-min.app/Contents/MacOS/sdl-min"))
+
+(global-set-key (kbd "<f6>") 'my-project-run)
+
+(use-package undo-tree
+  :diminish                       ;; Don't show an icon in the modeline
   :ensure t
+  :bind ("C-x u" . undo-tree-visualize)
   :init
-  (use-package pyvenv
-    :ensure t)
+  (global-undo-tree-mode)
   :config
-  (add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
-  ;; (add-hook 'projectile-after-switch-project-hook 'auto-virtualenv-set-virtualenv)  ;; If using projectile
-  )
-(add-hook 'python-mode-hook 'auto-virtualenv-set-virtualenv)
+  ;; Each node in the undo tree should have a timestamp.
+  (setq undo-tree-visualizer-timestamps t)
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
 
-(use-package perspective
-  :bind
-  ("C-x C-b" . persp-list-buffers) ; or use a nicer switcher, see below
-  :custom
-  (persp-mode-prefix-key (kbd "C-c M-p")) ; pick your own prefix key here
-  :init
-  (persp-mode))
+  ;; Show a diff window displaying changes between undo nodes.
+  (setq undo-tree-visualizer-diff t))
 
-(when (file-readable-p "~/.emacs.d/persp-state")
-  (persp-state-load "~/.emacs.d/persp-state"))
+(use-package gptel
+  :ensure t)
 
-(add-hook 'window-configuration-change-hook 'auto-virtualenv-set-virtualenv)
-(add-hook 'focus-in-hook 'auto-virtualenv-set-virtualenv)
+;; -----------------
 
-(add-hook 'python-mode-hook 'disable-eldoc-in-python-mode)
-(add-hook 'python-mode-hook 'code-cells-mode-maybe)
 
