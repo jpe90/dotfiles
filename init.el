@@ -87,9 +87,15 @@
       )
 
 (use-package undo-tree
+  :diminish ;; Don't show an icon in the modeline
   :ensure t
+  :bind ("C-x u" . undo-tree-visualize)
   :init
-  (global-undo-tree-mode))
+  (global-undo-tree-mode)
+  :config
+  ;; Each node in the undo tree should have a timestamp.
+  (setq undo-tree-visualizer-timestamps t)
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
 
 (use-package evil
   :ensure t
