@@ -95,7 +95,7 @@
   :config
   ;; Each node in the undo tree should have a timestamp.
   (setq undo-tree-visualizer-timestamps t)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
 (use-package evil
   :ensure t
