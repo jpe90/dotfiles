@@ -1,28 +1,25 @@
-;; === Fonts ===
+;; === Core Settings ===
 
-(set-face-attribute 'default nil :font "SF Mono" :height 100)
-;; (set-face-attribute 'default nil :font "Iosevka" :height 160)
-
-;; === Packages and Initialization ===
+(if (eq system-type 'darwin)
+    (progn
+      (set-face-attribute 'default nil :font "SF Mono" :height 140)
+      (menu-bar-mode 1)
+      ))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
+;; Core requires
 (require 'recentf)
 (require 'uniquify)
 (require 'view)
 
+;; === Basic Configuration ===
 (defalias 'yes-or-no-p 'y-or-n-p)
+(autoload 'zap-up-to-char "misc" "Kill up to, but not including ARGth occurrence of CHAR." t)
 
-(autoload 'zap-up-to-char "misc"
-  "Kill up to, but not including ARGth occurrence of CHAR." t)
-
-;; (add-hook 'python-mode-hook
-;;           (lambda ()
-;;             (python-ts-mode 1)
-;;             (eglot-ensure)))
-
+;; Python mode configuration
 (add-hook 'python-mode-hook
           (lambda ()
             (if (fboundp 'python-ts-mode)
@@ -32,14 +29,9 @@
                 (eglot-ensure)
               (message "eglot-ensure not available"))))
 
-;; (setq frame-background-mode 'dark)
-
-
-;; (add-to-list 'major-mode-remap-alist '(python-mode . python-ts-mode))
-;; (add-to-list 'major-mode-remap-alist '(c++-mode . c++-ts-mode))
+;; C++ configuration
 (setq-default c-basic-offset 4)
-
-;; === Various Settings ===
+(setq c-default-style "k&r")
 
 (setq
       mac-option-modifier 'meta
@@ -90,52 +82,30 @@
       completion-styles '(flex)
       ;; put backup files in the .emacs.d/backups directory
       backup-directory-alist `(("." . ,(concat user-emacs-directory
-                                                 "backups")))
+                                               "backups")))
+      doom-gruvbox-dark-variant "hard"
       )
-      
 
-(unless backup-directory-alist
-  (setq backup-directory-alist `(("." . ,(concat user-emacs-directory
-                                                 "backups")))))
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode))
 
-;; === Modes ===
-(defun indent-last-pasted-region ()
-  "Indent the last pasted region."
-  (interactive)
-  (when (and (boundp 'last-command)
-             (or (eq last-command 'yank)
-                 (eq last-command 'yank-pop)))
-    (let ((mark-even-if-inactive t))
-      (indent-region (region-beginning) (region-end)))))
+(use-package evil
+  :ensure t
+  :init
+  (setq evil-want-C-u-scroll t)
+  (setq evil-undo-system 'undo-tree)
+  :config
+  (evil-mode 1))
 
-;; bind it to Shift+tab
-(global-set-key (kbd "<backtab>") 'indent-last-pasted-region)
+(global-display-line-numbers-mode 1)
+(setq display-line-numbers-type 'relative)
 
-(delete-selection-mode 1)
-;; (xclip-mode 1)
-;;(xterm-mouse-mode 1)
-(recentf-mode 1)
-(global-auto-revert-mode 1)
-(show-paren-mode -1)
-(savehist-mode 1)
-(save-place-mode 1)
-(show-paren-mode 1)
-(ido-mode 'buffers)
-(global-hl-line-mode -1)
-;; (blink-cursor-mode 1)
-;; (scroll-bar-mode -1)
-;; (context-menu-mode 1) ;; crashing emacs on mac
-(menu-bar-mode -1)
-(tool-bar-mode -1)
-(column-number-mode 1)
-(pixel-scroll-mode 1)
-;; (etags-regen-mode 1)
-
-;; - turning off because tired of it jumping aroun
-;; - turning on because it makes lookin at stuff with citre easier
-;; (fido-vertical-mode 1)
+(use-package evil-commentary
+  :ensure t
+  :config
+  (evil-commentary-mode 1))
 
 (use-package smex
   :ensure t
@@ -166,14 +136,38 @@
 	 ("C-S-s" . 'phi-search)
 	 ("C-S-r" . 'phi-search-backward))))
 
+;; === Mode Enabling/Disabling ===
+(delete-selection-mode 1)
+(recentf-mode 1)
+(global-auto-revert-mode 1)
+(savehist-mode 1)
+(save-place-mode 1)
+(show-paren-mode 1)
+(ido-mode 'buffers)
+;; (menu-bar-mode -1)
+(tool-bar-mode -1)
+(column-number-mode 1)
+(pixel-scroll-mode 1)
+
+;; === Package Configuration ===
+(use-package eglot
+  :ensure t
+  :hook ((c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)))
+
+(use-package project-cmake
+  :load-path "~/.emacs.d/project-cmake/"
+  :config
+  (require 'eglot)
+  (project-cmake-scan-kits)
+  (project-cmake-eglot-integration))
+
 ;; ido + smex
 (ido-mode t)
 (setq ido-enable-flex-matching t)
 
-
 (global-set-key (kbd "M-x") 'smex)
 (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-;; ;; This is your old M-x.
 (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 ;; === Functions ===
@@ -455,33 +449,7 @@ This command does the inverse of `fill-paragraph'."
     (let ((default-directory (concat (project-root (project-current t)) "/build"))
             (command "cmake --build . --config Debug"))
       (compile command)))
-(global-set-key (kbd "<f5>") 'my-cmake-compile)
 
-(defun my-project-run ()
-  "Run the specified application."
-  (interactive)
-  (start-process "sdl-min" "*sdl-min-output*"
-                 "/Users/jon/development/cpp/solitaire/build/Debug/sdl-min.app/Contents/MacOS/sdl-min"))
-
-(global-set-key (kbd "<f6>") 'my-project-run)
-
-(use-package undo-tree
-  :diminish                       ;; Don't show an icon in the modeline
-  :ensure t
-  :bind ("C-x u" . undo-tree-visualize)
-  :init
-  (global-undo-tree-mode)
-  :config
-  ;; Each node in the undo tree should have a timestamp.
-  (setq undo-tree-visualizer-timestamps t)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-
-  ;; Show a diff window displaying changes between undo nodes.
-  (setq undo-tree-visualizer-diff t))
-
-(use-package gptel
-  :ensure t)
-
-;; -----------------
-
-
+;; === Load Local Configuration ===
+(when (file-exists-p "local-config.el")
+  (load-file "local-config.el"))
