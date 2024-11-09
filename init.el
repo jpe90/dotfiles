@@ -1,10 +1,8 @@
 ;; === Core Settings ===
-
 (if (eq system-type 'darwin)
     (progn
-      (set-face-attribute 'default nil :font "SF Mono" :height 140)
-      (menu-bar-mode 1)
-      ))
+      (set-face-attribute 'default nil :font "SF Mono" :height 120)
+      (menu-bar-mode 1)))
 
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
@@ -18,16 +16,6 @@
 ;; === Basic Configuration ===
 (defalias 'yes-or-no-p 'y-or-n-p)
 (autoload 'zap-up-to-char "misc" "Kill up to, but not including ARGth occurrence of CHAR." t)
-
-;; Python mode configuration
-(add-hook 'python-mode-hook
-          (lambda ()
-            (if (fboundp 'python-ts-mode)
-                (python-ts-mode 1)
-              (message "python-ts-mode not available"))
-            (if (fboundp 'eglot-ensure)
-                (eglot-ensure)
-              (message "eglot-ensure not available"))))
 
 ;; C++ configuration
 (setq-default c-basic-offset 4)
@@ -97,22 +85,6 @@
   (setq undo-tree-visualizer-timestamps t)
   (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
-(use-package evil
-  :ensure t
-  :init
-  (setq evil-want-C-u-scroll t)
-  (setq evil-undo-system 'undo-tree)
-  :config
-  (evil-mode 1))
-
-(global-display-line-numbers-mode 1)
-(setq display-line-numbers-type 'relative)
-
-(use-package evil-commentary
-  :ensure t
-  :config
-  (evil-commentary-mode 1))
-
 (use-package smex
   :ensure t
   :init
@@ -155,18 +127,7 @@
 (column-number-mode 1)
 (pixel-scroll-mode 1)
 
-;; === Package Configuration ===
-(use-package eglot
-  :ensure t
-  :hook ((c-mode . eglot-ensure)
-         (c++-mode . eglot-ensure)))
-
-(use-package project-cmake
-  :load-path "~/.emacs.d/project-cmake/"
-  :config
-  (require 'eglot)
-  (project-cmake-scan-kits)
-  (project-cmake-eglot-integration))
+;; ;; === Package Configuration ===
 
 ;; ido + smex
 (ido-mode t)
@@ -457,5 +418,27 @@ This command does the inverse of `fill-paragraph'."
       (compile command)))
 
 ;; === Load Local Configuration ===
-(when (file-exists-p "local-config.el")
-  (load-file "local-config.el"))
+(when (file-exists-p "/Users/jon/.emacs.d/local-config.el")
+  (load-file "/Users/jon/.emacs.d/local-config.el"))
+
+(when (file-exists-p "/Users/jon/.emacs.d/setup-meow.el")
+  (load-file "/Users/jon/.emacs.d/setup-meow.el"))
+
+
+;; (use-package evil
+;;  :ensure t
+;;  :init
+;;  (setq evil-want-C-u-scroll t)
+;;  (setq evil-undo-system 'undo-tree)
+;;  :config
+;;  (evil-mode 1))
+
+;; (global-display-line-numbers-mode 1)
+;; (setq display-line-numbers-type 'relative)
+
+;; (use-package evil-commentary
+;;  :ensure t
+;;  :config
+;;  (evil-commentary-mode 1))
+
+;; (require 'powershell-ts-mode)
