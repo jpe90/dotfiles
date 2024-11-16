@@ -72,6 +72,7 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups")))
       doom-gruvbox-dark-variant "hard"
+      gptel-default-mode 'org-mode
       )
 
 (use-package undo-tree
@@ -423,6 +424,13 @@ This command does the inverse of `fill-paragraph'."
 
 (when (file-exists-p "/Users/jon/.emacs.d/setup-meow.el")
   (load-file "/Users/jon/.emacs.d/setup-meow.el"))
+
+(defun org-copy-src-block ()
+  (interactive)
+  (org-edit-src-code)
+  (mark-whole-buffer)
+  (kill-ring-save (point-min) (point-max))
+  (org-edit-src-exit))
 
 
 ;; (use-package evil
