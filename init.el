@@ -1,7 +1,7 @@
 ;; === Core Settings ===
 (if (eq system-type 'darwin)
     (progn
-      (set-face-attribute 'default nil :font "SF Mono" :height 120)
+      (set-face-attribute 'default nil :font "Iosevka" :height 140)
       (menu-bar-mode 1)))
 
 (require 'package)
@@ -72,9 +72,8 @@
       backup-directory-alist `(("." . ,(concat user-emacs-directory
                                                "backups")))
       doom-gruvbox-dark-variant "hard"
-      gptel-default-mode 'org-mode
+      ;; gptel-default-mode 'org-mode
       )
-
 (use-package undo-tree
   :diminish ;; Don't show an icon in the modeline
   :ensure t
@@ -91,13 +90,14 @@
   :init
   (smex-initialize))
 
-
 (use-package which-key
   :ensure t)
 
+;; PREREQUISITE: git
 (use-package magit
   :ensure t)
 
+;; PREREQUISITE: rg
 (use-package deadgrep
   :ensure t)
 
@@ -158,7 +158,7 @@ the cursor by ARG lines."
     (set-mark-command nil))
   (forward-line arg))
 
-;; ==== random stuff stolen from tsoding https://github.com/rexim/dotfiles
+;; ==== stuff with rc prefix comes from Alexey Kutepov  https://github.com/rexim/dotfiles
 
 (defun rc/buffer-file-name ()
   (if (equal major-mode 'dired-mode)
@@ -190,7 +190,6 @@ the cursor by ARG lines."
   (let ((parent-directory (rc/parent-directory (rc/buffer-file-name))))
     (kill-new parent-directory)
     (message parent-directory)))
-
 
 ;;; Stolen from http://ergoemacs.org/emacs/emacs_unfill-paragraph.html
 (defun rc/unfill-paragraph ()
@@ -273,11 +272,20 @@ This command does the inverse of `fill-paragraph'."
 
 (global-set-key [S-tab] 'indent-for-tab-command)
 
+;; I split out some system or setup specific settings into separate files, so I
+;; have some code to look for those and only load them if they exist
+
 (when (file-directory-p "~/.emacs.d/lisp")
   (add-to-list 'load-path "~/.emacs.d/lisp")
 
   (when (file-directory-p "~/.emacs.d/lisp/witness")
     (add-to-list 'load-path "~/.emacs.d/lisp/witness")))
+
+(when (file-readable-p "~/.emacs.d/custom.el")
+  (load "~/.emacs.d/custom.el"))
+
+(when (file-exists-p "/Users/jon/.emacs.d/local-config.el")
+  (load-file "/Users/jon/.emacs.d/local-config.el"))
 
 (defun disable-font-lock-in-compilation-buffer ()
   "Disable syntax highlighting in the compilation buffer."
@@ -285,105 +293,8 @@ This command does the inverse of `fill-paragraph'."
 
 (add-hook 'compilation-mode-hook 'disable-font-lock-in-compilation-buffer)
 
-(when (file-readable-p "~/.emacs.d/custom.el")
-  (load "~/.emacs.d/custom.el"))
-
 (with-eval-after-load 'multiple-cursors
   (global-set-key (kbd "C-S-<mouse-1>") 'mc/add-cursor-on-click))
-
-(defun dired-do-llm-format (&optional arg)
-  "Create a buffer with the contents of the marked (or next ARG) files, formatted in Markdown."
-  (interactive)
-  (let ((file-list (dired-get-marked-files t arg nil nil t))
-        (buffer (generate-new-buffer "*LLM Format*")))
-    (with-current-buffer buffer
-      (markdown-mode)
-      (dolist (file file-list)
-        ;; Insert the file name with backticks
-        (insert "```" (file-name-nondirectory file) "\n")
-        ;; Save the position
-        (let ((start (point)))
-          ;; Insert the file contents
-          (insert-file-contents file)
-          ;; Insert the closing backticks
-          (goto-char (point-max))
-          (insert "\n```\n")))
-      (goto-char (point-min)))
-    (switch-to-buffer buffer)))
-
-(defun dired-do-llm-format (&optional arg)
-  "Create a buffer with the contents of the marked (or next ARG) files, formatted in Markdown."
-  (interactive)
-  (let ((file-list (dired-get-marked-files t arg nil nil t))
-        (buffer (generate-new-buffer "*LLM Format*"))
-        (header-text (read-string "Enter text to insert at the top of the buffer: ")))
-    (with-current-buffer buffer
-      (markdown-mode)
-      ;; Insert the header text at the top
-      (insert header-text "\n\n")
-      (dolist (file file-list)
-        ;; Insert the file name with backticks
-        (insert "```" (file-name-nondirectory file) "\n")
-        ;; Save the position
-        (let ((start (point)))
-          ;; Insert the file contents
-          (insert-file-contents file)
-          ;; Insert the closing backticks
-          (goto-char (point-max))
-          (insert "\n```\n")))
-      (goto-char (point-min)))
-    (switch-to-buffer buffer)))
-
-(defun ibuffer-do-llm-format (&optional arg)
-  "Create a buffer with the contents of the marked (or next ARG) buffers, formatted in Markdown."
-  (interactive "P")
-  (let ((buffer-list (ibuffer-get-marked-buffers))
-        (new-buffer (generate-new-buffer "*LLM Format*"))
-        (header-text (read-string "Enter text to insert at the top of the buffer: ")))
-    (with-current-buffer new-buffer
-      (markdown-mode)
-      ;; Insert the header text at the top
-      (insert header-text "\n\n")
-      (dolist (buf buffer-list)
-        ;; Insert the buffer name with backticks
-        (insert "```" (buffer-name buf) "\n")
-        ;; Save the position
-        (let ((start (point)))
-          ;; Insert the buffer contents
-          (insert-buffer-substring buf)
-          ;; Insert the closing backticks
-          (goto-char (point-max))
-          (insert "\n```\n")))
-      (goto-char (point-min)))
-    (switch-to-buffer new-buffer)))
-
-(with-eval-after-load 'ibuffer
-  (define-key ibuffer-mode-map (kbd "b") 'ibuffer-do-llm-format))
-
-(defun create-llm-compilation-output ()
-  "Create a buffer named *LLM Compilation Output* with specified content."
-  (interactive)
-  (let ((compilation-content (with-current-buffer "*compilation*"
-                               (buffer-string)))
-        (current-content (buffer-string))
-        (current-filename (buffer-file-name)))
-
-    ;; Create new buffer
-    (with-current-buffer (get-buffer-create "*LLM Compilation Output*")
-      ;; Insert compilation content
-      (insert compilation-content "\n\n")
-
-      ;; Insert current buffer content enclosed in markdown code ticks
-      (insert "```" (file-name-nondirectory current-filename) "\n"
-              current-content
-              "```\n")
-
-      ;; Display the buffer
-      (switch-to-buffer-other-window "*LLM Compilation Output*"))))
-
-
-(with-eval-after-load 'dired
-  (define-key dired-mode-map (kbd "b") 'dired-do-llm-format))
 
 ;; switch between header and source file for c/h or cpp/h or cc/hh
 (defun switch-header-source ()
@@ -418,19 +329,10 @@ This command does the inverse of `fill-paragraph'."
             (command "cmake --build . --config Debug"))
       (compile command)))
 
-;; === Load Local Configuration ===
-(when (file-exists-p "/Users/jon/.emacs.d/local-config.el")
-  (load-file "/Users/jon/.emacs.d/local-config.el"))
 
-(when (file-exists-p "/Users/jon/.emacs.d/setup-meow.el")
-  (load-file "/Users/jon/.emacs.d/setup-meow.el"))
 
-(defun org-copy-src-block ()
-  (interactive)
-  (org-edit-src-code)
-  (mark-whole-buffer)
-  (kill-ring-save (point-min) (point-max))
-  (org-edit-src-exit))
+;; (when (file-exists-p "/Users/jon/.emacs.d/setup-meow.el")
+;;   (load-file "/Users/jon/.emacs.d/setup-meow.el"))
 
 
 ;; (use-package evil
@@ -450,3 +352,11 @@ This command does the inverse of `fill-paragraph'."
 ;;  (evil-commentary-mode 1))
 
 ;; (require 'powershell-ts-mode)
+
+(defun org-copy-src-block ()
+  (interactive)
+  (org-edit-src-code)
+  (mark-whole-buffer)
+  (kill-ring-save (point-min) (point-max))
+  (org-edit-src-exit))
+
